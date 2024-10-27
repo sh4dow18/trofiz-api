@@ -5,6 +5,6 @@ data class PlatformRequest(
 )
 // Responses
 data class PlatformResponse(
-    var id: Long,
+    var id: String,
     var name: String
 )

@@ -26,8 +26,11 @@ class AbstractPlatformService(
     // one makes a transaction when this service function is in operation.
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(platformRequest: PlatformRequest): PlatformResponse {
+        // Transforms Name in Platform Request in lowercase and replace spaces with "-"
+        // Example: "Play Station 5" -> "play-station-5"
+        val platformId = getPlatformId(platformRequest.name)
         // Verifies if the platform already exists
-        if (platformRepository.findByName(platformRequest.name).orElse(null) != null) {
+        if (platformRepository.findById(platformId).orElse(null) != null) {
             throw ElementAlreadyExists(platformRequest.name, "Plataforma" )
         }
         // If not exists, create the new platform

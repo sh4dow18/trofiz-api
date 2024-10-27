@@ -104,9 +104,7 @@ data class Game(
 data class Platform(
     // Platform Properties
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long,
-    var name: String,
+    var id: String,
     // Platform Relationships
     @OneToMany(mappedBy = "platform", targetEntity = GameLog::class)
     var gamesLogsList: List<GameLog>,
