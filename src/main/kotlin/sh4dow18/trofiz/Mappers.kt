@@ -3,14 +3,17 @@ package sh4dow18.trofiz
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.ReportingPolicy
+const val UTILS_PATH = "sh4dow18.trofiz.UtilsKt"
 // Platform Mapper
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface PlatformMapper {
     // Create a game logs list as an empty list, when creating a "Platform"
-    @Mapping(target = "gamesLogsList", expression = "java(java.util.Collections.emptyList())")
+    @Mapping(target = "id", expression = "java($UTILS_PATH.getPlatformId(platformRequest.getName()))")
     fun platformRequestToPlatform(
         platformRequest: PlatformRequest
     ): Platform
+    // Get the Platform name using its own id
+    @Mapping(target = "name", expression = "java($UTILS_PATH.getPlatformName(platform.getId()))")
     fun platformToPlatformResponse(
         platform: Platform
     ): PlatformResponse

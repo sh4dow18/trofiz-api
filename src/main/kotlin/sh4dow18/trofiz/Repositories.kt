@@ -6,7 +6,4 @@ import org.springframework.stereotype.Repository
 import java.util.Optional
 // Platform Repository
 @Repository
-interface PlatformRepository: JpaRepository<Platform, Long> {
-    // Find Platform By Name, to verify if the Platform exists
-    fun findByName(@Param("name") name: String): Optional<Platform>
-}
+interface PlatformRepository: JpaRepository<Platform, String>
