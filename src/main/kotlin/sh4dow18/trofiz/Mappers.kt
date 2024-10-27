@@ -14,4 +14,7 @@ interface PlatformMapper {
     fun platformToPlatformResponse(
         platform: Platform
     ): PlatformResponse
+    fun platformsListToPlatformResponsesList(
+        platformsList: List<Platform>
+    ): List<PlatformResponse>
 }

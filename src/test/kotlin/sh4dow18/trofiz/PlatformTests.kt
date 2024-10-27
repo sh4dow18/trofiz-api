@@ -13,6 +13,11 @@ class PlatformTests(
     val platformMapper: PlatformMapper
 ) {
     @Test
+    fun findAll() {
+        // Transforms a Platforms List to a Platform Responses List
+        platformMapper.platformsListToPlatformResponsesList(platformRepository.findAll())
+    }
+    @Test
     fun insert() {
         // Insert Platform Test Prop
         val platformRequest = PlatformRequest("Play Station 5")
