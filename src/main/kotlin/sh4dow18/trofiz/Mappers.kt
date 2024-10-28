@@ -34,4 +34,7 @@ interface GenreMapper {
     fun genreToGenreResponse(
         genre: Genre
     ): GenreResponse
+    fun genresListToGenreResponsesList(
+        genresList: List<Genre>
+    ): List<GenreResponse>
 }

@@ -13,6 +13,11 @@ class GenreTests(
     val genreMapper: GenreMapper
 ) {
     @Test
+    fun findAll() {
+        // Transforms a Genres List to a Genres Responses List
+        genreMapper.genresListToGenreResponsesList(genreRepository.findAll())
+    }
+    @Test
     fun insert() {
         // Insert Genre Test Prop
         val genreRequest = GenreRequest("Género de Prueba")
