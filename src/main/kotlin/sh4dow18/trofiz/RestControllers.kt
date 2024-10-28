@@ -24,6 +24,10 @@ class PlatformRestController(private val platformService: PlatformService) {
 @RestController
 @RequestMapping("\${endpoint.genres}")
 class GenreRestController(private val genreService: GenreService) {
+    // When the Endpoint has HTTP GET requests, call find all genres function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = genreService.findAll()
     // When the Endpoint has HTTP POST requests, call insert genre function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody

@@ -42,6 +42,7 @@ class AbstractPlatformService(
 // Genre Service Interface where the functions to be used in
 // Spring Abstract Genre Service are declared
 interface GenreService {
+    fun findAll(): List<GenreResponse>
     fun insert(genreRequest: GenreRequest): GenreResponse
 }
 // Spring Abstract Genre Service
@@ -53,6 +54,10 @@ class AbstractGenreService(
     @Autowired
     val genreMapper: GenreMapper
 ): GenreService {
+    override fun findAll(): List<GenreResponse> {
+        // Returns all Genres as a Genre Responses List
+        return genreMapper.genresListToGenreResponsesList(genreRepository.findAll())
+    }
     override fun insert(genreRequest: GenreRequest): GenreResponse {
         // Transforms Name in Genre Request in lowercase and replace spaces with "-"
         // Example: "Interactive Adventure" -> "interactive-adventure"
@@ -64,6 +69,6 @@ class AbstractGenreService(
         // If not exists, create the new genre
         val newGenre = genreMapper.genreRequestToGenre(genreRequest)
         // Transforms the New Genre to Genre Response and Returns It
-        return genreMapper.genreToGenreResponse(newGenre)
+        return genreMapper.genreToGenreResponse(genreRepository.save(newGenre))
     }
 }
