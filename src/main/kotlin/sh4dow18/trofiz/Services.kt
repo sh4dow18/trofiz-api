@@ -39,3 +39,31 @@ class AbstractPlatformService(
         return platformMapper.platformToPlatformResponse(platformRepository.save(newPlatform))
     }
 }
+// Genre Service Interface where the functions to be used in
+// Spring Abstract Genre Service are declared
+interface GenreService {
+    fun insert(genreRequest: GenreRequest): GenreResponse
+}
+// Spring Abstract Genre Service
+@Service
+class AbstractGenreService(
+    // Genre Service Props
+    @Autowired
+    val genreRepository: GenreRepository,
+    @Autowired
+    val genreMapper: GenreMapper
+): GenreService {
+    override fun insert(genreRequest: GenreRequest): GenreResponse {
+        // Transforms Name in Genre Request in lowercase and replace spaces with "-"
+        // Example: "Interactive Adventure" -> "interactive-adventure"
+        val genreId = getPlatformId(genreRequest.name)
+        // Verifies if the genre already exists
+        if (genreRepository.findById(genreId).orElse(null) != null) {
+            throw ElementAlreadyExists(genreRequest.name, "Género" )
+        }
+        // If not exists, create the new genre
+        val newGenre = genreMapper.genreRequestToGenre(genreRequest)
+        // Transforms the New Genre to Genre Response and Returns It
+        return genreMapper.genreToGenreResponse(newGenre)
+    }
+}
