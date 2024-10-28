@@ -7,7 +7,7 @@ const val UTILS_PATH = "sh4dow18.trofiz.UtilsKt"
 // Platform Mapper
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface PlatformMapper {
-    // Create a game logs list as an empty list, when creating a "Platform"
+    // Get the Platform id using its own name
     @Mapping(target = "id", expression = "java($UTILS_PATH.getPlatformId(platformRequest.getName()))")
     fun platformRequestToPlatform(
         platformRequest: PlatformRequest
