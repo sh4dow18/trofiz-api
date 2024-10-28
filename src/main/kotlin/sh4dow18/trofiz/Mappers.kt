@@ -21,3 +21,17 @@ interface PlatformMapper {
         platformsList: List<Platform>
     ): List<PlatformResponse>
 }
+// Genre Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface GenreMapper {
+    // Get the Genre id using its own name
+    @Mapping(target = "id", expression = "java($UTILS_PATH.getPlatformId(genreRequest.getName()))")
+    fun genreRequestToGenre(
+        genreRequest: GenreRequest
+    ): Genre
+    // Get the Genre name using its own id
+    @Mapping(target = "name", expression = "java($UTILS_PATH.getPlatformName(genre.getId()))")
+    fun genreToGenreResponse(
+        genre: Genre
+    ): GenreResponse
+}

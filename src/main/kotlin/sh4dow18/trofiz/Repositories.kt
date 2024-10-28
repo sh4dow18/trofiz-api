@@ -7,3 +7,6 @@ import java.util.Optional
 // Platform Repository
 @Repository
 interface PlatformRepository: JpaRepository<Platform, String>
+// Genre Repository
+@Repository
+interface GenreRepository: JpaRepository<Genre, String>
