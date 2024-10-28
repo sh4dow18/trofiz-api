@@ -117,9 +117,7 @@ data class Platform(
 data class Genre(
     // Genre Properties
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long,
-    var name: String,
+    var id: String,
     // Genre Relationships
     @ManyToMany(mappedBy = "genresList", fetch = FetchType.LAZY, targetEntity = Game::class)
     var gamesList: Set<Game>
