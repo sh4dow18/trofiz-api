@@ -17,6 +17,11 @@ class GameTests(
     val genreRepository: GenreRepository
 ) {
     @Test
+    fun findAll() {
+        // Transforms a Games List to a Game Responses List
+        gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
+    }
+    @Test
     fun insert() {
         // Insert Genre Test Props
         val platformsSet: Set<PlatformRequest> = setOf(PlatformRequest("Plataforma 1"),

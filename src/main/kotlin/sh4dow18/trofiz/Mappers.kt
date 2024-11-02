@@ -53,4 +53,7 @@ interface GameMapper {
     fun gameToGameResponse(
         game: Game
     ): GameResponse
+    fun gamesListToGameResponsesList(
+        gamesList: List<Game>
+    ): List<GameResponse>
 }
