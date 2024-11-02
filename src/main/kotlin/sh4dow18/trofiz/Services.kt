@@ -72,3 +72,40 @@ class AbstractGenreService(
         return genreMapper.genreToGenreResponse(genreRepository.save(newGenre))
     }
 }
+// Game Service Interface where the functions to be used in
+// Spring Abstract Game Service are declared
+interface GameService {
+    fun insert(gameRequest: GameRequest): GameResponse
+}
+// Spring Abstract Game Service
+@Service
+class AbstractGameService(
+    // Game Service Props
+    @Autowired
+    val gameRepository: GameRepository,
+    @Autowired
+    val gameMapper: GameMapper,
+    @Autowired
+    val platformRepository: PlatformRepository,
+    @Autowired
+    val genreRepository: GenreRepository
+): GameService {
+    override fun insert(gameRequest: GameRequest): GameResponse {
+        // Verifies if the game already exists
+        if (gameRepository.findById(getPlatformId(gameRequest.name)).orElse(null) != null) {
+            throw ElementAlreadyExists(gameRequest.name, "Juego")
+        }
+        // If not exists, create the new game
+        val newGame = gameMapper.gameRequestToGame(gameRequest)
+        // Add existing platforms to the new game
+        newGame.platformsList = platformRepository.findAllById(gameRequest.platformsList.map {
+                platform -> getPlatformId(platform.name)
+        }).toSet()
+        // Add existing genres to the new game
+        newGame.genresList = genreRepository.findAllById(gameRequest.genresList.map {
+                genre -> getPlatformId(genre.name)
+        }).toSet()
+        // Transforms the New Game to a Game Response and Returns it
+        return gameMapper.gameToGameResponse(gameRepository.save(newGame))
+    }
+}
