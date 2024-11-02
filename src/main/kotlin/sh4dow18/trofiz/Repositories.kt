@@ -10,3 +10,6 @@ interface PlatformRepository: JpaRepository<Platform, String>
 // Genre Repository
 @Repository
 interface GenreRepository: JpaRepository<Genre, String>
+// Game Repository
+@Repository
+interface GameRepository: JpaRepository<Game, String>

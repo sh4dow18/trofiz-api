@@ -38,3 +38,22 @@ interface GenreMapper {
         genresList: List<Genre>
     ): List<GenreResponse>
 }
+// Game Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface GameMapper {
+    // Get Game slug using its own name
+    @Mapping(target = "slug", expression = "java($UTILS_PATH.getPlatformId(gameRequest.getName()))")
+    // Set each list and each set as empty
+    @Mapping(target = "platformsList", expression = "java(java.util.Collections.emptySet())")
+    @Mapping(target = "genresList", expression = "java(java.util.Collections.emptySet())")
+    @Mapping(target = "gamesLogsList", expression = "java(java.util.Collections.emptyList())")
+    fun gameRequestToGame(
+        gameRequest: GameRequest
+    ): Game
+    fun gameToGameResponse(
+        game: Game
+    ): GameResponse
+    fun gamesListToGameResponsesList(
+        gamesList: List<Game>
+    ): List<GameResponse>
+}
