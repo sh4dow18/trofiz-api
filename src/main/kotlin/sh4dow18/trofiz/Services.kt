@@ -75,6 +75,7 @@ class AbstractGenreService(
 // Game Service Interface where the functions to be used in
 // Spring Abstract Game Service are declared
 interface GameService {
+    fun findAll(): List<GameResponse>
     fun insert(gameRequest: GameRequest): GameResponse
 }
 // Spring Abstract Game Service
@@ -90,6 +91,10 @@ class AbstractGameService(
     @Autowired
     val genreRepository: GenreRepository
 ): GameService {
+    override fun findAll(): List<GameResponse> {
+        // Transforms a Games List to a Game Responses List
+        return gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
+    }
     override fun insert(gameRequest: GameRequest): GameResponse {
         // Verifies if the game already exists
         if (gameRepository.findById(getPlatformId(gameRequest.name)).orElse(null) != null) {

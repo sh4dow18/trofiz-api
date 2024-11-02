@@ -37,6 +37,10 @@ class GenreRestController(private val genreService: GenreService) {
 @RestController
 @RequestMapping("\${endpoint.games}")
 class GameRestController(private val gameService: GameService) {
+    // When the Endpoint has HTTP GET requests, call find all games function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = gameService.findAll()
     // When the Endpoint has HTTP POST requests, call insert game function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
