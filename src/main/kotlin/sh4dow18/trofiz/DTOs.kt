@@ -1,11 +1,15 @@
 package sh4dow18.trofiz
+// Interfaces
+interface NamedEntity {
+    val name: String
+}
 // Requests
 data class PlatformRequest(
-    var name: String,
-)
+    override var name: String,
+): NamedEntity
 data class GenreRequest(
-    var name: String
-)
+    override var name: String
+): NamedEntity
 data class GameRequest(
     var name: String,
     var rating: Float,
@@ -24,16 +28,12 @@ data class GenreResponse(
     var id: String,
     var name: String
 )
-data class GameLogResponse(
-    var id: Long
-)
 data class GameResponse(
     var name: String,
     var rating: Float,
     var metacritic: Int,
     var releaseDate: String,
     var imageUrl: String,
-    var gameLogsList: List<GameLogResponse>,
     var platformsList: Set<PlatformResponse>,
     var genresList: Set<GenreResponse>
 )

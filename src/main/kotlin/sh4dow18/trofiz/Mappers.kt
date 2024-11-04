@@ -3,15 +3,18 @@ package sh4dow18.trofiz
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.ReportingPolicy
+// Mappers Constants
 const val UTILS_PATH = "sh4dow18.trofiz.UtilsKt"
+const val EMPTY_LIST = "java(java.util.Collections.emptyList())"
+const val EMPTY_SET = "java(java.util.Collections.emptySet())"
 // Platform Mapper
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface PlatformMapper {
     // Get the Platform id using its own name
-    @Mapping(target = "id", expression = "java($UTILS_PATH.getPlatformId(platformRequest.getName()))")
+    @Mapping(target = "id", expression = "java($UTILS_PATH.getIdByName(platformRequest.getName()))")
     // Set each list and each set as empty
-    @Mapping(target = "gameLogsList", expression = "java(java.util.Collections.emptyList())")
-    @Mapping(target = "gamesList", expression = "java(java.util.Collections.emptySet())")
+    @Mapping(target = "gameLogsList", expression = EMPTY_LIST)
+    @Mapping(target = "gamesList", expression = EMPTY_SET)
     fun platformRequestToPlatform(
         platformRequest: PlatformRequest
     ): Platform
@@ -26,9 +29,9 @@ interface PlatformMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface GenreMapper {
     // Get the Genre id using its own name
-    @Mapping(target = "id", expression = "java($UTILS_PATH.getPlatformId(genreRequest.getName()))")
+    @Mapping(target = "id", expression = "java($UTILS_PATH.getIdByName(genreRequest.getName()))")
     // Set games list as empty
-    @Mapping(target = "gamesList", expression = "java(java.util.Collections.emptySet())")
+    @Mapping(target = "gamesList", expression = EMPTY_SET)
     fun genreRequestToGenre(
         genreRequest: GenreRequest
     ): Genre
@@ -43,11 +46,11 @@ interface GenreMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface GameMapper {
     // Get Game slug using its own name
-    @Mapping(target = "id", expression = "java($UTILS_PATH.getPlatformId(gameRequest.getName()))")
+    @Mapping(target = "id", expression = "java($UTILS_PATH.getIdByName(gameRequest.getName()))")
     // Set each list and each set as empty
-    @Mapping(target = "platformsList", expression = "java(java.util.Collections.emptySet())")
-    @Mapping(target = "genresList", expression = "java(java.util.Collections.emptySet())")
-    @Mapping(target = "gameLogsList", expression = "java(java.util.Collections.emptyList())")
+    @Mapping(target = "platformsList", expression = EMPTY_SET)
+    @Mapping(target = "genresList", expression = EMPTY_SET)
+    @Mapping(target = "gameLogsList", expression = EMPTY_LIST)
     fun gameRequestToGame(
         gameRequest: GameRequest
     ): Game
