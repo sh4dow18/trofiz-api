@@ -29,7 +29,7 @@ data class User(
     @JoinColumn(name = "role_id", nullable = false, referencedColumnName = "id")
     var role: Role,
     @OneToMany(mappedBy = "user", targetEntity = GameLog::class)
-    var gamesLogsList: List<GameLog>,
+    var gameLogsList: List<GameLog>,
     @OneToMany(mappedBy = "user", targetEntity = Log::class)
     var logsList: List<Log>
 )
@@ -59,7 +59,7 @@ data class GameLog(
     var platinum: ZonedDateTime?,
     // Game Log Relationships
     @ManyToOne
-    @JoinColumn(name = "game_id", nullable = false, referencedColumnName = "slug")
+    @JoinColumn(name = "game_id", nullable = false, referencedColumnName = "id")
     var game: Game,
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "email")
@@ -74,7 +74,7 @@ data class GameLog(
 data class Game(
     // Game Properties
     @Id
-    var slug: String,
+    var id: String,
     var name: String,
     var rating: Float,
     var metacritic: Int,
@@ -82,18 +82,18 @@ data class Game(
     var imageUrl: String,
     // Game Relationships
     @OneToMany(mappedBy = "game", targetEntity = GameLog::class)
-    var gamesLogsList: List<GameLog>,
+    var gameLogsList: List<GameLog>,
     @ManyToMany(targetEntity = Platform::class)
     @JoinTable(
         name = "game_platform",
-        joinColumns = [JoinColumn(name = "game_slug", referencedColumnName = "slug")],
+        joinColumns = [JoinColumn(name = "game_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "platform_id", referencedColumnName = "id")]
     )
     var platformsList: Set<Platform>,
     @ManyToMany(targetEntity = Genre::class)
     @JoinTable(
         name = "game_genre",
-        joinColumns = [JoinColumn(name = "game_slug", referencedColumnName = "slug")],
+        joinColumns = [JoinColumn(name = "game_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "genre_id", referencedColumnName = "id")]
     )
     var genresList: Set<Genre>
@@ -105,9 +105,10 @@ data class Platform(
     // Platform Properties
     @Id
     var id: String,
+    var name: String,
     // Platform Relationships
     @OneToMany(mappedBy = "platform", targetEntity = GameLog::class)
-    var gamesLogsList: List<GameLog>,
+    var gameLogsList: List<GameLog>,
     @ManyToMany(mappedBy = "platformsList", fetch = FetchType.LAZY, targetEntity = Game::class)
     var gamesList: Set<Game>
 )
@@ -118,6 +119,7 @@ data class Genre(
     // Genre Properties
     @Id
     var id: String,
+    var name: String,
     // Genre Relationships
     @ManyToMany(mappedBy = "genresList", fetch = FetchType.LAZY, targetEntity = Game::class)
     var gamesList: Set<Game>

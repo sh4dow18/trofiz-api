@@ -103,13 +103,13 @@ class AbstractGameService(
         // If not exists, create the new game
         val newGame = gameMapper.gameRequestToGame(gameRequest)
         // Add existing platforms to the new game
-        newGame.platformsList = platformRepository.findAllById(gameRequest.platformsList.map {
-                platform -> getPlatformId(platform.name)
-        }).toSet()
+        newGame.platformsList = platformRepository.saveAll(platformRepository.findAllById(gameRequest.platformsList.map {
+            platform -> getPlatformId(platform.name)
+        })).toSet()
         // Add existing genres to the new game
-        newGame.genresList = genreRepository.findAllById(gameRequest.genresList.map {
+        newGame.genresList = genreRepository.saveAll(genreRepository.findAllById(gameRequest.genresList.map {
                 genre -> getPlatformId(genre.name)
-        }).toSet()
+        })).toSet()
         // Transforms the New Game to a Game Response and Returns it
         return gameMapper.gameToGameResponse(gameRepository.save(newGame))
     }

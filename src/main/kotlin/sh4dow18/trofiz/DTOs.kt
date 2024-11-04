@@ -33,7 +33,7 @@ data class GameResponse(
     var metacritic: Int,
     var releaseDate: String,
     var imageUrl: String,
-    var gamesLogsList: List<GameLogResponse>,
+    var gameLogsList: List<GameLogResponse>,
     var platformsList: Set<PlatformResponse>,
     var genresList: Set<GenreResponse>
 )
