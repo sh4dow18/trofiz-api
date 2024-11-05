@@ -23,7 +23,7 @@ class GenreTests(
         val genreRequest = GenreRequest("Género de Prueba")
         // Transforms Name in Genre Request in lowercase and replace spaces with "-"
         // Example: "Interactive Adventure" -> "interactive-adventure"
-        val genreId = getPlatformId(genreRequest.name)
+        val genreId = getIdByName(genreRequest.name)
         // Verifies if the genre already exists
         if (genreRepository.findById(genreId).orElse(null) != null) {
             throw ElementAlreadyExists(genreRequest.name, "Género" )

@@ -3,6 +3,8 @@ package sh4dow18.trofiz
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
+
 // Game Tests Main Class
 @SpringBootTest
 class GameTests(
@@ -31,18 +33,18 @@ class GameTests(
             "2024-11-01", "http://image.com", platformsSet, genresSet
             )
         // Verifies if the game already exists
-        if (gameRepository.findById(getPlatformId(gameRequest.name)).orElse(null) != null) {
+        if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
             throw ElementAlreadyExists(gameRequest.name, "Juego")
         }
         // If not exists, create the new game
         val newGame = gameMapper.gameRequestToGame(gameRequest)
         // Add existing platforms to the new game
         newGame.platformsList = platformRepository.findAllById(gameRequest.platformsList.map {
-            platform -> getPlatformId(platform.name)
+            platform -> getIdByName(platform.name)
         }).toSet()
         // Add existing genres to the new game
         newGame.genresList = genreRepository.findAllById(gameRequest.genresList.map {
-            genre -> getPlatformId(genre.name)
+            genre -> getIdByName(genre.name)
         }).toSet()
         // Transforms the New Game to a Game Response
         gameMapper.gameToGameResponse(newGame)
