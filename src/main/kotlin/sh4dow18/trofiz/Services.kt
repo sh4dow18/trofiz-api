@@ -28,7 +28,7 @@ class AbstractPlatformService(
     override fun insert(platformRequest: PlatformRequest): PlatformResponse {
         // Transforms Name in Platform Request in lowercase and replace spaces with "-"
         // Example: "Play Station 5" -> "play-station-5"
-        val platformId = getPlatformId(platformRequest.name)
+        val platformId = getIdByName(platformRequest.name)
         // Verifies if the platform already exists
         if (platformRepository.findById(platformId).orElse(null) != null) {
             throw ElementAlreadyExists(platformRequest.name, "Plataforma" )
@@ -61,7 +61,7 @@ class AbstractGenreService(
     override fun insert(genreRequest: GenreRequest): GenreResponse {
         // Transforms Name in Genre Request in lowercase and replace spaces with "-"
         // Example: "Interactive Adventure" -> "interactive-adventure"
-        val genreId = getPlatformId(genreRequest.name)
+        val genreId = getIdByName(genreRequest.name)
         // Verifies if the genre already exists
         if (genreRepository.findById(genreId).orElse(null) != null) {
             throw ElementAlreadyExists(genreRequest.name, "Género" )
@@ -97,19 +97,15 @@ class AbstractGameService(
     }
     override fun insert(gameRequest: GameRequest): GameResponse {
         // Verifies if the game already exists
-        if (gameRepository.findById(getPlatformId(gameRequest.name)).orElse(null) != null) {
+        if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
             throw ElementAlreadyExists(gameRequest.name, "Juego")
         }
         // If not exists, create the new game
         val newGame = gameMapper.gameRequestToGame(gameRequest)
         // Add existing platforms to the new game
-        newGame.platformsList = platformRepository.findAllById(gameRequest.platformsList.map {
-                platform -> getPlatformId(platform.name)
-        }).toSet()
+        newGame.platformsList = connectEntities(platformRepository, gameRequest.platformsList)
         // Add existing genres to the new game
-        newGame.genresList = genreRepository.findAllById(gameRequest.genresList.map {
-                genre -> getPlatformId(genre.name)
-        }).toSet()
+        newGame.genresList = connectEntities(genreRepository, gameRequest.genresList)
         // Transforms the New Game to a Game Response and Returns it
         return gameMapper.gameToGameResponse(gameRepository.save(newGame))
     }
