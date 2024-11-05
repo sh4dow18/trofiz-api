@@ -39,13 +39,9 @@ class GameTests(
         // If not exists, create the new game
         val newGame = gameMapper.gameRequestToGame(gameRequest)
         // Add existing platforms to the new game
-        newGame.platformsList = platformRepository.findAllById(gameRequest.platformsList.map {
-            platform -> getIdByName(platform.name)
-        }).toSet()
+        newGame.platformsList = connectEntitiesTest(platformRepository, gameRequest.platformsList)
         // Add existing genres to the new game
-        newGame.genresList = genreRepository.findAllById(gameRequest.genresList.map {
-            genre -> getIdByName(genre.name)
-        }).toSet()
+        newGame.genresList = connectEntitiesTest(genreRepository, gameRequest.genresList)
         // Transforms the New Game to a Game Response
         gameMapper.gameToGameResponse(newGame)
     }
