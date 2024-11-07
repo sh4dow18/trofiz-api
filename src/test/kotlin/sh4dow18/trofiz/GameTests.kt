@@ -3,8 +3,6 @@ package sh4dow18.trofiz
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.annotation.Transactional
-
 // Game Tests Main Class
 @SpringBootTest
 class GameTests(
@@ -22,6 +20,12 @@ class GameTests(
     fun findAll() {
         // Transforms a Games List to a Game Responses List
         gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
+    }
+    @Test
+    fun findTop10ByNameContainingIgnoreCase() {
+        val name = "Juego 1"
+        // Transforms the first 10 Games from a Games List to a Game Responses List
+        gameMapper.gamesListToGameResponsesList(gameRepository.findTop10ByNameContainingIgnoreCase(name))
     }
     @Test
     fun insert() {
