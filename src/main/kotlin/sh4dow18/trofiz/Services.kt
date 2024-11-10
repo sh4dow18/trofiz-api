@@ -76,6 +76,7 @@ class AbstractGenreService(
 // Spring Abstract Game Service are declared
 interface GameService {
     fun findAll(): List<GameResponse>
+    fun findTop10ByNameContainingIgnoreCase(name: String): List<GameResponse>
     fun insert(gameRequest: GameRequest): GameResponse
 }
 // Spring Abstract Game Service
@@ -94,6 +95,10 @@ class AbstractGameService(
     override fun findAll(): List<GameResponse> {
         // Transforms a Games List to a Game Responses List
         return gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
+    }
+    override fun findTop10ByNameContainingIgnoreCase(name: String): List<GameResponse> {
+        // Transforms the first 10 Games from a Games List to a Game Responses List
+        return gameMapper.gamesListToGameResponsesList(gameRepository.findTop10ByNameContainingIgnoreCase(name))
     }
     override fun insert(gameRequest: GameRequest): GameResponse {
         // Verifies if the game already exists
