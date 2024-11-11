@@ -42,6 +42,10 @@ class GameRestController(private val gameService: GameService) {
     @GetMapping
     @ResponseBody
     fun findAll() = gameService.findAll()
+    // When the Endpoint has HTTP GET requests with an id, call find by id function
+    @GetMapping("{id}")
+    @ResponseBody
+    fun findById(@PathVariable id: String) = gameService.findById(id)
     // When the Endpoint has HTTP GET requests on "search" and an id, call find Top 10 by name containing ignore case function
     @GetMapping("search/{name}")
     @ResponseBody
