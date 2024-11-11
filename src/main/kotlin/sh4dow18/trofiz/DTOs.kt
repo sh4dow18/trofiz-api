@@ -29,6 +29,7 @@ data class GenreResponse(
     var name: String
 )
 data class GameResponse(
+    var id: String,
     var name: String,
     var rating: Float,
     var metacritic: Int,

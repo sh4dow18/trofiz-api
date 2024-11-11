@@ -13,6 +13,9 @@ data class ApiError(
 // "Element already exists" class based on "Runtime Exception" class for use in error handlers with a template message
 class ElementAlreadyExists(element: String, existsHow: String) :
     RuntimeException("El elemento $element ya existe en el sistema como $existsHow")
+// "No Such Element Exists" class based on "Runtime Exception" class for use in error handlers with a template message
+class NoSuchElementExists(element: String, notExistsHow: String) :
+    RuntimeException("El elemento con el identificador $element no existe en el sistema como $notExistsHow")
 // Error Handlers Main Class
 @ControllerAdvice
 class ErrorsHandler: ResponseEntityExceptionHandler() {
@@ -26,6 +29,18 @@ class ErrorsHandler: ResponseEntityExceptionHandler() {
             message = exception.message
         )
         logger.debug("Element Already Exists: {}", exception)
+        return ResponseEntity(apiError, apiError.status)
+    }
+    // Error handler when some element doesn't exist and needs to exist
+    @ExceptionHandler(NoSuchElementExists::class)
+    fun noSuchElementExists(
+        exception: java.lang.Exception,
+    ): ResponseEntity<Any> {
+        val apiError = ApiError(
+            status = HttpStatus.NOT_FOUND,
+            message = exception.message
+        )
+        logger.debug("No Such Element Exists: {}", exception)
         return ResponseEntity(apiError, apiError.status)
     }
     // Default error handler for each exception that does not have a specific error handler

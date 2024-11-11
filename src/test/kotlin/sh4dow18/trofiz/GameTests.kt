@@ -24,6 +24,25 @@ class GameTests(
         gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
     }
     @Test
+    fun findTop10ByNameContainingIgnoreCase() {
+        val name = "Juego 1"
+        // Transforms the first 10 Games from a Games List to a Game Responses List
+        gameMapper.gamesListToGameResponsesList(gameRepository.findTop10ByNameContainingIgnoreCase(name))
+    }
+    @Test
+    fun findById() {
+        // Find by id Props
+        val id = "resident-evil"
+        val platformsSet: Set<PlatformRequest> = setOf(PlatformRequest("Plataforma 1"),
+            PlatformRequest("Plataforma 2"))
+        val genresSet: Set<GenreRequest> = setOf(GenreRequest("Género 1"), GenreRequest("Género 2"))
+        val gameRequest = GameRequest("Juego de Prueba: Con Puntos / Y Slashes", 4.5f, 97,
+            "2024-11-01", "http://image.com", platformsSet, genresSet
+        )
+        // Transforms a Game to a Game Response
+        gameMapper.gameToGameResponse(gameRepository.findById(id).orElse(gameMapper.gameRequestToGame(gameRequest)))
+    }
+    @Test
     fun insert() {
         // Insert Genre Test Props
         val platformsSet: Set<PlatformRequest> = setOf(PlatformRequest("Plataforma 1"),
