@@ -44,7 +44,27 @@ data class Role(
     var name: String,
     // Role Relationships
     @OneToMany(mappedBy = "role", targetEntity = User::class)
-    var usersList: List<User>
+    var usersList: List<User>,
+    @ManyToMany(targetEntity = Privilege::class)
+    @JoinTable(
+        name = "role_privilege",
+        joinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")],
+        inverseJoinColumns = [JoinColumn(name = "privilege_id", referencedColumnName = "id")]
+    )
+    var privilegesList: Set<Privilege>
+)
+// Privileges Entity
+@Entity
+@Table(name = "privileges")
+data class Privilege(
+    // Privileges Properties
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long,
+    var name: String,
+    // Privileges Relationships
+    @ManyToMany(mappedBy = "privilegesList", fetch = FetchType.LAZY, targetEntity = Role::class)
+    var rolesList: List<Role>
 )
 // Game Log Entity
 @Entity
