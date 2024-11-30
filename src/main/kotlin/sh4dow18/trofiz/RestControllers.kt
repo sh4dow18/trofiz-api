@@ -59,6 +59,10 @@ class GameRestController(private val gameService: GameService) {
 @RestController
 @RequestMapping("\${endpoint.privileges}")
 class PrivilegeRestController(private val privilegeService: PrivilegeService) {
+    // When the Endpoint has HTTP GET requests, call find all Privileges function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = privilegeService.findAll()
     // When the Endpoint has HTTP POST requests, call insert Privilege function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody

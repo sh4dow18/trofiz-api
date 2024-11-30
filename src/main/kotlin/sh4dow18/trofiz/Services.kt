@@ -127,6 +127,7 @@ class AbstractGameService(
 // Privilege Service Interface where the functions to be used in
 // Spring Abstract Privilege Service are declared
 interface PrivilegeService {
+    fun findAll(): List<PrivilegeResponse>
     fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse
 }
 // Spring Abstract Game Service
@@ -138,6 +139,10 @@ class AbstractPrivilegeService(
     @Autowired
     val privilegeMapper: PrivilegeMapper
 ): PrivilegeService {
+    override fun findAll(): List<PrivilegeResponse> {
+        // Transforms a Privilege List to a Privilege Responses List
+        return privilegeMapper.privilegesListToPrivilegeResponsesList(privilegeRepository.findAll())
+    }
     override fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse {
         // Transforms Name in Privilege Request in lowercase and replace spaces with "-"
         // Example: "Add Games" -> "add-games"
