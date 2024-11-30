@@ -55,3 +55,12 @@ class GameRestController(private val gameService: GameService) {
     @ResponseBody
     fun insert(@RequestBody gameRequest: GameRequest) = gameService.insert(gameRequest)
 }
+// Privilege Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.privileges}")
+class PrivilegeRestController(private val privilegeService: PrivilegeService) {
+    // When the Endpoint has HTTP POST requests, call insert Privilege function
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun insert(@RequestBody privilegeRequest: PrivilegeRequest) = privilegeService.insert(privilegeRequest)
+}

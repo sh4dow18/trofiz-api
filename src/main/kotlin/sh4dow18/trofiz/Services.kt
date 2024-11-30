@@ -124,3 +124,31 @@ class AbstractGameService(
         return gameMapper.gameToGameResponse(gameRepository.save(newGame))
     }
 }
+// Privilege Service Interface where the functions to be used in
+// Spring Abstract Privilege Service are declared
+interface PrivilegeService {
+    fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse
+}
+// Spring Abstract Game Service
+@Service
+class AbstractPrivilegeService(
+    // Privilege Service Props
+    @Autowired
+    val privilegeRepository: PrivilegeRepository,
+    @Autowired
+    val privilegeMapper: PrivilegeMapper
+): PrivilegeService {
+    override fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse {
+        // Transforms Name in Privilege Request in lowercase and replace spaces with "-"
+        // Example: "Add Games" -> "add-games"
+        val privilegeId = getIdByName(privilegeRequest.name)
+        // Verifies if the Privilege already exists
+        if (privilegeRepository.findById(privilegeId).orElse(null) != null) {
+            throw ElementAlreadyExists(privilegeId, "Privilegio")
+        }
+        // If not exists, create the new Privilege
+        val newPrivilege = privilegeMapper.privilegeRequestToPrivilege(privilegeRequest)
+        // Transforms the New Privilege to Privilege Response
+        return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(newPrivilege))
+    }
+}
