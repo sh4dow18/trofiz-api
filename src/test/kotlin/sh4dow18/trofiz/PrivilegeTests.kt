@@ -13,6 +13,11 @@ class PrivilegeTests(
     val privilegeMapper: PrivilegeMapper
 ) {
     @Test
+    fun findAll() {
+        // Transforms a Privilege List to a Privilege Responses List
+        privilegeMapper.privilegesListToPrivilegeResponsesList(privilegeRepository.findAll())
+    }
+    @Test
     fun insert() {
         // Insert Privilege Test Prop
         val privilegeDetails = PrivilegeRequest("Add Games", "El Usuario puede agregar juegos")

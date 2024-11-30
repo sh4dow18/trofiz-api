@@ -74,4 +74,7 @@ interface PrivilegeMapper {
     fun privilegeToPrivilegeResponse(
         privilege: Privilege
     ): PrivilegeResponse
+    fun privilegesListToPrivilegeResponsesList(
+        privilegesList: List<Privilege>
+    ): List<PrivilegeResponse>
 }
