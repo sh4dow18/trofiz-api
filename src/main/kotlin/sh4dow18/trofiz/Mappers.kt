@@ -61,3 +61,22 @@ interface GameMapper {
         gamesList: List<Game>
     ): List<GameResponse>
 }
+// Privilege Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface PrivilegeMapper {
+    // Get Privilege id using its own name
+    @Mapping(target = "id", expression = "java($UTILS_PATH.getIdByName(privilegeRequest.getName()))")
+    // Set enabled always as true
+    @Mapping(target = "enabled", expression = "java(true)")
+    // Set each set as empty
+    @Mapping(target = "rolesList", expression = EMPTY_SET)
+    fun privilegeRequestToPrivilege(
+        privilegeRequest: PrivilegeRequest
+    ): Privilege
+    fun privilegeToPrivilegeResponse(
+        privilege: Privilege
+    ): PrivilegeResponse
+    fun privilegesListToPrivilegeResponsesList(
+        privilegesList: List<Privilege>
+    ): List<PrivilegeResponse>
+}

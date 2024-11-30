@@ -4,6 +4,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
@@ -54,4 +55,21 @@ class GameRestController(private val gameService: GameService) {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun insert(@RequestBody gameRequest: GameRequest) = gameService.insert(gameRequest)
+}
+// Privilege Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.privileges}")
+class PrivilegeRestController(private val privilegeService: PrivilegeService) {
+    // When the Endpoint has HTTP GET requests, call find all Privileges function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = privilegeService.findAll()
+    // When the Endpoint has HTTP POST requests, call insert Privilege function
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun insert(@RequestBody privilegeRequest: PrivilegeRequest) = privilegeService.insert(privilegeRequest)
+    // When the Endpoint has HTTP PUT requests, call update status Privilege function
+    @PutMapping("status/{id}")
+    @ResponseBody
+    fun updateStatus(@PathVariable id: String) = privilegeService.updateStatus(id)
 }
