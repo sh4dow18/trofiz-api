@@ -16,3 +16,6 @@ interface GameRepository: JpaRepository<Game, String> {
     // Find the first 10 games that start with the submitted name
     fun findTop10ByNameContainingIgnoreCase(@Param("name") name: String): List<Game>
 }
+// Privilege Repository
+@Repository
+interface PrivilegeRepository: JpaRepository<Privilege, String>

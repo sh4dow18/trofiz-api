@@ -19,6 +19,10 @@ data class GameRequest(
     var platformsList: Set<PlatformRequest>,
     var genresList: Set<GenreRequest>
 )
+data class PrivilegeRequest(
+    var name: String,
+    var description: String
+)
 // Responses
 data class PlatformResponse(
     var id: String,
@@ -37,4 +41,9 @@ data class GameResponse(
     var imageUrl: String,
     var platformsList: Set<PlatformResponse>,
     var genresList: Set<GenreResponse>
+)
+data class PrivilegeResponse(
+    var id: String,
+    var name: String,
+    var description: String
 )

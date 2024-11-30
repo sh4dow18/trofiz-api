@@ -59,12 +59,12 @@ data class Role(
 data class Privilege(
     // Privileges Properties
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long,
+    var id: String,
     var name: String,
+    var description: String,
     // Privileges Relationships
     @ManyToMany(mappedBy = "privilegesList", fetch = FetchType.LAZY, targetEntity = Role::class)
-    var rolesList: List<Role>
+    var rolesList: Set<Role>
 )
 // Game Log Entity
 @Entity
