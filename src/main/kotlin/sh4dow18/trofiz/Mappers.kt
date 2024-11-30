@@ -66,6 +66,8 @@ interface GameMapper {
 interface PrivilegeMapper {
     // Get Privilege id using its own name
     @Mapping(target = "id", expression = "java($UTILS_PATH.getIdByName(privilegeRequest.getName()))")
+    // Set enabled always as true
+    @Mapping(target = "enabled", expression = "java(true)")
     // Set each set as empty
     @Mapping(target = "rolesList", expression = EMPTY_SET)
     fun privilegeRequestToPrivilege(

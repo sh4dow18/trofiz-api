@@ -62,6 +62,7 @@ data class Privilege(
     var id: String,
     var name: String,
     var description: String,
+    var enabled: Boolean,
     // Privileges Relationships
     @ManyToMany(mappedBy = "privilegesList", fetch = FetchType.LAZY, targetEntity = Role::class)
     var rolesList: Set<Role>
