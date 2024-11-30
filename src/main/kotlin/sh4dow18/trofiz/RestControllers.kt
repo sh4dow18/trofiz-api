@@ -4,6 +4,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
@@ -67,4 +68,8 @@ class PrivilegeRestController(private val privilegeService: PrivilegeService) {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun insert(@RequestBody privilegeRequest: PrivilegeRequest) = privilegeService.insert(privilegeRequest)
+    // When the Endpoint has HTTP PUT requests, call update status Privilege function
+    @PutMapping("status/{id}")
+    @ResponseBody
+    fun updateStatus(@PathVariable id: String) = privilegeService.updateStatus(id)
 }

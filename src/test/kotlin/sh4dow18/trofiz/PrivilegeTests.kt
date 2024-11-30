@@ -33,4 +33,17 @@ class PrivilegeTests(
         // Transforms the New Privilege to Privilege Response
         privilegeMapper.privilegeToPrivilegeResponse(newPrivilege)
     }
+    @Test
+    fun updateStatus() {
+        // Update Privilege Status Test Prop
+        val privilegeId = "add-game"
+        // Verifies if the Privilege already exists
+        val privilege = privilegeRepository.findById(privilegeId).orElseThrow {
+            NoSuchElementExists(privilegeId, "Privilegio")
+        }
+        // Change enabled from true to false and vice versa
+        privilege.enabled = !privilege.enabled
+        // Transforms the Privilege to Privilege Response
+        privilegeMapper.privilegeToPrivilegeResponse(privilege)
+    }
 }

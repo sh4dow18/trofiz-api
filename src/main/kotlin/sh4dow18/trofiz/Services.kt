@@ -129,6 +129,7 @@ class AbstractGameService(
 interface PrivilegeService {
     fun findAll(): List<PrivilegeResponse>
     fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse
+    fun updateStatus(id: String): PrivilegeResponse
 }
 // Spring Abstract Game Service
 @Service
@@ -155,5 +156,15 @@ class AbstractPrivilegeService(
         val newPrivilege = privilegeMapper.privilegeRequestToPrivilege(privilegeRequest)
         // Transforms the New Privilege to Privilege Response
         return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(newPrivilege))
+    }
+    override fun updateStatus(id: String): PrivilegeResponse {
+        // Verifies if the Privilege already exists
+        val privilege = privilegeRepository.findById(id).orElseThrow {
+            NoSuchElementExists(id,"Privilegio")
+        }
+        // Change enabled from true to false and vice versa
+        privilege.enabled = !privilege.enabled
+        // Transforms the Privilege to Privilege Response
+        return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(privilege))
     }
 }
