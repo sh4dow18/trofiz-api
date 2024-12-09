@@ -80,3 +80,18 @@ interface PrivilegeMapper {
         privilegesList: List<Privilege>
     ): List<PrivilegeResponse>
 }
+// Role Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface RoleMapper {
+    // Set the role's privilege list to the submitted privilege list
+    @Mapping(target = "privilegesList", expression = "java(newPrivilegesList)")
+    // Set each list as empty
+    @Mapping(target = "usersList", expression = EMPTY_LIST)
+    fun roleRequestToRole(
+        roleRequest: RoleRequest,
+        newPrivilegesList: Set<Privilege>
+    ): Role
+    fun roleToRoleResponse(
+        role: Role
+    ): RoleResponse
+}

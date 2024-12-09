@@ -23,6 +23,10 @@ data class PrivilegeRequest(
     var name: String,
     var description: String
 )
+data class RoleRequest(
+    var name: String,
+    var privilegesList: List<String>
+)
 // Responses
 data class PlatformResponse(
     var id: String,
@@ -47,4 +51,9 @@ data class PrivilegeResponse(
     var name: String,
     var description: String,
     var enabled: Boolean
+)
+data class RoleResponse(
+    var id: Long,
+    var name: String,
+    var privilegesList: Set<PrivilegeResponse>
 )
