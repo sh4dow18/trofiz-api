@@ -171,6 +171,7 @@ class AbstractPrivilegeService(
 // Role Service Interface where the functions to be used in
 // Spring Abstract Role Service are declared
 interface RoleService {
+    fun findAll(): List<RoleResponse>
     fun insert(roleRequest: RoleRequest): RoleResponse
 }
 // Spring Abstract Game Service
@@ -184,6 +185,10 @@ class AbstractRoleService(
     @Autowired
     val roleMapper: RoleMapper
 ): RoleService {
+    override fun findAll(): List<RoleResponse> {
+        // Transforms a Role List to a Role Responses List
+        return roleMapper.rolesListToRoleResponsesList(roleRepository.findAll())
+    }
     override fun insert(roleRequest: RoleRequest): RoleResponse {
         // Verifies if the Role already exists
         if (roleRepository.findByNameIgnoringCase(roleRequest.name).orElse(null) != null) {

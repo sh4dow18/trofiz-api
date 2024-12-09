@@ -77,6 +77,10 @@ class PrivilegeRestController(private val privilegeService: PrivilegeService) {
 @RestController
 @RequestMapping("\${endpoint.roles}")
 class RoleRestController(private val roleService: RoleService) {
+    // When the Endpoint has HTTP GET requests, call find all Roles function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = roleService.findAll()
     // When the Endpoint has HTTP POST requests, call insert Role function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
