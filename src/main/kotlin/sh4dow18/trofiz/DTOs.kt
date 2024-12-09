@@ -27,6 +27,10 @@ data class RoleRequest(
     var name: String,
     var privilegesList: List<String>
 )
+data class UpdateRoleRequest(
+    var id: Long,
+    var privilegesList: List<String>
+)
 // Responses
 data class PlatformResponse(
     var id: String,

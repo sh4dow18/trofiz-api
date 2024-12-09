@@ -43,4 +43,23 @@ class RoleTests(
         // Transforms the New Role to Role Response
         roleMapper.roleToRoleResponse(newRole)
     }
+    @Test
+    fun update() {
+        // Update Role Test Prop
+        val updateRoleRequest = UpdateRoleRequest(1, listOf("add-game"))
+        // Verifies if the Role already exists
+        val role = roleRepository.findById(updateRoleRequest.id).orElseThrow {
+            NoSuchElementExists("${updateRoleRequest.id}", "Rol")
+        }
+        // Check if the privileges on the submitted role already exist
+        val privilegesList = privilegeRepository.findAllById(updateRoleRequest.privilegesList)
+        if (privilegesList.size != updateRoleRequest.privilegesList.size) {
+            val missingIds = updateRoleRequest.privilegesList - privilegesList.map { it.id }.toSet()
+            throw NoSuchElementExists(missingIds.toString(), "Privilegios")
+        }
+        // If the Role exists and the Privileges Exists, update it
+        role.privilegesList = privilegesList.toSet()
+        // Transforms the New Role to Role Response
+        roleMapper.roleToRoleResponse(role)
+    }
 }
