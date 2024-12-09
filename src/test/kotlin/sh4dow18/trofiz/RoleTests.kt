@@ -16,6 +16,12 @@ class RoleTests(
     val roleMapper: RoleMapper
 ) {
     @Test
+    @Transactional
+    fun findAll() {
+        // Transforms a Role List to a Role Responses List
+        roleMapper.rolesListToRoleResponsesList(roleRepository.findAll())
+    }
+    @Test
     // Makes it transactional to use Privilege Repository
     @Transactional
     fun insert() {

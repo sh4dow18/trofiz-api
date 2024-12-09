@@ -93,4 +93,7 @@ interface RoleMapper {
     fun roleToRoleResponse(
         role: Role
     ): RoleResponse
+    fun rolesListToRoleResponsesList(
+        rolesList: List<Role>
+    ): List<RoleResponse>
 }
