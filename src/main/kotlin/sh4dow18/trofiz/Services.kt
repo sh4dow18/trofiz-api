@@ -168,3 +168,37 @@ class AbstractPrivilegeService(
         return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(privilege))
     }
 }
+// Role Service Interface where the functions to be used in
+// Spring Abstract Role Service are declared
+interface RoleService {
+    fun insert(roleRequest: RoleRequest): RoleResponse
+}
+// Spring Abstract Game Service
+@Service
+class AbstractRoleService(
+    // Role Service Props
+    @Autowired
+    val roleRepository: RoleRepository,
+    @Autowired
+    val privilegeRepository: PrivilegeRepository,
+    @Autowired
+    val roleMapper: RoleMapper
+): RoleService {
+    override fun insert(roleRequest: RoleRequest): RoleResponse {
+        // Verifies if the Role already exists
+        if (roleRepository.findByNameIgnoringCase(roleRequest.name).orElse(null) != null) {
+            throw ElementAlreadyExists(roleRequest.name, "Rol")
+        }
+        // Check if the privileges on the submitted role already exist
+        val privilegesList = privilegeRepository.findAllById(roleRequest.privilegesList)
+        if (privilegesList.size != roleRequest.privilegesList.size) {
+            val missingIds = roleRequest.privilegesList - privilegesList.map { it.id }.toSet()
+            throw NoSuchElementExists(missingIds.toString(), "Privilegios")
+        }
+        // If each privileges exist, create the new role
+        val newRole = roleMapper.roleRequestToRole(roleRequest)
+        newRole.privilegesList = privilegeRepository.saveAll(privilegesList).toSet()
+        // Transforms the New Role to Role Response
+        return roleMapper.roleToRoleResponse(roleRepository.save(newRole))
+    }
+}
