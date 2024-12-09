@@ -85,4 +85,8 @@ class RoleRestController(private val roleService: RoleService) {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun insert(@RequestBody roleRequest: RoleRequest) = roleService.insert(roleRequest)
+    // When the Endpoint has HTTP POST requests, call update Role function
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun update(@RequestBody updateRoleRequest: UpdateRoleRequest) = roleService.update(updateRoleRequest)
 }
