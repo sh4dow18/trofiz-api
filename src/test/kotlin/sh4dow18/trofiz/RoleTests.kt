@@ -26,15 +26,14 @@ class RoleTests(
             throw ElementAlreadyExists(roleRequest.name, "Rol")
         }
         // Check if the privileges on the submitted role already exist
-        val privilegesList = mutableSetOf<Privilege>()
-        roleRequest.privilegesList.forEach {
-            val privilege = privilegeRepository.findById(it).orElseThrow {
-                NoSuchElementExists(it, "Privilegio")
-            }
-            privilegesList.add(privilege)
+        val privilegesList = privilegeRepository.findAllById(roleRequest.privilegesList)
+        if (privilegesList.size != roleRequest.privilegesList.size) {
+            val missingIds = roleRequest.privilegesList - privilegesList.map { it.id }.toSet()
+            throw NoSuchElementExists(missingIds.toString(), "Privilegios")
         }
         // If each privileges exist, create the new role
-        val newRole = roleMapper.roleRequestToRole(roleRequest, privilegesList)
+        val newRole = roleMapper.roleRequestToRole(roleRequest)
+        newRole.privilegesList = privilegesList.toSet()
         // Transforms the New Role to Role Response
         roleMapper.roleToRoleResponse(newRole)
     }
