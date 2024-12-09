@@ -52,7 +52,18 @@ data class Role(
         inverseJoinColumns = [JoinColumn(name = "privilege_id", referencedColumnName = "id")]
     )
     var privilegesList: Set<Privilege>
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        // Check if the current object is the same instance as other
+        if (this === other) return true
+        // Check if other is a Role
+        if (other !is Role) return false
+        // Compare the id of this object with the id of the other object
+        return id == other.id
+    }
+    // Use the hashCode of the "id" field as the hash code for the entire object
+    override fun hashCode(): Int = id.hashCode()
+}
 // Privileges Entity
 @Entity
 @Table(name = "privileges")
@@ -66,7 +77,19 @@ data class Privilege(
     // Privileges Relationships
     @ManyToMany(mappedBy = "privilegesList", fetch = FetchType.LAZY, targetEntity = Role::class)
     var rolesList: Set<Role>
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        // Check if the current object is the same instance as other
+        if (this === other) return true
+        // Check if other is a Privilege
+        if (other !is Privilege) return false
+        // Compare the id of this object with the id of the other object
+        return id == other.id
+    }
+    // Use the hashCode of the "id" field as the hash code for the entire object
+    override fun hashCode(): Int = id.hashCode()
+
+}
 // Game Log Entity
 @Entity
 @Table(name = "game_log")
