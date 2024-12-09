@@ -73,3 +73,20 @@ class PrivilegeRestController(private val privilegeService: PrivilegeService) {
     @ResponseBody
     fun updateStatus(@PathVariable id: String) = privilegeService.updateStatus(id)
 }
+// Privilege Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.roles}")
+class RoleRestController(private val roleService: RoleService) {
+    // When the Endpoint has HTTP GET requests, call find all Roles function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = roleService.findAll()
+    // When the Endpoint has HTTP POST requests, call insert Role function
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun insert(@RequestBody roleRequest: RoleRequest) = roleService.insert(roleRequest)
+    // When the Endpoint has HTTP POST requests, call update Role function
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun update(@RequestBody updateRoleRequest: UpdateRoleRequest) = roleService.update(updateRoleRequest)
+}
