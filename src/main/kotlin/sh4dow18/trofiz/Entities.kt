@@ -18,6 +18,8 @@ import java.time.ZonedDateTime
 data class User(
     // User Properties
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long,
     var email: String,
     var userName: String,
     var password: String?,
@@ -106,7 +108,7 @@ data class GameLog(
     @JoinColumn(name = "game_id", nullable = false, referencedColumnName = "id")
     var game: Game,
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "email")
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     var user: User,
     @ManyToOne
     @JoinColumn(name = "platform_id", nullable = false, referencedColumnName = "id")
@@ -182,7 +184,7 @@ data class Log(
     @JoinColumn(name = "action_type_id", nullable = false, referencedColumnName = "id")
     var actionType: ActionType,
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "email")
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     var user: User
 )
 // Log Action Type Entity
