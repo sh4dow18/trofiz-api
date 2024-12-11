@@ -23,3 +23,8 @@ interface PrivilegeRepository: JpaRepository<Privilege, String>
 interface RoleRepository: JpaRepository<Role, Long> {
     fun findByNameIgnoringCase(@Param("name") name: String): Optional<Role>
 }
+// User Repository
+@Repository
+interface UserRepository: JpaRepository<User, Long> {
+    fun findByEmailOrUserName(@Param("email") email: String, @Param("userName") userName: String): Optional<User>
+}

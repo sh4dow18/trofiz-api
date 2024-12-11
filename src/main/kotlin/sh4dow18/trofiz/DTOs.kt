@@ -1,4 +1,7 @@
 package sh4dow18.trofiz
+
+import java.time.ZonedDateTime
+
 // Interfaces
 interface NamedEntity {
     val name: String
@@ -31,6 +34,11 @@ data class UpdateRoleRequest(
     var id: Long,
     var privilegesList: List<String>
 )
+data class UserRequest(
+    var email: String,
+    var userName: String,
+    var password: String,
+)
 // Responses
 data class PlatformResponse(
     var id: String,
@@ -60,4 +68,14 @@ data class RoleResponse(
     var id: Long,
     var name: String,
     var privilegesList: Set<PrivilegeResponse>
+)
+data class UserResponse(
+    var id: Long,
+    var email: String,
+    var userName: String,
+    var password: String,
+    var createdDate: ZonedDateTime,
+    var enabled: Boolean,
+    var image: Boolean,
+    var role: RoleResponse
 )

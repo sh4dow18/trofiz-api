@@ -97,3 +97,22 @@ interface RoleMapper {
         rolesList: List<Role>
     ): List<RoleResponse>
 }
+// User Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface UserMapper {
+    // Mapping the variables not submitted
+    @Mapping(target = "createdDate", expression = "java($UTILS_PATH.getCurrentDate())")
+    @Mapping(target = "enabled", expression = "java(true)")
+    @Mapping(target = "image", expression = "java(false)")
+    @Mapping(target = "role", expression = "java(existingRole)")
+    // Set each list as empty
+    @Mapping(target = "gameLogsList", expression = EMPTY_LIST)
+    @Mapping(target = "logsList", expression = EMPTY_LIST)
+    fun userRequestToUser(
+        userRequest: UserRequest,
+        existingRole: Role
+    ): User
+    fun userToUserResponse(
+        user: User
+    ): UserResponse
+}
