@@ -98,6 +98,10 @@ class UserRestController(private val userService: UserService) {
     @GetMapping
     @ResponseBody
     fun findAll() = userService.findAll()
+    // When the Endpoint has HTTP GET requests with an id, call find user by id function
+    @GetMapping("{id}")
+    @ResponseBody
+    fun findById(@PathVariable("id") id: Long) = userService.findById(id)
     // When the Endpoint has HTTP POST requests, call insert User function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody

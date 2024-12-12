@@ -228,6 +228,7 @@ class AbstractRoleService(
 // Spring Abstract User Service are declared
 interface UserService {
     fun findAll(): List<UserResponse>
+    fun findById(id: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
 }
 // Spring Abstract Game Service
@@ -244,6 +245,14 @@ class AbstractUserService(
     override fun findAll(): List<UserResponse> {
         // Transforms a User List to a User Responses List
         return userMapper.usersListToUserResponsesList(userRepository.findAll())
+    }
+    override fun findById(id: Long): UserResponse {
+        // Verifies if the User already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // If exists, transforms it to User Response
+        return userMapper.userToUserResponse(user)
     }
     override fun insert(userRequest: UserRequest): UserResponse {
         // Verifies if the User already exists
