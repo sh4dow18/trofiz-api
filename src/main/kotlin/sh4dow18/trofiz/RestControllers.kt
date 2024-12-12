@@ -94,6 +94,10 @@ class RoleRestController(private val roleService: RoleService) {
 @RestController
 @RequestMapping("\${endpoint.users}")
 class UserRestController(private val userService: UserService) {
+    // When the Endpoint has HTTP GET requests, call find all Users function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = userService.findAll()
     // When the Endpoint has HTTP POST requests, call insert User function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
