@@ -21,6 +21,17 @@ class UserTests(
         userMapper.usersListToUserResponsesList(userRepository.findAll())
     }
     @Test
+    fun findById() {
+        // Find User By Id Test Prop
+        val userId = 1L
+        // Verifies if the User already exists
+        val user = userRepository.findById(userId).orElseThrow {
+            NoSuchElementExists("$userId", "Usuario")
+        }
+        // If exists, transforms it to User Response
+        userMapper.userToUserResponse(user)
+    }
+    @Test
     // Makes it transactional to use Role Repository
     @Transactional
     fun insert() {
