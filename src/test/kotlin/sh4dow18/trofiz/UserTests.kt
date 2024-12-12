@@ -16,6 +16,11 @@ class UserTests(
     val roleRepository: RoleRepository
 ) {
     @Test
+    fun findAll() {
+        // Transforms a User List to a User Responses List
+        userMapper.usersListToUserResponsesList(userRepository.findAll())
+    }
+    @Test
     // Makes it transactional to use Role Repository
     @Transactional
     fun insert() {

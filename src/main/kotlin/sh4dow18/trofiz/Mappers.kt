@@ -117,4 +117,7 @@ interface UserMapper {
     fun userToUserResponse(
         user: User
     ): UserResponse
+    fun usersListToUserResponsesList(
+        usersList: List<User>
+    ): List<UserResponse>
 }
