@@ -73,9 +73,8 @@ data class UserResponse(
     var id: Long,
     var email: String,
     var userName: String,
-    var password: String,
-    var createdDate: ZonedDateTime,
+    var createdDate: String,
     var enabled: Boolean,
     var image: Boolean,
-    var role: RoleResponse
+    var role: String
 )

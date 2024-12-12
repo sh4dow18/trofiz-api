@@ -112,6 +112,8 @@ interface UserMapper {
         userRequest: UserRequest,
         existingRole: Role
     ): User
+    @Mapping(target = "createdDate", expression = "java($UTILS_PATH.getDateAsString(user.getCreatedDate()))")
+    @Mapping(target = "role", expression = "java(user.getRole().getName())")
     fun userToUserResponse(
         user: User
     ): UserResponse

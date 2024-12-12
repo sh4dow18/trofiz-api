@@ -224,3 +224,37 @@ class AbstractRoleService(
         return roleMapper.roleToRoleResponse(roleRepository.save(role))
     }
 }
+// User Service Interface where the functions to be used in
+// Spring Abstract User Service are declared
+interface UserService {
+    fun insert(userRequest: UserRequest): UserResponse
+}
+// Spring Abstract Game Service
+@Service
+class AbstractUserService(
+    // User Tests Props
+    @Autowired
+    val userRepository: UserRepository,
+    @Autowired
+    val userMapper: UserMapper,
+    @Autowired
+    val roleRepository: RoleRepository
+): UserService {
+    override fun insert(userRequest: UserRequest): UserResponse {
+        // Verifies if the User already exists
+        val user = userRepository.findByEmailOrUserName(userRequest.email, userRequest.userName).orElse(null)
+        if (user != null) {
+            val prop = if (user.email == userRequest.email) user.email else user.userName
+            throw ElementAlreadyExists(prop, "Usuario")
+        }
+        // Check if the role with id 1 already exist
+        val role = roleRepository.findById(1).orElseThrow {
+            NoSuchElementExists("${1}", "Rol")
+        }
+        // If the role exist, create the new User
+        val newUser = userMapper.userRequestToUser(userRequest, role)
+        // Transforms the New User to User Response
+        return userMapper.userToUserResponse(userRepository.save(newUser))
+    }
+
+}

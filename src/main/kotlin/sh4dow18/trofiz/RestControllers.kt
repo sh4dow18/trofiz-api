@@ -90,3 +90,12 @@ class RoleRestController(private val roleService: RoleService) {
     @ResponseBody
     fun update(@RequestBody updateRoleRequest: UpdateRoleRequest) = roleService.update(updateRoleRequest)
 }
+// User Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.users}")
+class UserRestController(private val userService: UserService) {
+    // When the Endpoint has HTTP POST requests, call insert User function
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun insert(@RequestBody userRequest: UserRequest) = userService.insert(userRequest)
+}
