@@ -82,12 +82,14 @@ class UserTests(
         val user = userRepository.findById(updateUserRequest.id).orElseThrow {
             NoSuchElementExists("${updateUserRequest.id}", "Usuario")
         }
-        val anotherUser = userRepository.findByEmailOrUserName("", updateUserRequest.userName).orElse(null)
-        if (anotherUser != null) {
-            throw ElementAlreadyExists(updateUserRequest.userName, "Usuario")
+        if (updateUserRequest.userName != null) {
+            val anotherUser = userRepository.findByEmailOrUserName("", updateUserRequest.userName!!).orElse(null)
+            if (anotherUser != null) {
+                throw ElementAlreadyExists(updateUserRequest.userName!!, "Usuario")
+            }
+            // Update the user
+            user.userName = updateUserRequest.userName!!
         }
-        // Update the user
-        user.userName = updateUserRequest.userName
         // Verifies if the image file is really an Image
         if (ImageIO.read(image.inputStream) == null) {
             throw BadRequest("Image file type not supported")
