@@ -3,7 +3,14 @@ package sh4dow18.trofiz
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.transaction.annotation.Transactional
+import java.awt.Color
+import java.awt.geom.Ellipse2D
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
+
 // User Test Main Class
 @SpringBootTest
 class UserTests(
@@ -51,5 +58,56 @@ class UserTests(
         val newUser = userMapper.userRequestToUser(userRequest, role)
         // Transforms the New User to User Response
         userMapper.userToUserResponse(newUser)
+    }
+    @Test
+    fun update() {
+        // Update User Test Prop
+        val updateUserRequest = UpdateUserRequest(1, "Ramsés Solano")
+        // Update User Image Test Prop
+        // Generate a blank image to test
+        val width = 500
+        val height = 400
+        val blankImage = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+        val graphicsExample = blankImage.createGraphics()
+        graphicsExample.color = Color.WHITE
+        graphicsExample.fillRect(0, 0, width, height)
+        graphicsExample.dispose()
+        // Transform the image into bytes
+        val outputStream = ByteArrayOutputStream()
+        ImageIO.write(blankImage, "jpg", outputStream)
+        val imageBytes = outputStream.toByteArray()
+        // Create a Fake multipart file to test
+        val image = MockMultipartFile("file", "test-image.jpg", "image/jpeg", imageBytes)
+        // Verifies if the User already exists
+        val user = userRepository.findById(updateUserRequest.id).orElseThrow {
+            NoSuchElementExists("${updateUserRequest.id}", "Usuario")
+        }
+        val anotherUser = userRepository.findByEmailOrUserName("", updateUserRequest.userName).orElse(null)
+        if (anotherUser != null) {
+            throw ElementAlreadyExists(updateUserRequest.userName, "Usuario")
+        }
+        // Update the user
+        user.userName = updateUserRequest.userName
+        // Verifies if the image file is really an Image
+        if (ImageIO.read(image.inputStream) == null) {
+            throw BadRequest("Image file type not supported")
+        }
+        // Create a New Image 150 x 150 from the original image
+        val originalImage = ImageIO.read(image.inputStream)
+        val targetWidth = 150
+        val targetHeight = 150
+        val xScale = targetWidth.toDouble() / originalImage.width
+        val yScale = targetHeight.toDouble() / originalImage.height
+        val scale = if (xScale > yScale) xScale else yScale
+        val newWidth = (originalImage.width * scale).toInt()
+        val newHeight = (originalImage.height * scale).toInt()
+        val resizedImage = BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB)
+        val graphics = resizedImage.createGraphics()
+        graphics.clip = Ellipse2D.Float(0f, 0f, targetWidth.toFloat(), targetHeight.toFloat())
+        graphics.drawImage(originalImage, (targetWidth - newWidth) / 2, (targetHeight - newHeight) / 2, newWidth, newHeight, null)
+        graphics.dispose()
+        user.image = true
+        // Transforms the User to User Response
+        userMapper.userToUserResponse(user)
     }
 }

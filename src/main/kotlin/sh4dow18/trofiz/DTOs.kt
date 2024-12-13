@@ -39,6 +39,10 @@ data class UserRequest(
     var userName: String,
     var password: String,
 )
+data class UpdateUserRequest(
+    var id: Long,
+    var userName: String
+)
 // Responses
 data class PlatformResponse(
     var id: String,
