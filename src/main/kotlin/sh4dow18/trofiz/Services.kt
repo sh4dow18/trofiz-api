@@ -1,8 +1,15 @@
 package sh4dow18.trofiz
 // Services Requirements
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
+import java.awt.geom.Ellipse2D
+import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
+
 // Platform Service Interface where the functions to be used in
 // Spring Abstract Platform Service are declared
 interface PlatformService {
@@ -230,11 +237,14 @@ interface UserService {
     fun findAll(): List<UserResponse>
     fun findById(id: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
+    fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
 }
 // Spring Abstract Game Service
 @Service
 class AbstractUserService(
     // User Tests Props
+    @Value("\${files.path}")
+    val filesPath: String,
     @Autowired
     val userRepository: UserRepository,
     @Autowired
@@ -269,6 +279,49 @@ class AbstractUserService(
         val newUser = userMapper.userRequestToUser(userRequest, role)
         // Transforms the New User to User Response
         return userMapper.userToUserResponse(userRepository.save(newUser))
+    }
+    override fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse {
+        // Verifies if the User already exists
+        val user = userRepository.findById(updateUserRequest.id).orElseThrow {
+            NoSuchElementExists("${updateUserRequest.id}", "Usuario")
+        }
+        if (updateUserRequest.userName != null) {
+            // Check if another user has the same name
+            val anotherUser = userRepository.findByEmailOrUserName("", updateUserRequest.userName!!).orElse(null)
+            if (anotherUser != null) {
+                throw ElementAlreadyExists(updateUserRequest.userName!!, "Usuario")
+            }
+            // Update the user
+            user.userName = updateUserRequest.userName!!
+        }
+        // Check if the image was submitted
+        if (image != null) {
+            // Verifies if the image file is really an Image
+            if (ImageIO.read(image.inputStream) == null) {
+                throw BadRequest("Image file type not supported")
+            }
+            // Create a New Image 150 x 150 from the original image
+            val originalImage = ImageIO.read(image.inputStream)
+            val targetWidth = 150
+            val targetHeight = 150
+            val xScale = targetWidth.toDouble() / originalImage.width
+            val yScale = targetHeight.toDouble() / originalImage.height
+            val scale = if (xScale > yScale) xScale else yScale
+            val newWidth = (originalImage.width * scale).toInt()
+            val newHeight = (originalImage.height * scale).toInt()
+            val resizedImage = BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB)
+            val graphics = resizedImage.createGraphics()
+            graphics.clip = Ellipse2D.Float(0f, 0f, targetWidth.toFloat(), targetHeight.toFloat())
+            graphics.drawImage(originalImage, (targetWidth - newWidth) / 2, (targetHeight - newHeight) / 2, newWidth, newHeight, null)
+            graphics.dispose()
+            // Add the "User" email plus ".png"
+            val fileName = user.email + ".png"
+            // Renders the image as "jpg" and save it in the path "filesPath"
+            ImageIO.write(resizedImage, "png", File("$filesPath/users/$fileName"))
+            user.image = true
+        }
+        // Transforms the User to User Response
+        return userMapper.userToUserResponse(userRepository.save(user))
     }
 
 }

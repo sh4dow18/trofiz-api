@@ -41,7 +41,7 @@ data class UserRequest(
 )
 data class UpdateUserRequest(
     var id: Long,
-    var userName: String
+    var userName: String?
 )
 // Responses
 data class PlatformResponse(

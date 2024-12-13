@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
+
 // Platform Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.platforms}")
@@ -106,4 +109,9 @@ class UserRestController(private val userService: UserService) {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun insert(@RequestBody userRequest: UserRequest) = userService.insert(userRequest)
+    // When the Endpoint has HTTP PUT requests, call Update User function
+    @PutMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun update(@RequestPart("information") updateUserRequest: UpdateUserRequest,
+               @RequestPart("image") image: MultipartFile?) = userService.update(updateUserRequest, image)
 }
