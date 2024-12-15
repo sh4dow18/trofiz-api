@@ -2,6 +2,7 @@ package sh4dow18.trofiz
 // User Tests Requirements
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.transaction.annotation.Transactional
@@ -9,12 +10,15 @@ import java.awt.Color
 import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.io.File
 import javax.imageio.ImageIO
 
 // User Test Main Class
 @SpringBootTest
 class UserTests(
     // User Tests Props
+    @Value("\${files.path}")
+    val filesPath: String,
     @Autowired
     val userRepository: UserRepository,
     @Autowired
@@ -109,6 +113,31 @@ class UserTests(
         graphics.drawImage(originalImage, (targetWidth - newWidth) / 2, (targetHeight - newHeight) / 2, newWidth, newHeight, null)
         graphics.dispose()
         user.image = true
+        // Transforms the User to User Response
+        userMapper.userToUserResponse(user)
+    }
+    @Test
+    fun closeAccount() {
+        // Close Account Test Prop
+        val id = 1L
+        // Verifies if the User already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // Update user
+        // Check if the user has a profile image, if exists, delete it
+        if (user.image) {
+            val image = File("$filesPath/users/${user.email}.png")
+            val imageDelete = image.delete()
+            if (imageDelete) {
+                user.image = false
+            }
+        }
+        // Delete all the user's personal information
+        user.email = null
+        user.userName = null
+        user.password = null
+        user.enabled = false
         // Transforms the User to User Response
         userMapper.userToUserResponse(user)
     }

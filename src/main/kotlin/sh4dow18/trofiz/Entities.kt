@@ -20,8 +20,8 @@ data class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long,
-    var email: String,
-    var userName: String,
+    var email: String?,
+    var userName: String?,
     var password: String?,
     var createdDate: ZonedDateTime,
     var enabled: Boolean,

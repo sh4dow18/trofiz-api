@@ -75,8 +75,8 @@ data class RoleResponse(
 )
 data class UserResponse(
     var id: Long,
-    var email: String,
-    var userName: String,
+    var email: String?,
+    var userName: String?,
     var createdDate: String,
     var enabled: Boolean,
     var image: Boolean,
