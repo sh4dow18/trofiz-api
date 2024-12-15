@@ -238,6 +238,7 @@ interface UserService {
     fun findById(id: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
     fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
+    fun closeAccount(id: Long): UserResponse
 }
 // Spring Abstract Game Service
 @Service
@@ -323,5 +324,26 @@ class AbstractUserService(
         // Transforms the User to User Response
         return userMapper.userToUserResponse(userRepository.save(user))
     }
-
+    override fun closeAccount(id: Long): UserResponse {
+        // Verifies if the User already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // Update user
+        // Check if the user has a profile image, if exists, delete it
+        if (user.image) {
+            val image = File("$filesPath/users/${user.email}.png")
+            val imageDelete = image.delete()
+            if (imageDelete) {
+                user.image = false
+            }
+        }
+        // Delete all the user's personal information
+        user.email = null
+        user.userName = null
+        user.password = null
+        user.enabled = false
+        // Transforms the User to User Response
+        return userMapper.userToUserResponse(userRepository.save(user))
+    }
 }

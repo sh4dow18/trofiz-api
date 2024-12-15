@@ -114,4 +114,8 @@ class UserRestController(private val userService: UserService) {
     @ResponseBody
     fun update(@RequestPart("information") updateUserRequest: UpdateUserRequest,
                @RequestPart("image") image: MultipartFile?) = userService.update(updateUserRequest, image)
+    // When the Endpoint has HTTP PUT requests with subdirectory "close" and id, call Close User's Account function
+    @PutMapping("close/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun closeAccount(@PathVariable("id") id: Long) = userService.closeAccount(id)
 }
