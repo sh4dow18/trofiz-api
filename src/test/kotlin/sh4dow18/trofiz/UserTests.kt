@@ -52,7 +52,7 @@ class UserTests(
         val user = userRepository.findByEmailOrUserName(userRequest.email, userRequest.userName).orElse(null)
         if (user != null) {
             val prop = if (user.email == userRequest.email) user.email else user.userName
-            throw ElementAlreadyExists(prop, "Usuario")
+            throw ElementAlreadyExists(prop!!, "Usuario")
         }
         // Check if the role with id 1 already exist
         val role = roleRepository.findById(1).orElseThrow {
