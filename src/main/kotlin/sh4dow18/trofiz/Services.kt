@@ -1,8 +1,15 @@
 package sh4dow18.trofiz
 // Services Requirements
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
+import java.awt.geom.Ellipse2D
+import java.awt.image.BufferedImage
+import java.io.File
+import javax.imageio.ImageIO
+
 // Platform Service Interface where the functions to be used in
 // Spring Abstract Platform Service are declared
 interface PlatformService {
@@ -222,5 +229,121 @@ class AbstractRoleService(
         role.privilegesList = privilegesList.toSet()
         // Transforms the New Role to Role Response
         return roleMapper.roleToRoleResponse(roleRepository.save(role))
+    }
+}
+// User Service Interface where the functions to be used in
+// Spring Abstract User Service are declared
+interface UserService {
+    fun findAll(): List<UserResponse>
+    fun findById(id: Long): UserResponse
+    fun insert(userRequest: UserRequest): UserResponse
+    fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
+    fun closeAccount(id: Long): UserResponse
+}
+// Spring Abstract Game Service
+@Service
+class AbstractUserService(
+    // User Tests Props
+    @Value("\${files.path}")
+    val filesPath: String,
+    @Autowired
+    val userRepository: UserRepository,
+    @Autowired
+    val userMapper: UserMapper,
+    @Autowired
+    val roleRepository: RoleRepository
+): UserService {
+    override fun findAll(): List<UserResponse> {
+        // Transforms a User List to a User Responses List
+        return userMapper.usersListToUserResponsesList(userRepository.findAll())
+    }
+    override fun findById(id: Long): UserResponse {
+        // Verifies if the User already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // If exists, transforms it to User Response
+        return userMapper.userToUserResponse(user)
+    }
+    override fun insert(userRequest: UserRequest): UserResponse {
+        // Verifies if the User already exists
+        val user = userRepository.findByEmailOrUserName(userRequest.email, userRequest.userName).orElse(null)
+        if (user != null) {
+            val prop = if (user.email == userRequest.email) user.email else user.userName
+            throw ElementAlreadyExists(prop!!, "Usuario")
+        }
+        // Check if the role with id 1 already exist
+        val role = roleRepository.findById(1).orElseThrow {
+            NoSuchElementExists("${1}", "Rol")
+        }
+        // If the role exist, create the new User
+        val newUser = userMapper.userRequestToUser(userRequest, role)
+        // Transforms the New User to User Response
+        return userMapper.userToUserResponse(userRepository.save(newUser))
+    }
+    override fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse {
+        // Verifies if the User already exists
+        val user = userRepository.findById(updateUserRequest.id).orElseThrow {
+            NoSuchElementExists("${updateUserRequest.id}", "Usuario")
+        }
+        if (updateUserRequest.userName != null) {
+            // Check if another user has the same name
+            val anotherUser = userRepository.findByEmailOrUserName("", updateUserRequest.userName!!).orElse(null)
+            if (anotherUser != null) {
+                throw ElementAlreadyExists(updateUserRequest.userName!!, "Usuario")
+            }
+            // Update the user
+            user.userName = updateUserRequest.userName!!
+        }
+        // Check if the image was submitted
+        if (image != null) {
+            // Verifies if the image file is really an Image
+            if (ImageIO.read(image.inputStream) == null) {
+                throw BadRequest("Image file type not supported")
+            }
+            // Create a New Image 150 x 150 from the original image
+            val originalImage = ImageIO.read(image.inputStream)
+            val targetWidth = 150
+            val targetHeight = 150
+            val xScale = targetWidth.toDouble() / originalImage.width
+            val yScale = targetHeight.toDouble() / originalImage.height
+            val scale = if (xScale > yScale) xScale else yScale
+            val newWidth = (originalImage.width * scale).toInt()
+            val newHeight = (originalImage.height * scale).toInt()
+            val resizedImage = BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB)
+            val graphics = resizedImage.createGraphics()
+            graphics.clip = Ellipse2D.Float(0f, 0f, targetWidth.toFloat(), targetHeight.toFloat())
+            graphics.drawImage(originalImage, (targetWidth - newWidth) / 2, (targetHeight - newHeight) / 2, newWidth, newHeight, null)
+            graphics.dispose()
+            // Add the "User" email plus ".png"
+            val fileName = user.email + ".png"
+            // Renders the image as "jpg" and save it in the path "filesPath"
+            ImageIO.write(resizedImage, "png", File("$filesPath/users/$fileName"))
+            user.image = true
+        }
+        // Transforms the User to User Response
+        return userMapper.userToUserResponse(userRepository.save(user))
+    }
+    override fun closeAccount(id: Long): UserResponse {
+        // Verifies if the User already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // Update user
+        // Check if the user has a profile image, if exists, delete it
+        if (user.image) {
+            val image = File("$filesPath/users/${user.email}.png")
+            val imageDelete = image.delete()
+            if (imageDelete) {
+                user.image = false
+            }
+        }
+        // Delete all the user's personal information
+        user.email = null
+        user.userName = null
+        user.password = null
+        user.enabled = false
+        // Transforms the User to User Response
+        return userMapper.userToUserResponse(userRepository.save(user))
     }
 }

@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
+
 // Platform Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.platforms}")
@@ -89,4 +92,30 @@ class RoleRestController(private val roleService: RoleService) {
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun update(@RequestBody updateRoleRequest: UpdateRoleRequest) = roleService.update(updateRoleRequest)
+}
+// User Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.users}")
+class UserRestController(private val userService: UserService) {
+    // When the Endpoint has HTTP GET requests, call find all Users function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = userService.findAll()
+    // When the Endpoint has HTTP GET requests with an id, call find user by id function
+    @GetMapping("{id}")
+    @ResponseBody
+    fun findById(@PathVariable("id") id: Long) = userService.findById(id)
+    // When the Endpoint has HTTP POST requests, call insert User function
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun insert(@RequestBody userRequest: UserRequest) = userService.insert(userRequest)
+    // When the Endpoint has HTTP PUT requests, call Update User function
+    @PutMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun update(@RequestPart("information") updateUserRequest: UpdateUserRequest,
+               @RequestPart("image") image: MultipartFile?) = userService.update(updateUserRequest, image)
+    // When the Endpoint has HTTP PUT requests with subdirectory "close" and id, call Close User's Account function
+    @PutMapping("close/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun closeAccount(@PathVariable("id") id: Long) = userService.closeAccount(id)
 }
