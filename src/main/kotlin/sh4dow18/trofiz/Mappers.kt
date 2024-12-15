@@ -1,5 +1,6 @@
 package sh4dow18.trofiz
 // Mappers Requirements
+import org.mapstruct.Context
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.ReportingPolicy
@@ -110,7 +111,7 @@ interface UserMapper {
     @Mapping(target = "logsList", expression = EMPTY_LIST)
     fun userRequestToUser(
         userRequest: UserRequest,
-        existingRole: Role
+        @Context existingRole: Role
     ): User
     @Mapping(target = "createdDate", expression = "java($UTILS_PATH.getDateAsString(user.getCreatedDate()))")
     @Mapping(target = "role", expression = "java(user.getRole().getName())")
