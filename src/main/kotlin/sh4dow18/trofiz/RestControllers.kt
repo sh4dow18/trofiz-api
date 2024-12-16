@@ -122,6 +122,10 @@ class UserRestController(private val userService: UserService) {
 @RestController
 @RequestMapping("\${endpoint.gameLogs}")
 class GameLogRestController(private val gameLogService: GameLogService) {
+    // When the Endpoint has HTTP GET requests, call find all Game Logs function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = gameLogService.findAll()
     // When the Endpoint has HTTP POST requests, call insert Game Log function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
