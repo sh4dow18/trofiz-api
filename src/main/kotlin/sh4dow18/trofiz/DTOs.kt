@@ -59,8 +59,8 @@ data class GameResponse(
     var metacritic: Int,
     var releaseDate: String,
     var imageUrl: String,
-    var platformsList: Set<PlatformResponse>,
-    var genresList: Set<GenreResponse>
+    var platformsList: Set<String>,
+    var genresList: Set<String>
 )
 data class PrivilegeResponse(
     var id: String,
