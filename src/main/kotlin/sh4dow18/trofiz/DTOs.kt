@@ -71,7 +71,7 @@ data class PrivilegeResponse(
 data class RoleResponse(
     var id: Long,
     var name: String,
-    var privilegesList: Set<PrivilegeResponse>
+    var privilegesList: Set<String>
 )
 data class UserResponse(
     var id: Long,

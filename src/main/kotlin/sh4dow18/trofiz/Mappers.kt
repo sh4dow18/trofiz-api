@@ -95,6 +95,7 @@ interface RoleMapper {
     fun roleRequestToRole(
         roleRequest: RoleRequest,
     ): Role
+    @Mapping(target = "privilegesList", expression = "java(role.getPrivilegesList().$MAP(it -> it.getName()).$TO_SET)")
     fun roleToRoleResponse(
         role: Role
     ): RoleResponse
