@@ -20,6 +20,7 @@ interface GameRepository: JpaRepository<Game, String> {
 @Repository
 interface PrivilegeRepository: JpaRepository<Privilege, String>
 // Role Repository
+@Repository
 interface RoleRepository: JpaRepository<Role, Long> {
     fun findByNameIgnoringCase(@Param("name") name: String): Optional<Role>
 }
