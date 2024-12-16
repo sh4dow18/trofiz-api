@@ -378,6 +378,7 @@ class AbstractUserService(
 // Spring Abstract Game Log Service are declared
 interface GameLogService {
     fun findAll(): List<GameLogResponse>
+    fun findById(id: Long): GameLogResponse
     fun insert(gameLogRequest: GameLogRequest): GameLogResponse
 }
 // Spring Abstract Game Log Service
@@ -396,6 +397,14 @@ class AbstractGameLogService(
     override fun findAll(): List<GameLogResponse> {
         // Transforms the Game Logs List to a Game Log Responses List
         return gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findAll())
+    }
+    override fun findById(id: Long): GameLogResponse {
+        // Check if the game log already exists
+        val gameLog = gameLogRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Registro de Juego")
+        }
+        // Transforms the Game Logs List to a Game Log Responses List
+        return gameLogMapper.gameLogToGameLogResponse(gameLog)
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class, ElementAlreadyExists::class])
     override fun insert(gameLogRequest: GameLogRequest): GameLogResponse {

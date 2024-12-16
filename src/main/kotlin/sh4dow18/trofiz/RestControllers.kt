@@ -126,6 +126,10 @@ class GameLogRestController(private val gameLogService: GameLogService) {
     @GetMapping
     @ResponseBody
     fun findAll() = gameLogService.findAll()
+    // When the Endpoint has HTTP GET requests with an id, call find Game Log by id function
+    @GetMapping("{id}")
+    @ResponseBody
+    fun findById(@PathVariable("id") id: Long) = gameLogService.findById(id)
     // When the Endpoint has HTTP POST requests, call insert Game Log function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
