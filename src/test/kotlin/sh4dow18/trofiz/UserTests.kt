@@ -49,14 +49,18 @@ class UserTests(
         // Insert User Test Prop
         val userRequest = UserRequest("sh4dow18@gmail.com", "sh4dow18", "PASSWORD")
         // Verifies if the User already exists
-        val user = userRepository.findByEmailOrUserName(userRequest.email, userRequest.userName).orElse(null)
+        val user = userRepository.findByEmailOrName(userRequest.email, userRequest.name).orElse(null)
         if (user != null) {
-            val prop = if (user.email == userRequest.email) user.email else user.userName
+            val prop = if (user.email == userRequest.email) user.email else user.name
             throw ElementAlreadyExists(prop!!, "Usuario")
         }
-        // Check if the role with id 1 already exist
-        val role = roleRepository.findById(1).orElseThrow {
-            NoSuchElementExists("${1}", "Rol")
+        // Check if the username length is less than 16 characters
+        if (userRequest.name.length > 16) {
+            throw BadRequest("El nombre de usuario debe ser menor a 16 caracteres")
+        }
+        // Check if the "Gamer" role already exist
+        val role = roleRepository.findByNameIgnoringCase("Gamer").orElseThrow {
+            NoSuchElementExists("Gamer", "Rol")
         }
         // If the role exist, create the new User
         val newUser = userMapper.userRequestToUser(userRequest, role)
@@ -86,13 +90,17 @@ class UserTests(
         val user = userRepository.findById(updateUserRequest.id).orElseThrow {
             NoSuchElementExists("${updateUserRequest.id}", "Usuario")
         }
-        if (updateUserRequest.userName != null) {
-            val anotherUser = userRepository.findByEmailOrUserName("", updateUserRequest.userName!!).orElse(null)
+        if (updateUserRequest.name != null) {
+            // Check if the username length is less than 16 characters
+            if (updateUserRequest.name!!.length > 16) {
+                throw BadRequest("El nombre de usuario debe ser menor a 16 caracteres")
+            }
+            val anotherUser = userRepository.findByEmailOrName("", updateUserRequest.name!!).orElse(null)
             if (anotherUser != null) {
-                throw ElementAlreadyExists(updateUserRequest.userName!!, "Usuario")
+                throw ElementAlreadyExists(updateUserRequest.name!!, "Usuario")
             }
             // Update the user
-            user.userName = updateUserRequest.userName!!
+            user.name = updateUserRequest.name!!
         }
         // Verifies if the image file is really an Image
         if (ImageIO.read(image.inputStream) == null) {
@@ -135,7 +143,7 @@ class UserTests(
         }
         // Delete all the user's personal information
         user.email = null
-        user.userName = null
+        user.name = null
         user.password = null
         user.enabled = false
         // Transforms the User to User Response

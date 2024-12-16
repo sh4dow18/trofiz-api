@@ -1,26 +1,19 @@
 package sh4dow18.trofiz
-
-import java.time.ZonedDateTime
-
-// Interfaces
-interface NamedEntity {
-    val name: String
-}
 // Requests
 data class PlatformRequest(
-    override var name: String,
-): NamedEntity
+    var name: String,
+)
 data class GenreRequest(
-    override var name: String
-): NamedEntity
+    var name: String
+)
 data class GameRequest(
     var name: String,
     var rating: Float,
     var metacritic: Int,
     var releaseDate: String,
     var imageUrl: String,
-    var platformsList: Set<PlatformRequest>,
-    var genresList: Set<GenreRequest>
+    var platformsList: Set<String>,
+    var genresList: Set<String>
 )
 data class PrivilegeRequest(
     var name: String,
@@ -36,12 +29,12 @@ data class UpdateRoleRequest(
 )
 data class UserRequest(
     var email: String,
-    var userName: String,
+    var name: String,
     var password: String,
 )
 data class UpdateUserRequest(
     var id: Long,
-    var userName: String?
+    var name: String?
 )
 // Responses
 data class PlatformResponse(
@@ -59,8 +52,8 @@ data class GameResponse(
     var metacritic: Int,
     var releaseDate: String,
     var imageUrl: String,
-    var platformsList: Set<PlatformResponse>,
-    var genresList: Set<GenreResponse>
+    var platformsList: Set<String>,
+    var genresList: Set<String>
 )
 data class PrivilegeResponse(
     var id: String,
@@ -71,12 +64,12 @@ data class PrivilegeResponse(
 data class RoleResponse(
     var id: Long,
     var name: String,
-    var privilegesList: Set<PrivilegeResponse>
+    var privilegesList: Set<String>
 )
 data class UserResponse(
     var id: Long,
     var email: String?,
-    var userName: String?,
+    var name: String?,
     var createdDate: String,
     var enabled: Boolean,
     var image: Boolean,

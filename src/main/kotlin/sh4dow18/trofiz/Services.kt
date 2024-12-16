@@ -1,4 +1,10 @@
 package sh4dow18.trofiz
+/* Main Comments
+
+* @Transactional is a Tag that establishes that is a Transactional Service Function. This one makes a transaction
+* when this service function is in operation.
+
+* */
 // Services Requirements
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -9,7 +15,6 @@ import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
-
 // Platform Service Interface where the functions to be used in
 // Spring Abstract Platform Service are declared
 interface PlatformService {
@@ -29,8 +34,6 @@ class AbstractPlatformService(
         // Returns all Platforms as a Platform Responses List
         return platformMapper.platformsListToPlatformResponsesList(platformRepository.findAll())
     }
-    // @Transactional is a Tag that establishes that is a Transactional Service Function. This
-    // one makes a transaction when this service function is in operation.
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(platformRequest: PlatformRequest): PlatformResponse {
         // Transforms Name in Platform Request in lowercase and replace spaces with "-"
@@ -65,6 +68,7 @@ class AbstractGenreService(
         // Returns all Genres as a Genre Responses List
         return genreMapper.genresListToGenreResponsesList(genreRepository.findAll())
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(genreRequest: GenreRequest): GenreResponse {
         // Transforms Name in Genre Request in lowercase and replace spaces with "-"
         // Example: "Interactive Adventure" -> "interactive-adventure"
@@ -116,17 +120,26 @@ class AbstractGameService(
         // Transforms a Game to a Game Response
         return gameMapper.gameToGameResponse(game)
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementsExists::class])
     override fun insert(gameRequest: GameRequest): GameResponse {
         // Verifies if the game already exists
         if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
             throw ElementAlreadyExists(gameRequest.name, "Juego")
         }
-        // If not exists, create the new game
-        val newGame = gameMapper.gameRequestToGame(gameRequest)
-        // Add existing platforms to the new game
-        newGame.platformsList = connectEntities(platformRepository, gameRequest.platformsList)
-        // Add existing genres to the new game
-        newGame.genresList = connectEntities(genreRepository, gameRequest.genresList)
+        // Check if each platform submitted exists
+        val platformsList = platformRepository.findAllById(gameRequest.platformsList)
+        if (platformsList.size != gameRequest.platformsList.size) {
+            val missingIds = gameRequest.platformsList - platformsList.map { it.id }.toSet()
+            throw NoSuchElementsExists(missingIds.toList(), "Plataformas")
+        }
+        // Check if each genre submitted exists
+        val genresList = genreRepository.findAllById(gameRequest.genresList)
+        if (genresList.size != gameRequest.genresList.size) {
+            val missingIds = gameRequest.genresList - genresList.map { it.id }.toSet()
+            throw NoSuchElementsExists(missingIds.toList(), "Géneros")
+        }
+        // If the game not exists and each platform and genre exists, create the new game
+        val newGame = gameMapper.gameRequestToGame(gameRequest, platformsList.toSet(), genresList.toSet())
         // Transforms the New Game to a Game Response and Returns it
         return gameMapper.gameToGameResponse(gameRepository.save(newGame))
     }
@@ -151,6 +164,7 @@ class AbstractPrivilegeService(
         // Transforms a Privilege List to a Privilege Responses List
         return privilegeMapper.privilegesListToPrivilegeResponsesList(privilegeRepository.findAll())
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse {
         // Transforms Name in Privilege Request in lowercase and replace spaces with "-"
         // Example: "Add Games" -> "add-games"
@@ -164,6 +178,7 @@ class AbstractPrivilegeService(
         // Transforms the New Privilege to Privilege Response
         return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(newPrivilege))
     }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun updateStatus(id: String): PrivilegeResponse {
         // Verifies if the Privilege already exists
         val privilege = privilegeRepository.findById(id).orElseThrow {
@@ -197,6 +212,7 @@ class AbstractRoleService(
         // Transforms a Role List to a Role Responses List
         return roleMapper.rolesListToRoleResponsesList(roleRepository.findAll())
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementsExists::class])
     override fun insert(roleRequest: RoleRequest): RoleResponse {
         // Verifies if the Role already exists
         if (roleRepository.findByNameIgnoringCase(roleRequest.name).orElse(null) != null) {
@@ -206,14 +222,14 @@ class AbstractRoleService(
         val privilegesList = privilegeRepository.findAllById(roleRequest.privilegesList)
         if (privilegesList.size != roleRequest.privilegesList.size) {
             val missingIds = roleRequest.privilegesList - privilegesList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Privilegios")
+            throw NoSuchElementsExists(missingIds.toList(), "Privilegios")
         }
         // If each privileges exist, create the new role
-        val newRole = roleMapper.roleRequestToRole(roleRequest)
-        newRole.privilegesList = privilegeRepository.saveAll(privilegesList).toSet()
+        val newRole = roleMapper.roleRequestToRole(roleRequest, privilegesList.toSet())
         // Transforms the New Role to Role Response
         return roleMapper.roleToRoleResponse(roleRepository.save(newRole))
     }
+    @Transactional(rollbackFor = [NoSuchElementExists::class, NoSuchElementsExists::class])
     override fun update(updateRoleRequest: UpdateRoleRequest): RoleResponse {
         // Verifies if the Role already exists
         val role = roleRepository.findById(updateRoleRequest.id).orElseThrow {
@@ -223,7 +239,7 @@ class AbstractRoleService(
         val privilegesList = privilegeRepository.findAllById(updateRoleRequest.privilegesList)
         if (privilegesList.size != updateRoleRequest.privilegesList.size) {
             val missingIds = updateRoleRequest.privilegesList - privilegesList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Privilegios")
+            throw NoSuchElementsExists(missingIds.toList(), "Privilegios")
         }
         // If the Role exists and the Privileges Exists, update it
         role.privilegesList = privilegesList.toSet()
@@ -265,35 +281,45 @@ class AbstractUserService(
         // If exists, transforms it to User Response
         return userMapper.userToUserResponse(user)
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementExists::class])
     override fun insert(userRequest: UserRequest): UserResponse {
         // Verifies if the User already exists
-        val user = userRepository.findByEmailOrUserName(userRequest.email, userRequest.userName).orElse(null)
+        val user = userRepository.findByEmailOrName(userRequest.email, userRequest.name).orElse(null)
         if (user != null) {
-            val prop = if (user.email == userRequest.email) user.email else user.userName
+            val prop = if (user.email == userRequest.email) user.email else user.name
             throw ElementAlreadyExists(prop!!, "Usuario")
         }
-        // Check if the role with id 1 already exist
-        val role = roleRepository.findById(1).orElseThrow {
-            NoSuchElementExists("${1}", "Rol")
+        // Check if the username length is less than 16 characters
+        if (userRequest.name.length > 16) {
+            throw BadRequest("El nombre de usuario debe ser menor a 16 caracteres")
+        }
+        // Check if the "Gamer" role already exist
+        val role = roleRepository.findByNameIgnoringCase("Gamer").orElseThrow {
+            NoSuchElementExists("Gamer", "Rol")
         }
         // If the role exist, create the new User
         val newUser = userMapper.userRequestToUser(userRequest, role)
         // Transforms the New User to User Response
         return userMapper.userToUserResponse(userRepository.save(newUser))
     }
+    @Transactional(rollbackFor = [NoSuchElementExists::class, ElementAlreadyExists::class, BadRequest::class])
     override fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse {
         // Verifies if the User already exists
         val user = userRepository.findById(updateUserRequest.id).orElseThrow {
             NoSuchElementExists("${updateUserRequest.id}", "Usuario")
         }
-        if (updateUserRequest.userName != null) {
+        if (updateUserRequest.name != null) {
+            // Check if the username length is less than 16 characters
+            if (updateUserRequest.name!!.length > 16) {
+                throw BadRequest("El nombre de usuario debe ser menor a 16 caracteres")
+            }
             // Check if another user has the same name
-            val anotherUser = userRepository.findByEmailOrUserName("", updateUserRequest.userName!!).orElse(null)
+            val anotherUser = userRepository.findByEmailOrName("", updateUserRequest.name!!).orElse(null)
             if (anotherUser != null) {
-                throw ElementAlreadyExists(updateUserRequest.userName!!, "Usuario")
+                throw ElementAlreadyExists(updateUserRequest.name!!, "Usuario")
             }
             // Update the user
-            user.userName = updateUserRequest.userName!!
+            user.name = updateUserRequest.name!!
         }
         // Check if the image was submitted
         if (image != null) {
@@ -324,6 +350,7 @@ class AbstractUserService(
         // Transforms the User to User Response
         return userMapper.userToUserResponse(userRepository.save(user))
     }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun closeAccount(id: Long): UserResponse {
         // Verifies if the User already exists
         val user = userRepository.findById(id).orElseThrow {
@@ -340,7 +367,7 @@ class AbstractUserService(
         }
         // Delete all the user's personal information
         user.email = null
-        user.userName = null
+        user.name = null
         user.password = null
         user.enabled = false
         // Transforms the User to User Response
