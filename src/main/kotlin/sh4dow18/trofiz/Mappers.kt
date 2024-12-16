@@ -50,12 +50,14 @@ interface GenreMapper {
 interface GameMapper {
     // Get Game slug using its own name
     @Mapping(target = "id", expression = "java($UTILS_PATH.getIdByName(gameRequest.getName()))")
-    // Set each list and each set as empty
-    @Mapping(target = "platformsList", expression = EMPTY_SET)
-    @Mapping(target = "genresList", expression = EMPTY_SET)
+    // Set each list and each set
+    @Mapping(target = "platformsList", expression = "java(platformsList)")
+    @Mapping(target = "genresList", expression = "java(genresList)")
     @Mapping(target = "gameLogsList", expression = EMPTY_LIST)
     fun gameRequestToGame(
-        gameRequest: GameRequest
+        gameRequest: GameRequest,
+        @Context platformsList: Set<Platform>,
+        @Context genresList: Set<Genre>,
     ): Game
     @Mapping(target = "platformsList", expression = "java(game.getPlatformsList().$MAP(it -> it.getName()).$TO_SET)")
     @Mapping(target = "genresList", expression = "java(game.getGenresList().$MAP(it -> it.getName()).$TO_SET)")
@@ -88,12 +90,13 @@ interface PrivilegeMapper {
 // Role Mapper
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface RoleMapper {
-    // Set each set as empty
-    @Mapping(target = "privilegesList", expression = EMPTY_SET)
+    // Set each set
+    @Mapping(target = "privilegesList", expression = "java(privilegesList)")
     // Set each list as empty
     @Mapping(target = "usersList", expression = EMPTY_LIST)
     fun roleRequestToRole(
         roleRequest: RoleRequest,
+        @Context privilegesList: Set<Privilege>
     ): Role
     @Mapping(target = "privilegesList", expression = "java(role.getPrivilegesList().$MAP(it -> it.getName()).$TO_SET)")
     fun roleToRoleResponse(
@@ -110,13 +113,13 @@ interface UserMapper {
     @Mapping(target = "createdDate", expression = "java($UTILS_PATH.getCurrentDate())")
     @Mapping(target = "enabled", expression = "java(true)")
     @Mapping(target = "image", expression = "java(false)")
-    @Mapping(target = "role", expression = "java(existingRole)")
+    @Mapping(target = "role", expression = "java(role)")
     // Set each list as empty
     @Mapping(target = "gameLogsList", expression = EMPTY_LIST)
     @Mapping(target = "logsList", expression = EMPTY_LIST)
     fun userRequestToUser(
         userRequest: UserRequest,
-        @Context existingRole: Role
+        @Context role: Role
     ): User
     @Mapping(target = "createdDate", expression = "java($UTILS_PATH.getDateAsString(user.getCreatedDate()))")
     @Mapping(target = "role", expression = "java(user.getRole().getName())")

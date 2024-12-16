@@ -139,11 +139,7 @@ class AbstractGameService(
             throw NoSuchElementExists(missingIds.toString(), "Géneros")
         }
         // If the game not exists and each platform and genre exists, create the new game
-        val newGame = gameMapper.gameRequestToGame(gameRequest)
-        // Add existing platforms to the new game
-        newGame.platformsList = platformsList.toSet()
-        // Add existing genres to the new game
-        newGame.genresList = genresList.toSet()
+        val newGame = gameMapper.gameRequestToGame(gameRequest, platformsList.toSet(), genresList.toSet())
         // Transforms the New Game to a Game Response and Returns it
         return gameMapper.gameToGameResponse(gameRepository.save(newGame))
     }
@@ -229,8 +225,7 @@ class AbstractRoleService(
             throw NoSuchElementExists(missingIds.toString(), "Privilegios")
         }
         // If each privileges exist, create the new role
-        val newRole = roleMapper.roleRequestToRole(roleRequest)
-        newRole.privilegesList = privilegesList.toSet()
+        val newRole = roleMapper.roleRequestToRole(roleRequest, privilegesList.toSet())
         // Transforms the New Role to Role Response
         return roleMapper.roleToRoleResponse(roleRepository.save(newRole))
     }
