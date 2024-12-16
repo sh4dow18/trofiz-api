@@ -230,7 +230,7 @@ class AbstractRoleService(
         }
         // If each privileges exist, create the new role
         val newRole = roleMapper.roleRequestToRole(roleRequest)
-        newRole.privilegesList = privilegeRepository.saveAll(privilegesList).toSet()
+        newRole.privilegesList = privilegesList.toSet()
         // Transforms the New Role to Role Response
         return roleMapper.roleToRoleResponse(roleRepository.save(newRole))
     }
