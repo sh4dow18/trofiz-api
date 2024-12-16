@@ -25,6 +25,19 @@ class GameLogTests(
         gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findAll())
     }
     @Test
+    // Makes it transactional to use Platform and Genre in Game
+    @Transactional
+    fun findById() {
+        // Find Game Log by Id Test Prop
+        val id = 1L
+        // Check if the game log already exists
+        val gameLog = gameLogRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Registro de Juego")
+        }
+        // Transforms the Game Logs List to a Game Log Responses List
+        gameLogMapper.gameLogToGameLogResponse(gameLog)
+    }
+    @Test
     // Makes it transactional to use Game and User Repositories
     @Transactional
     fun insert() {
