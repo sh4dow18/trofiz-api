@@ -143,7 +143,18 @@ data class Game(
         inverseJoinColumns = [JoinColumn(name = "genre_id", referencedColumnName = "id")]
     )
     var genresList: Set<Genre>
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        // Check if the current object is the same instance as other
+        if (this === other) return true
+        // Check if other is a Game
+        if (other !is Game) return false
+        // Compare the id of this object with the id of the other object
+        return id == other.id
+    }
+    // Use the hashCode of the "id" field as the hash code for the entire object
+    override fun hashCode(): Int = id.hashCode()
+}
 // Platform Entity
 @Entity
 @Table(name = "platforms")
@@ -157,7 +168,18 @@ data class Platform(
     var gameLogsList: List<GameLog>,
     @ManyToMany(mappedBy = "platformsList", fetch = FetchType.LAZY, targetEntity = Game::class)
     var gamesList: Set<Game>
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        // Check if the current object is the same instance as other
+        if (this === other) return true
+        // Check if other is a Platform
+        if (other !is Platform) return false
+        // Compare the id of this object with the id of the other object
+        return id == other.id
+    }
+    // Use the hashCode of the "id" field as the hash code for the entire object
+    override fun hashCode(): Int = id.hashCode()
+}
 // Game Genre Entity
 @Entity
 @Table(name = "genres")
@@ -169,7 +191,18 @@ data class Genre(
     // Genre Relationships
     @ManyToMany(mappedBy = "genresList", fetch = FetchType.LAZY, targetEntity = Game::class)
     var gamesList: Set<Game>
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        // Check if the current object is the same instance as other
+        if (this === other) return true
+        // Check if other is a Genre
+        if (other !is Genre) return false
+        // Compare the id of this object with the id of the other object
+        return id == other.id
+    }
+    // Use the hashCode of the "id" field as the hash code for the entire object
+    override fun hashCode(): Int = id.hashCode()
+}
 // Log Entity
 @Entity
 @Table(name = "logs")
