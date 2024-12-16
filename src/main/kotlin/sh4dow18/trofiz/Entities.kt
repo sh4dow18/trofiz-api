@@ -21,7 +21,7 @@ data class User(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long,
     var email: String?,
-    var userName: String?,
+    var name: String?,
     var password: String?,
     var createdDate: ZonedDateTime,
     var enabled: Boolean,

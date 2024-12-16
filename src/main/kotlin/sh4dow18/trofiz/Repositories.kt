@@ -27,5 +27,5 @@ interface RoleRepository: JpaRepository<Role, Long> {
 // User Repository
 @Repository
 interface UserRepository: JpaRepository<User, Long> {
-    fun findByEmailOrUserName(@Param("email") email: String, @Param("userName") userName: String): Optional<User>
+    fun findByEmailOrName(@Param("email") email: String, @Param("name") name: String): Optional<User>
 }

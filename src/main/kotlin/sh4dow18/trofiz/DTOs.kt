@@ -29,12 +29,12 @@ data class UpdateRoleRequest(
 )
 data class UserRequest(
     var email: String,
-    var userName: String,
+    var name: String,
     var password: String,
 )
 data class UpdateUserRequest(
     var id: Long,
-    var userName: String?
+    var name: String?
 )
 // Responses
 data class PlatformResponse(
@@ -69,7 +69,7 @@ data class RoleResponse(
 data class UserResponse(
     var id: Long,
     var email: String?,
-    var userName: String?,
+    var name: String?,
     var createdDate: String,
     var enabled: Boolean,
     var image: Boolean,
