@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-
 // Platform Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.platforms}")

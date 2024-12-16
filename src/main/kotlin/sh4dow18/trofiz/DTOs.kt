@@ -1,18 +1,11 @@
 package sh4dow18.trofiz
-
-import java.time.ZonedDateTime
-
-// Interfaces
-interface NamedEntity {
-    val name: String
-}
 // Requests
 data class PlatformRequest(
-    override var name: String,
-): NamedEntity
+    var name: String,
+)
 data class GenreRequest(
-    override var name: String
-): NamedEntity
+    var name: String
+)
 data class GameRequest(
     var name: String,
     var rating: Float,
