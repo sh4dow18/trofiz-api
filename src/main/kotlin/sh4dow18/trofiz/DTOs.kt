@@ -19,8 +19,8 @@ data class GameRequest(
     var metacritic: Int,
     var releaseDate: String,
     var imageUrl: String,
-    var platformsList: Set<PlatformRequest>,
-    var genresList: Set<GenreRequest>
+    var platformsList: Set<String>,
+    var genresList: Set<String>
 )
 data class PrivilegeRequest(
     var name: String,

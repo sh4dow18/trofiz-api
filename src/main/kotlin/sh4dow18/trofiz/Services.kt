@@ -120,18 +120,30 @@ class AbstractGameService(
         // Transforms a Game to a Game Response
         return gameMapper.gameToGameResponse(game)
     }
-    @Transactional(rollbackFor = [ElementAlreadyExists::class])
+    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementExists::class])
     override fun insert(gameRequest: GameRequest): GameResponse {
         // Verifies if the game already exists
         if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
             throw ElementAlreadyExists(gameRequest.name, "Juego")
         }
-        // If not exists, create the new game
+        // Check if each platform submitted exists
+        val platformsList = platformRepository.findAllById(gameRequest.platformsList)
+        if (platformsList.size != gameRequest.platformsList.size) {
+            val missingIds = gameRequest.platformsList - platformsList.map { it.id }.toSet()
+            throw NoSuchElementExists(missingIds.toString(), "Plataformas")
+        }
+        // Check if each genre submitted exists
+        val genresList = genreRepository.findAllById(gameRequest.genresList)
+        if (genresList.size != gameRequest.genresList.size) {
+            val missingIds = gameRequest.genresList - genresList.map { it.id }.toSet()
+            throw NoSuchElementExists(missingIds.toString(), "Géneros")
+        }
+        // If the game not exists and each platform and genre exists, create the new game
         val newGame = gameMapper.gameRequestToGame(gameRequest)
         // Add existing platforms to the new game
-        newGame.platformsList = connectEntities(platformRepository, gameRequest.platformsList)
+        newGame.platformsList = platformsList.toSet()
         // Add existing genres to the new game
-        newGame.genresList = connectEntities(genreRepository, gameRequest.genresList)
+        newGame.genresList = genresList.toSet()
         // Transforms the New Game to a Game Response and Returns it
         return gameMapper.gameToGameResponse(gameRepository.save(newGame))
     }
