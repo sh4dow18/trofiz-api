@@ -66,11 +66,7 @@ class GameTests(
         }
         // If the game not exists and each platform and genre exists, create the new game
         // If not exists, create the new game
-        val newGame = gameMapper.gameRequestToGame(gameRequest)
-        // Add existing platforms to the new game
-        newGame.platformsList = platformsList.toSet()
-        // Add existing genres to the new game
-        newGame.genresList = genresList.toSet()
+        val newGame = gameMapper.gameRequestToGame(gameRequest, platformsList.toSet() , genresList.toSet())
         // Transforms the New Game to a Game Response
         gameMapper.gameToGameResponse(newGame)
     }

@@ -38,8 +38,7 @@ class RoleTests(
             throw NoSuchElementExists(missingIds.toString(), "Privilegios")
         }
         // If each privileges exist, create the new role
-        val newRole = roleMapper.roleRequestToRole(roleRequest)
-        newRole.privilegesList = privilegesList.toSet()
+        val newRole = roleMapper.roleRequestToRole(roleRequest, privilegesList.toSet())
         // Transforms the New Role to Role Response
         roleMapper.roleToRoleResponse(newRole)
     }
