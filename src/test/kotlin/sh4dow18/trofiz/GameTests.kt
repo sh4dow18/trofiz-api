@@ -33,14 +33,12 @@ class GameTests(
     fun findById() {
         // Find by id Props
         val id = "resident-evil"
-        val platformsSet: Set<PlatformRequest> = setOf(PlatformRequest("Plataforma 1"),
-            PlatformRequest("Plataforma 2"))
-        val genresSet: Set<GenreRequest> = setOf(GenreRequest("Género 1"), GenreRequest("Género 2"))
-        val gameRequest = GameRequest("Juego de Prueba: Con Puntos / Y Slashes", 4.5f, 97,
-            "2024-11-01", "http://image.com", platformsSet, genresSet
-        )
+        // Check if the game already exists
+        val game = gameRepository.findById(id).orElseThrow {
+            NoSuchElementExists(id, "Juego")
+        }
         // Transforms a Game to a Game Response
-        gameMapper.gameToGameResponse(gameRepository.findById(id).orElse(gameMapper.gameRequestToGame(gameRequest)))
+        gameMapper.gameToGameResponse(game)
     }
     @Test
     fun insert() {
