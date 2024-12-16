@@ -1,4 +1,10 @@
 package sh4dow18.trofiz
+/* Main Comments
+
+* @Transactional is a Tag that establishes that is a Transactional Service Function. This one makes a transaction
+* when this service function is in operation.
+
+* */
 // Services Requirements
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -9,7 +15,6 @@ import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
-
 // Platform Service Interface where the functions to be used in
 // Spring Abstract Platform Service are declared
 interface PlatformService {
@@ -29,8 +34,6 @@ class AbstractPlatformService(
         // Returns all Platforms as a Platform Responses List
         return platformMapper.platformsListToPlatformResponsesList(platformRepository.findAll())
     }
-    // @Transactional is a Tag that establishes that is a Transactional Service Function. This
-    // one makes a transaction when this service function is in operation.
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(platformRequest: PlatformRequest): PlatformResponse {
         // Transforms Name in Platform Request in lowercase and replace spaces with "-"
@@ -65,6 +68,7 @@ class AbstractGenreService(
         // Returns all Genres as a Genre Responses List
         return genreMapper.genresListToGenreResponsesList(genreRepository.findAll())
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(genreRequest: GenreRequest): GenreResponse {
         // Transforms Name in Genre Request in lowercase and replace spaces with "-"
         // Example: "Interactive Adventure" -> "interactive-adventure"
@@ -116,6 +120,7 @@ class AbstractGameService(
         // Transforms a Game to a Game Response
         return gameMapper.gameToGameResponse(game)
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(gameRequest: GameRequest): GameResponse {
         // Verifies if the game already exists
         if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
@@ -151,6 +156,7 @@ class AbstractPrivilegeService(
         // Transforms a Privilege List to a Privilege Responses List
         return privilegeMapper.privilegesListToPrivilegeResponsesList(privilegeRepository.findAll())
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse {
         // Transforms Name in Privilege Request in lowercase and replace spaces with "-"
         // Example: "Add Games" -> "add-games"
@@ -164,6 +170,7 @@ class AbstractPrivilegeService(
         // Transforms the New Privilege to Privilege Response
         return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(newPrivilege))
     }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun updateStatus(id: String): PrivilegeResponse {
         // Verifies if the Privilege already exists
         val privilege = privilegeRepository.findById(id).orElseThrow {
@@ -197,6 +204,7 @@ class AbstractRoleService(
         // Transforms a Role List to a Role Responses List
         return roleMapper.rolesListToRoleResponsesList(roleRepository.findAll())
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementExists::class])
     override fun insert(roleRequest: RoleRequest): RoleResponse {
         // Verifies if the Role already exists
         if (roleRepository.findByNameIgnoringCase(roleRequest.name).orElse(null) != null) {
@@ -214,6 +222,7 @@ class AbstractRoleService(
         // Transforms the New Role to Role Response
         return roleMapper.roleToRoleResponse(roleRepository.save(newRole))
     }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun update(updateRoleRequest: UpdateRoleRequest): RoleResponse {
         // Verifies if the Role already exists
         val role = roleRepository.findById(updateRoleRequest.id).orElseThrow {
@@ -265,6 +274,7 @@ class AbstractUserService(
         // If exists, transforms it to User Response
         return userMapper.userToUserResponse(user)
     }
+    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementExists::class])
     override fun insert(userRequest: UserRequest): UserResponse {
         // Verifies if the User already exists
         val user = userRepository.findByEmailOrUserName(userRequest.email, userRequest.userName).orElse(null)
@@ -281,6 +291,7 @@ class AbstractUserService(
         // Transforms the New User to User Response
         return userMapper.userToUserResponse(userRepository.save(newUser))
     }
+    @Transactional(rollbackFor = [NoSuchElementExists::class, ElementAlreadyExists::class, BadRequest::class])
     override fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse {
         // Verifies if the User already exists
         val user = userRepository.findById(updateUserRequest.id).orElseThrow {
@@ -324,6 +335,7 @@ class AbstractUserService(
         // Transforms the User to User Response
         return userMapper.userToUserResponse(userRepository.save(user))
     }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun closeAccount(id: Long): UserResponse {
         // Verifies if the User already exists
         val user = userRepository.findById(id).orElseThrow {
