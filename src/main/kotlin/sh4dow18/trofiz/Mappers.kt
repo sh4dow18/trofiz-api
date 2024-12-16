@@ -145,7 +145,7 @@ interface GameLogMapper {
         @Context platform: Platform
     ): GameLog
     // Mapping the variables with clipped information
-    @Mapping(target = "game", expression = "java(gameLog.getGame().getName())")
+    @Mapping(target = "createdDate", expression = "java($UTILS_PATH.getDateAsString(gameLog.getCreatedDate()))")
     @Mapping(target = "user", expression = "java(gameLog.getUser().getName())")
     @Mapping(target = "platform", expression = "java(gameLog.getPlatform().getName())")
     fun gameLogToGameLogResponse(

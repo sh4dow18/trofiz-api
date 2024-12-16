@@ -85,7 +85,7 @@ data class GameLogResponse(
     var createdDate: String,
     var finished: String?,
     var platinum: String?,
-    var game: String,
+    var game: GameResponse,
     var user: String,
     var platform: String
 )

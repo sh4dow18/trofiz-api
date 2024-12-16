@@ -118,3 +118,12 @@ class UserRestController(private val userService: UserService) {
     @ResponseBody
     fun closeAccount(@PathVariable("id") id: Long) = userService.closeAccount(id)
 }
+// Game Log Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.gameLogs}")
+class GameLogRestController(private val gameLogService: GameLogService) {
+    // When the Endpoint has HTTP POST requests, call insert Game Log function
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun insert(@RequestBody gameLogRequest: GameLogRequest) = gameLogService.insert(gameLogRequest)
+}
