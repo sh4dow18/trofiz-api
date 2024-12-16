@@ -130,3 +130,25 @@ interface UserMapper {
         usersList: List<User>
     ): List<UserResponse>
 }
+// Game Log Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface GameLogMapper {
+    // Mapping the variables not submitted
+    @Mapping(target = "createdDate", expression = "java($UTILS_PATH.getCurrentDate())")
+    @Mapping(target = "game", expression = "java(game)")
+    @Mapping(target = "user", expression = "java(user)")
+    @Mapping(target = "platform", expression = "java(platform)")
+    fun gameLogRequestToGameLog(
+        gameLogRequest: GameLogRequest,
+        @Context game: Game,
+        @Context user: User,
+        @Context platform: Platform
+    ): GameLog
+    // Mapping the variables with clipped information
+    @Mapping(target = "game", expression = "java(gameLog.getGame().getName())")
+    @Mapping(target = "user", expression = "java(gameLog.getUser().getName())")
+    @Mapping(target = "platform", expression = "java(gameLog.getPlatform().getName())")
+    fun gameLogToGameLogResponse(
+        gameLog: GameLog
+    ): GameLogResponse
+}

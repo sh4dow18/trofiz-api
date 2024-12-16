@@ -36,6 +36,11 @@ data class UpdateUserRequest(
     var id: Long,
     var name: String?
 )
+data class GameLogRequest(
+    var gameId: String,
+    var userId: Long,
+    var platformId: String
+)
 // Responses
 data class PlatformResponse(
     var id: String,
@@ -74,4 +79,13 @@ data class UserResponse(
     var enabled: Boolean,
     var image: Boolean,
     var role: String
+)
+data class GameLogResponse(
+    var id: Long,
+    var createdDate: String,
+    var finished: String?,
+    var platinum: String?,
+    var game: String,
+    var user: String,
+    var platform: String
 )
