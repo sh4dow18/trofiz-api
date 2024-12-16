@@ -16,6 +16,8 @@ class ElementAlreadyExists(element: String, existsHow: String) :
 // "No Such Element Exists" class based on "Runtime Exception" class for use in error handlers with a template message
 class NoSuchElementExists(element: String, notExistsHow: String) :
     RuntimeException("El elemento con el identificador $element no existe en el sistema como $notExistsHow")
+class NoSuchElementsExists(elements: List<String>, notExistsHow: String) :
+    RuntimeException("Los elementos con los identificadores $elements no existen como $notExistsHow")
 // "Bad Request" class based on "Runtime Exception" class for use in error handlers with a template message
 class BadRequest(message: String) : RuntimeException(message)
 // Error Handlers Main Class
@@ -33,8 +35,8 @@ class ErrorsHandler: ResponseEntityExceptionHandler() {
         logger.debug("Element Already Exists: {}", exception)
         return ResponseEntity(apiError, apiError.status)
     }
-    // Error handler when some element doesn't exist and needs to exist
-    @ExceptionHandler(NoSuchElementExists::class)
+    // Error handler when some elements don't exist and needs to exist
+    @ExceptionHandler(value = [NoSuchElementExists::class, NoSuchElementsExists::class])
     fun noSuchElementExists(
         exception: java.lang.Exception,
     ): ResponseEntity<Any> {

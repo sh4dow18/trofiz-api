@@ -120,7 +120,7 @@ class AbstractGameService(
         // Transforms a Game to a Game Response
         return gameMapper.gameToGameResponse(game)
     }
-    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementExists::class])
+    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementsExists::class])
     override fun insert(gameRequest: GameRequest): GameResponse {
         // Verifies if the game already exists
         if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
@@ -130,13 +130,13 @@ class AbstractGameService(
         val platformsList = platformRepository.findAllById(gameRequest.platformsList)
         if (platformsList.size != gameRequest.platformsList.size) {
             val missingIds = gameRequest.platformsList - platformsList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Plataformas")
+            throw NoSuchElementsExists(missingIds.toList(), "Plataformas")
         }
         // Check if each genre submitted exists
         val genresList = genreRepository.findAllById(gameRequest.genresList)
         if (genresList.size != gameRequest.genresList.size) {
             val missingIds = gameRequest.genresList - genresList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Géneros")
+            throw NoSuchElementsExists(missingIds.toList(), "Géneros")
         }
         // If the game not exists and each platform and genre exists, create the new game
         val newGame = gameMapper.gameRequestToGame(gameRequest, platformsList.toSet(), genresList.toSet())
@@ -212,7 +212,7 @@ class AbstractRoleService(
         // Transforms a Role List to a Role Responses List
         return roleMapper.rolesListToRoleResponsesList(roleRepository.findAll())
     }
-    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementExists::class])
+    @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementsExists::class])
     override fun insert(roleRequest: RoleRequest): RoleResponse {
         // Verifies if the Role already exists
         if (roleRepository.findByNameIgnoringCase(roleRequest.name).orElse(null) != null) {
@@ -222,14 +222,14 @@ class AbstractRoleService(
         val privilegesList = privilegeRepository.findAllById(roleRequest.privilegesList)
         if (privilegesList.size != roleRequest.privilegesList.size) {
             val missingIds = roleRequest.privilegesList - privilegesList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Privilegios")
+            throw NoSuchElementsExists(missingIds.toList(), "Privilegios")
         }
         // If each privileges exist, create the new role
         val newRole = roleMapper.roleRequestToRole(roleRequest, privilegesList.toSet())
         // Transforms the New Role to Role Response
         return roleMapper.roleToRoleResponse(roleRepository.save(newRole))
     }
-    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    @Transactional(rollbackFor = [NoSuchElementExists::class, NoSuchElementsExists::class])
     override fun update(updateRoleRequest: UpdateRoleRequest): RoleResponse {
         // Verifies if the Role already exists
         val role = roleRepository.findById(updateRoleRequest.id).orElseThrow {
@@ -239,7 +239,7 @@ class AbstractRoleService(
         val privilegesList = privilegeRepository.findAllById(updateRoleRequest.privilegesList)
         if (privilegesList.size != updateRoleRequest.privilegesList.size) {
             val missingIds = updateRoleRequest.privilegesList - privilegesList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Privilegios")
+            throw NoSuchElementsExists(missingIds.toList(), "Privilegios")
         }
         // If the Role exists and the Privileges Exists, update it
         role.privilegesList = privilegesList.toSet()
