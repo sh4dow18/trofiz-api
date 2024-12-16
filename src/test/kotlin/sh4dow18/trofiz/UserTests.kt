@@ -54,9 +54,9 @@ class UserTests(
             val prop = if (user.email == userRequest.email) user.email else user.userName
             throw ElementAlreadyExists(prop!!, "Usuario")
         }
-        // Check if the role with id 1 already exist
-        val role = roleRepository.findById(1).orElseThrow {
-            NoSuchElementExists("${1}", "Rol")
+        // Check if the "Gamer" role already exist
+        val role = roleRepository.findByNameIgnoringCase("Gamer").orElseThrow {
+            NoSuchElementExists("Gamer", "Rol")
         }
         // If the role exist, create the new User
         val newUser = userMapper.userRequestToUser(userRequest, role)

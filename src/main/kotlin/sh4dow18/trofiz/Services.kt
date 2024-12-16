@@ -294,7 +294,7 @@ class AbstractUserService(
             val prop = if (user.email == userRequest.email) user.email else user.userName
             throw ElementAlreadyExists(prop!!, "Usuario")
         }
-        // Check if the role with id 1 already exist
+        // Check if the "Gamer" role already exist
         val role = roleRepository.findByNameIgnoringCase("Gamer").orElseThrow {
             NoSuchElementExists("Gamer", "Rol")
         }
