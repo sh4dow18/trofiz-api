@@ -153,4 +153,7 @@ interface GameLogMapper {
     fun gameLogToGameLogResponse(
         gameLog: GameLog
     ): GameLogResponse
+    fun gameLogsListToGameLogResponsesList(
+        gameLogsList: List<GameLog>
+    ): List<GameLogResponse>
 }

@@ -13,8 +13,17 @@ class GameLogTests(
     @Autowired
     val userRepository: UserRepository,
     @Autowired
-    val gameLogMapper: GameLogMapper
+    val gameLogMapper: GameLogMapper,
+    @Autowired
+    val gameLogRepository: GameLogRepository
 ) {
+    @Test
+    // Makes it transactional to use Platform and Genre in Game
+    @Transactional
+    fun findAll() {
+        // Transforms the Game Logs List to a Game Log Responses List
+        gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findAll())
+    }
     @Test
     // Makes it transactional to use Game and User Repositories
     @Transactional
