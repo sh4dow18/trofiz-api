@@ -8,7 +8,8 @@ import org.mapstruct.ReportingPolicy
 const val UTILS_PATH = "sh4dow18.trofiz.UtilsKt"
 const val EMPTY_LIST = "java(java.util.Collections.emptyList())"
 const val EMPTY_SET = "java(java.util.Collections.emptySet())"
-const val COLLECTORS_LIB = "java.util.stream.Collectors"
+const val MAP = "stream().map"
+const val TO_SET = "collect(java.util.stream.Collectors.toSet())"
 // Platform Mapper
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface PlatformMapper {
@@ -56,10 +57,8 @@ interface GameMapper {
     fun gameRequestToGame(
         gameRequest: GameRequest
     ): Game
-    @Mapping(target = "platformsList",
-        expression = "java(game.getPlatformsList().stream().map(it -> it.getName()).collect($COLLECTORS_LIB.toSet()))")
-    @Mapping(target = "genresList",
-        expression = "java(game.getGenresList().stream().map(it -> it.getName()).collect($COLLECTORS_LIB.toSet()))")
+    @Mapping(target = "platformsList", expression = "java(game.getPlatformsList().$MAP(it -> it.getName()).$TO_SET)")
+    @Mapping(target = "genresList", expression = "java(game.getGenresList().$MAP(it -> it.getName()).$TO_SET)")
     fun gameToGameResponse(
         game: Game
     ): GameResponse
