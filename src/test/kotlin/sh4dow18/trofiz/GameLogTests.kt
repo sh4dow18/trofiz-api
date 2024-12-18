@@ -28,6 +28,15 @@ class GameLogTests(
     @Test
     // Makes it transactional to use Platform and Genre in Game
     @Transactional
+    fun findByUserId() {
+        // Find Game Logs by User Id Test Prop
+        val id = 1L
+        // Transforms the Game Logs List to a Game Log Responses List
+        gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findByUserIdOrderByCreatedDateAsc(id))
+    }
+    @Test
+    // Makes it transactional to use Platform and Genre in Game
+    @Transactional
     fun findById() {
         // Find Game Log by Id Test Prop
         val id = 1L
