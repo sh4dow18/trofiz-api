@@ -134,4 +134,8 @@ class GameLogRestController(private val gameLogService: GameLogService) {
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun insert(@RequestBody gameLogRequest: GameLogRequest) = gameLogService.insert(gameLogRequest)
+    // When the Endpoint has HTTP POST requests, call insert Game Log function
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun update(@RequestBody updateGameLogRequest: UpdateGameLogRequest) = gameLogService.update(updateGameLogRequest)
 }

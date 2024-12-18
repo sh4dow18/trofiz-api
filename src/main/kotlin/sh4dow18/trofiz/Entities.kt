@@ -104,7 +104,7 @@ data class GameLog(
     var createdDate: ZonedDateTime,
     var finished: ZonedDateTime?,
     var platinum: ZonedDateTime?,
-    var review: String,
+    var review: String?,
     // Game Log Relationships
     @ManyToOne
     @JoinColumn(name = "game_id", nullable = false, referencedColumnName = "id")

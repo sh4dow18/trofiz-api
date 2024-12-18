@@ -380,6 +380,7 @@ interface GameLogService {
     fun findAll(): List<GameLogResponse>
     fun findById(id: Long): GameLogResponse
     fun insert(gameLogRequest: GameLogRequest): GameLogResponse
+    fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse
 }
 // Spring Abstract Game Log Service
 @Service
@@ -429,5 +430,43 @@ class AbstractGameLogService(
         val newGameLog = gameLogMapper.gameLogRequestToGameLog(gameLogRequest, game, user, platform)
         // Transforms the New Game Log to a Game Log Response
         return gameLogMapper.gameLogToGameLogResponse(gameLogRepository.save(newGameLog))
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    override fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse {
+        // Check if the user submitted already exists
+        val gameLog = gameLogRepository.findById(updateGameLogRequest.id).orElseThrow {
+            NoSuchElementExists("${updateGameLogRequest.id}", "Registro de Juego")
+        }
+        // Check if a new Rating was submitted, if it was, change it
+        if (updateGameLogRequest.rating != null) {
+            gameLog.rating = updateGameLogRequest.rating!!
+        }
+        // Check if a new Created Date was submitted, if it was, change it
+        if (updateGameLogRequest.createdDate != null) {
+            gameLog.createdDate = getStringAsDate(updateGameLogRequest.createdDate!!)
+        }
+        // Check if a new Finished Date was submitted, if it was, change it
+        if (updateGameLogRequest.finished != null) {
+            gameLog.finished = getStringAsDate(updateGameLogRequest.finished!!)
+        }
+        // Check if a new Platinum Date was submitted, if it was, change it
+        if (updateGameLogRequest.platinum != null) {
+            gameLog.platinum = getStringAsDate(updateGameLogRequest.platinum!!)
+        }
+        // Check if a new Review was submitted, if it was, change it
+        if (updateGameLogRequest.review != null) {
+            gameLog.review = updateGameLogRequest.review!!
+        }
+        // Check if a new Platform was submitted, if it was, change it
+        if (updateGameLogRequest.platformId != null) {
+            val platform = gameLog.game.platformsList.find { it.id == updateGameLogRequest.platformId }
+            if (platform == null) {
+                throw NoSuchElementExists("${updateGameLogRequest.platformId}",
+                    "Plataforma en el Juego ${gameLog.game.name}")
+            }
+            gameLog.platform = platform
+        }
+        // Transforms the Game Log to a Game Log Response
+        return gameLogMapper.gameLogToGameLogResponse(gameLogRepository.save(gameLog))
     }
 }

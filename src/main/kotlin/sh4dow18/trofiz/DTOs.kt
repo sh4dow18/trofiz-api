@@ -94,9 +94,11 @@ data class UserResponse(
 )
 data class GameLogResponse(
     var id: Long,
+    var rating: Float,
     var createdDate: String,
     var finished: String?,
     var platinum: String?,
+    var review: String?,
     var game: GameResponse,
     var user: String,
     var platform: String
