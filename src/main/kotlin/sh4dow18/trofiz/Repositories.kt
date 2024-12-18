@@ -29,3 +29,8 @@ interface RoleRepository: JpaRepository<Role, Long> {
 interface UserRepository: JpaRepository<User, Long> {
     fun findByEmailOrName(@Param("email") email: String, @Param("name") name: String): Optional<User>
 }
+// Game Log Repository
+@Repository
+interface GameLogRepository: JpaRepository<GameLog, Long> {
+    fun findByUserIdOrderByCreatedDateAsc(@Param("id") id: Long): List<GameLog>
+}

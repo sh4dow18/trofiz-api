@@ -1,6 +1,7 @@
 package sh4dow18.trofiz
 // Rest Controllers Requirements
 import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -117,4 +118,33 @@ class UserRestController(private val userService: UserService) {
     @PutMapping("close/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun closeAccount(@PathVariable("id") id: Long) = userService.closeAccount(id)
+}
+// Game Log Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.gameLogs}")
+class GameLogRestController(private val gameLogService: GameLogService) {
+    // When the Endpoint has HTTP GET requests, call find all Game Logs function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = gameLogService.findAll()
+    // When the Endpoint has HTTP GET requests with subdirectory "user" and id, call find all Game Logs function
+    @GetMapping("user/{id}")
+    @ResponseBody
+    fun findByUserId(@PathVariable("id") id: Long) = gameLogService.findByUserId(id)
+    // When the Endpoint has HTTP GET requests with an id, call find Game Log by id function
+    @GetMapping("{id}")
+    @ResponseBody
+    fun findById(@PathVariable("id") id: Long) = gameLogService.findById(id)
+    // When the Endpoint has HTTP POST requests, call insert Game Log function
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun insert(@RequestBody gameLogRequest: GameLogRequest) = gameLogService.insert(gameLogRequest)
+    // When the Endpoint has HTTP POST requests, call insert Game Log function
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun update(@RequestBody updateGameLogRequest: UpdateGameLogRequest) = gameLogService.update(updateGameLogRequest)
+    // When the Endpoint has HTTP POST requests, call delete Game Log function
+    @DeleteMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun delete(@RequestBody deleteGameLogRequest: DeleteGameLogRequest) = gameLogService.delete(deleteGameLogRequest)
 }

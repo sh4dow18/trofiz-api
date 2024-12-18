@@ -374,3 +374,115 @@ class AbstractUserService(
         return userMapper.userToUserResponse(userRepository.save(user))
     }
 }
+// Game Log Service Interface where the functions to be used in
+// Spring Abstract Game Log Service are declared
+interface GameLogService {
+    fun findAll(): List<GameLogResponse>
+    fun findByUserId(id: Long): List<GameLogResponse>
+    fun findById(id: Long): GameLogResponse
+    fun insert(gameLogRequest: GameLogRequest): GameLogResponse
+    fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse
+    fun delete(deleteGameLogRequest: DeleteGameLogRequest): String
+}
+// Spring Abstract Game Log Service
+@Service
+class AbstractGameLogService(
+    // Game Log Tests Props
+    @Autowired
+    val gameRepository: GameRepository,
+    @Autowired
+    val userRepository: UserRepository,
+    @Autowired
+    val gameLogMapper: GameLogMapper,
+    @Autowired
+    val gameLogRepository: GameLogRepository
+): GameLogService {
+    override fun findAll(): List<GameLogResponse> {
+        // Transforms the Game Logs List to a Game Log Responses List
+        return gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findAll())
+    }
+    override fun findByUserId(id: Long): List<GameLogResponse> {
+        // Transforms the Game Logs List to a Game Log Responses List
+        return gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findByUserIdOrderByCreatedDateAsc(id))
+    }
+    override fun findById(id: Long): GameLogResponse {
+        // Check if the game log already exists
+        val gameLog = gameLogRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Registro de Juego")
+        }
+        // Transforms the Game Logs List to a Game Log Responses List
+        return gameLogMapper.gameLogToGameLogResponse(gameLog)
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class, ElementAlreadyExists::class])
+    override fun insert(gameLogRequest: GameLogRequest): GameLogResponse {
+        // Check if the user submitted already exists
+        val user = userRepository.findById(gameLogRequest.userId).orElseThrow {
+            NoSuchElementExists("${gameLogRequest.userId}", "Usuario")
+        }
+        // Check if the user already have the game as a game log
+        if (user.gameLogsList.any { it.game.id == gameLogRequest.gameId }) {
+            throw ElementAlreadyExists(gameLogRequest.gameId, "Registro de Juego con ${user.name}")
+        }
+        // Check if the game submitted already exists
+        val game = gameRepository.findById(gameLogRequest.gameId).orElseThrow {
+            NoSuchElementExists(gameLogRequest.gameId, "Juego")
+        }
+        // Check if the platform submitted already exists in the game submitted
+        val platform = game.platformsList.find { it.id == gameLogRequest.platformId }
+        if (platform == null) {
+            throw NoSuchElementExists(gameLogRequest.platformId, "Plataforma en el Juego ${game.name}")
+        }
+        // If the game, the user and platform exists, create a new game log
+        val newGameLog = gameLogMapper.gameLogRequestToGameLog(gameLogRequest, game, user, platform)
+        // Transforms the New Game Log to a Game Log Response
+        return gameLogMapper.gameLogToGameLogResponse(gameLogRepository.save(newGameLog))
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    override fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse {
+        // Check if the user submitted already exists
+        val gameLog = gameLogRepository.findById(updateGameLogRequest.id).orElseThrow {
+            NoSuchElementExists("${updateGameLogRequest.id}", "Registro de Juego")
+        }
+        // Check if a new Rating was submitted, if it was, change it
+        if (updateGameLogRequest.rating != null) {
+            gameLog.rating = updateGameLogRequest.rating!!
+        }
+        // Check if a new Created Date was submitted, if it was, change it
+        if (updateGameLogRequest.createdDate != null) {
+            gameLog.createdDate = getStringAsDate(updateGameLogRequest.createdDate!!)
+        }
+        // Check if a new Finished Date was submitted, if it was, change it
+        if (updateGameLogRequest.finished != null) {
+            gameLog.finished = getStringAsDate(updateGameLogRequest.finished!!)
+        }
+        // Check if a new Platinum Date was submitted, if it was, change it
+        if (updateGameLogRequest.platinum != null) {
+            gameLog.platinum = getStringAsDate(updateGameLogRequest.platinum!!)
+        }
+        // Check if a new Review was submitted, if it was, change it
+        if (updateGameLogRequest.review != null) {
+            gameLog.review = updateGameLogRequest.review!!
+        }
+        // Check if a new Platform was submitted, if it was, change it
+        if (updateGameLogRequest.platformId != null) {
+            val platform = gameLog.game.platformsList.find { it.id == updateGameLogRequest.platformId }
+            if (platform == null) {
+                throw NoSuchElementExists("${updateGameLogRequest.platformId}",
+                    "Plataforma en el Juego ${gameLog.game.name}")
+            }
+            gameLog.platform = platform
+        }
+        // Transforms the Game Log to a Game Log Response
+        return gameLogMapper.gameLogToGameLogResponse(gameLogRepository.save(gameLog))
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    override fun delete(deleteGameLogRequest: DeleteGameLogRequest): String {
+        // Check if the user submitted already exists
+        val gameLog = gameLogRepository.findById(deleteGameLogRequest.id).orElseThrow {
+            NoSuchElementExists("${deleteGameLogRequest.id}", "Registro de Juego")
+        }
+        // Delete the Game Log
+        gameLogRepository.delete(gameLog)
+        return "El Registro de Juego con el Identificador ${deleteGameLogRequest.id} fue eliminado con éxito"
+    }
+}
