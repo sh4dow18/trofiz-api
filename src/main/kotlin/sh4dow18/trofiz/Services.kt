@@ -381,6 +381,7 @@ interface GameLogService {
     fun findById(id: Long): GameLogResponse
     fun insert(gameLogRequest: GameLogRequest): GameLogResponse
     fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse
+    fun delete(deleteGameLogRequest: DeleteGameLogRequest): String
 }
 // Spring Abstract Game Log Service
 @Service
@@ -468,5 +469,15 @@ class AbstractGameLogService(
         }
         // Transforms the Game Log to a Game Log Response
         return gameLogMapper.gameLogToGameLogResponse(gameLogRepository.save(gameLog))
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    override fun delete(deleteGameLogRequest: DeleteGameLogRequest): String {
+        // Check if the user submitted already exists
+        val gameLog = gameLogRepository.findById(deleteGameLogRequest.id).orElseThrow {
+            NoSuchElementExists("${deleteGameLogRequest.id}", "Registro de Juego")
+        }
+        // Delete the Game Log
+        gameLogRepository.delete(gameLog)
+        return "El Registro de Juego con el Identificador ${deleteGameLogRequest.id} fue eliminado con éxito"
     }
 }
