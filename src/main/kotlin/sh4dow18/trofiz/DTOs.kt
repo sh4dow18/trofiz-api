@@ -1,4 +1,7 @@
 package sh4dow18.trofiz
+
+import java.time.ZonedDateTime
+
 // Requests
 data class PlatformRequest(
     var name: String,
@@ -40,6 +43,15 @@ data class GameLogRequest(
     var gameId: String,
     var userId: Long,
     var platformId: String
+)
+data class UpdateGameLogRequest(
+    var id: Long,
+    var rating: Float?,
+    var createdDate: String?,
+    var finished: String?,
+    var platinum: String?,
+    var review: String?,
+    var platformId: String?
 )
 // Responses
 data class PlatformResponse(

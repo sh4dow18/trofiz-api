@@ -65,4 +65,46 @@ class GameLogTests(
         // Transforms the New Game Log to a Game Log Response
         gameLogMapper.gameLogToGameLogResponse(newGameLog)
     }
+    @Test
+    @Transactional
+    fun update() {
+        // Update Game Log Test Prop
+        val updateGameLogRequest = UpdateGameLogRequest(1, 8.5f,"2024-12-17 11:11",
+            "2024-12-17 11:11", "2024-12-17 11:11", "Excelente", "play-station-5")
+        // Check if the user submitted already exists
+        val gameLog = gameLogRepository.findById(updateGameLogRequest.id).orElseThrow {
+            NoSuchElementExists("${updateGameLogRequest.id}", "Registro de Juego")
+        }
+        // Check if a new Rating was submitted, if it was, change it
+        if (updateGameLogRequest.rating != null) {
+            gameLog.rating = updateGameLogRequest.rating!!
+        }
+        // Check if a new Created Date was submitted, if it was, change it
+        if (updateGameLogRequest.createdDate != null) {
+            gameLog.createdDate = getStringAsDate(updateGameLogRequest.createdDate!!)
+        }
+        // Check if a new Finished Date was submitted, if it was, change it
+        if (updateGameLogRequest.finished != null) {
+            gameLog.finished = getStringAsDate(updateGameLogRequest.finished!!)
+        }
+        // Check if a new Platinum Date was submitted, if it was, change it
+        if (updateGameLogRequest.platinum != null) {
+            gameLog.platinum = getStringAsDate(updateGameLogRequest.platinum!!)
+        }
+        // Check if a new Review was submitted, if it was, change it
+        if (updateGameLogRequest.review != null) {
+            gameLog.review = updateGameLogRequest.review!!
+        }
+        // Check if a new Platform was submitted, if it was, change it
+        if (updateGameLogRequest.platformId != null) {
+            val platform = gameLog.game.platformsList.find { it.id == updateGameLogRequest.platformId }
+            if (platform == null) {
+                throw NoSuchElementExists("${updateGameLogRequest.platformId}",
+                    "Plataforma en el Juego ${gameLog.game.name}")
+            }
+            gameLog.platform = platform
+        }
+        // Transforms the Game Log to a Game Log Response
+        gameLogMapper.gameLogToGameLogResponse(gameLog)
+    }
 }
