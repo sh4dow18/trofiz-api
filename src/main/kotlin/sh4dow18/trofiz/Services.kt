@@ -378,6 +378,7 @@ class AbstractUserService(
 // Spring Abstract Game Log Service are declared
 interface GameLogService {
     fun findAll(): List<GameLogResponse>
+    fun findByUserId(id: Long): List<GameLogResponse>
     fun findById(id: Long): GameLogResponse
     fun insert(gameLogRequest: GameLogRequest): GameLogResponse
     fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse
@@ -399,6 +400,10 @@ class AbstractGameLogService(
     override fun findAll(): List<GameLogResponse> {
         // Transforms the Game Logs List to a Game Log Responses List
         return gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findAll())
+    }
+    override fun findByUserId(id: Long): List<GameLogResponse> {
+        // Transforms the Game Logs List to a Game Log Responses List
+        return gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findByUserIdOrderByCreatedDateAsc(id))
     }
     override fun findById(id: Long): GameLogResponse {
         // Check if the game log already exists

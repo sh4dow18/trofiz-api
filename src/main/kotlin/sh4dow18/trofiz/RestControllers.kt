@@ -127,6 +127,10 @@ class GameLogRestController(private val gameLogService: GameLogService) {
     @GetMapping
     @ResponseBody
     fun findAll() = gameLogService.findAll()
+    // When the Endpoint has HTTP GET requests with subdirectory "user" and id, call find all Game Logs function
+    @GetMapping("user/{id}")
+    @ResponseBody
+    fun findByUserId(@PathVariable("id") id: Long) = gameLogService.findByUserId(id)
     // When the Endpoint has HTTP GET requests with an id, call find Game Log by id function
     @GetMapping("{id}")
     @ResponseBody
