@@ -3,8 +3,6 @@ package sh4dow18.trofiz
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.annotation.Transactional
-
 // Game Tests Main Class
 @SpringBootTest
 class GameTests(

@@ -16,7 +16,10 @@ fun getCurrentDate(): ZonedDateTime {
     return ZonedDateTime.now(ZoneId.of("America/Costa_Rica"))
 }
 // Function to get a date submitted as a String
-fun getDateAsString(date: ZonedDateTime): String {
+fun getDateAsString(date: ZonedDateTime?): String? {
+    if (date == null) {
+        return null
+    }
     return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("America/Costa_Rica")))
 }
 // Function to get a String submitted as a Date

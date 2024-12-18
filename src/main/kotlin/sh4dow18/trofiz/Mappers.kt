@@ -146,6 +146,8 @@ interface GameLogMapper {
     ): GameLog
     // Mapping the variables with clipped information
     @Mapping(target = "createdDate", expression = "java($UTILS_PATH.getDateAsString(gameLog.getCreatedDate()))")
+    @Mapping(target = "finished", expression = "java($UTILS_PATH.getDateAsString(gameLog.getFinished()))")
+    @Mapping(target = "platinum", expression = "java($UTILS_PATH.getDateAsString(gameLog.getPlatinum()))")
     @Mapping(target = "game.platformsList", expression = "java(game.getPlatformsList().$MAP(it -> it.getName()).$TO_SET)")
     @Mapping(target = "game.genresList", expression = "java(game.getGenresList().$MAP(it -> it.getName()).$TO_SET)")
     @Mapping(target = "user", expression = "java(gameLog.getUser().getName())")
