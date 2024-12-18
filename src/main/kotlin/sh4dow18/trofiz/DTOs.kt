@@ -1,7 +1,4 @@
 package sh4dow18.trofiz
-
-import java.time.ZonedDateTime
-
 // Requests
 data class PlatformRequest(
     var name: String,
