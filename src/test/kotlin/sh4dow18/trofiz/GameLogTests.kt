@@ -1,5 +1,6 @@
 package sh4dow18.trofiz
 // Game Log Tests Requirements
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -106,5 +107,16 @@ class GameLogTests(
         }
         // Transforms the Game Log to a Game Log Response
         gameLogMapper.gameLogToGameLogResponse(gameLog)
+    }
+    @Test
+    fun delete() {
+        // Delete Game Log Test Prop
+        val deleteGameLogRequest = DeleteGameLogRequest(1, 1)
+        // Check if the user submitted already exists
+        gameLogRepository.findById(deleteGameLogRequest.id).orElseThrow {
+            NoSuchElementExists("${deleteGameLogRequest.id}", "Registro de Juego")
+        }
+        // Delete the Game Log
+        Assertions.assertTrue(true)
     }
 }

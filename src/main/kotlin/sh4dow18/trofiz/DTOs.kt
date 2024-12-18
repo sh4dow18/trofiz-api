@@ -53,6 +53,10 @@ data class UpdateGameLogRequest(
     var review: String?,
     var platformId: String?
 )
+data class DeleteGameLogRequest(
+    var id: Long,
+    var userId: Long
+)
 // Responses
 data class PlatformResponse(
     var id: String,
