@@ -18,8 +18,6 @@ class GameLogTests(
     @Autowired
     val gameLogRepository: GameLogRepository,
     @Autowired
-    val reviewRepository: ReviewRepository,
-    @Autowired
     val reviewMapper: ReviewMapper
 ) {
     @Test
@@ -107,8 +105,13 @@ class GameLogTests(
         }
         // Check if a new Review was submitted, if it was, change it
         if (updateGameLogRequest.review != null) {
-            val newReview = reviewMapper.contextToReview(updateGameLogRequest.review!!, gameLog)
-            gameLog.review = newReview
+            if (gameLog.review != null) {
+                gameLog.review!!.description = updateGameLogRequest.review!!
+            }
+            else {
+                val newReview = reviewMapper.contextToReview(updateGameLogRequest.review!!, gameLog)
+                gameLog.review = newReview
+            }
         }
         // Check if a new Platform was submitted, if it was, change it
         if (updateGameLogRequest.platformId != null) {
