@@ -179,4 +179,7 @@ interface ReviewMapper {
     fun reviewToReviewResponse(
         review: Review
     ): ReviewResponse
+    fun reviewsListToReviewResponsesList(
+        reviewsList: List<Review>
+    ): List<ReviewResponse>
 }
