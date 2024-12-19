@@ -54,6 +54,10 @@ class GameRestController(private val gameService: GameService) {
     @GetMapping("search/{name}")
     @ResponseBody
     fun findTop10ByNameContainingIgnoreCase(@PathVariable name: String) = gameService.findTop10ByNameContainingIgnoreCase(name)
+    // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
+    @GetMapping("{id}/reviews")
+    @ResponseBody
+    fun findAllReviewsById(@PathVariable id: String) = gameService.findAllReviewsById(id)
     // When the Endpoint has HTTP POST requests, call insert game function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
