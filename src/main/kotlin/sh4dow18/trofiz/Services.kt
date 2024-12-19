@@ -262,6 +262,7 @@ class AbstractRoleService(
 // Spring Abstract User Service are declared
 interface UserService {
     fun findAll(): List<UserResponse>
+    fun findAllReviewsById(id: Long): List<ReviewResponse>
     fun findById(id: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
     fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
@@ -278,11 +279,21 @@ class AbstractUserService(
     @Autowired
     val userMapper: UserMapper,
     @Autowired
-    val roleRepository: RoleRepository
+    val roleRepository: RoleRepository,
+    @Autowired
+    val reviewMapper: ReviewMapper
 ): UserService {
     override fun findAll(): List<UserResponse> {
         // Transforms a User List to a User Responses List
         return userMapper.usersListToUserResponsesList(userRepository.findAll())
+    }
+    override fun findAllReviewsById(id: Long): List<ReviewResponse> {
+        // Check if the game already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // Transforms a Reviews List to a Review Responses List
+        return reviewMapper.reviewsListToReviewResponsesList(user.reviewsList)
     }
     override fun findById(id: Long): UserResponse {
         // Verifies if the User already exists
