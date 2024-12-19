@@ -10,6 +10,7 @@ import jakarta.persistence.JoinTable
 import jakarta.persistence.ManyToMany
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import java.time.ZonedDateTime
 // User Entity
@@ -32,6 +33,8 @@ data class User(
     var role: Role,
     @OneToMany(mappedBy = "user", targetEntity = GameLog::class)
     var gameLogsList: List<GameLog>,
+    @OneToMany(mappedBy = "user", targetEntity = Review::class)
+    var reviewsList: List<Review>,
     @OneToMany(mappedBy = "user", targetEntity = Log::class)
     var logsList: List<Log>
 )
@@ -104,7 +107,6 @@ data class GameLog(
     var createdDate: ZonedDateTime,
     var finished: ZonedDateTime?,
     var platinum: ZonedDateTime?,
-    var review: String?,
     // Game Log Relationships
     @ManyToOne
     @JoinColumn(name = "game_id", nullable = false, referencedColumnName = "id")
@@ -114,7 +116,9 @@ data class GameLog(
     var user: User,
     @ManyToOne
     @JoinColumn(name = "platform_id", nullable = false, referencedColumnName = "id")
-    var platform: Platform
+    var platform: Platform,
+    @OneToOne(mappedBy = "gameLog", targetEntity = Review::class)
+    var review: Review?,
 )
 // Game Entity
 @Entity
@@ -144,7 +148,9 @@ data class Game(
         joinColumns = [JoinColumn(name = "game_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "genre_id", referencedColumnName = "id")]
     )
-    var genresList: Set<Genre>
+    var genresList: Set<Genre>,
+    @OneToMany(mappedBy = "game", targetEntity = Review::class)
+    var reviewsList: List<Review>
 ) {
     override fun equals(other: Any?): Boolean {
         // Check if the current object is the same instance as other
@@ -205,6 +211,24 @@ data class Genre(
     // Use the hashCode of the "id" field as the hash code for the entire object
     override fun hashCode(): Int = id.hashCode()
 }
+// Review Entity
+@Entity
+@Table(name = "reviews")
+data class Review(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long,
+    var description: String,
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
+    var user: User,
+    @ManyToOne
+    @JoinColumn(name = "game_id", nullable = false, referencedColumnName = "id")
+    var game: Game,
+    @OneToOne
+    @JoinColumn(name = "game_log_id", nullable = false, referencedColumnName = "id")
+    var gameLog: GameLog
+)
 // Log Entity
 @Entity
 @Table(name = "logs")

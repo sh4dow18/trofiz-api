@@ -88,6 +88,7 @@ class AbstractGenreService(
 interface GameService {
     fun findAll(): List<GameResponse>
     fun findTop10ByNameContainingIgnoreCase(name: String): List<GameResponse>
+    fun findAllReviewsById(id: String): List<ReviewResponse>
     fun findById(id: String): GameResponse
     fun insert(gameRequest: GameRequest): GameResponse
 }
@@ -102,7 +103,9 @@ class AbstractGameService(
     @Autowired
     val platformRepository: PlatformRepository,
     @Autowired
-    val genreRepository: GenreRepository
+    val genreRepository: GenreRepository,
+    @Autowired
+    val reviewMapper: ReviewMapper
 ): GameService {
     override fun findAll(): List<GameResponse> {
         // Transforms a Games List to a Game Responses List
@@ -111,6 +114,14 @@ class AbstractGameService(
     override fun findTop10ByNameContainingIgnoreCase(name: String): List<GameResponse> {
         // Transforms the first 10 Games from a Games List to a Game Responses List
         return gameMapper.gamesListToGameResponsesList(gameRepository.findTop10ByNameContainingIgnoreCase(name))
+    }
+    override fun findAllReviewsById(id: String): List<ReviewResponse> {
+        // Check if the game already exists
+        val game = gameRepository.findById(id).orElseThrow {
+            NoSuchElementExists(id, "Juego")
+        }
+        // Transforms a Reviews List to a Review Responses List
+        return reviewMapper.reviewsListToReviewResponsesList(game.reviewsList)
     }
     override fun findById(id: String): GameResponse {
         // Find a game with the id and if the game is not found, throw a "No Such Element Exists" error
@@ -251,6 +262,7 @@ class AbstractRoleService(
 // Spring Abstract User Service are declared
 interface UserService {
     fun findAll(): List<UserResponse>
+    fun findAllReviewsById(id: Long): List<ReviewResponse>
     fun findById(id: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
     fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
@@ -267,11 +279,21 @@ class AbstractUserService(
     @Autowired
     val userMapper: UserMapper,
     @Autowired
-    val roleRepository: RoleRepository
+    val roleRepository: RoleRepository,
+    @Autowired
+    val reviewMapper: ReviewMapper
 ): UserService {
     override fun findAll(): List<UserResponse> {
         // Transforms a User List to a User Responses List
         return userMapper.usersListToUserResponsesList(userRepository.findAll())
+    }
+    override fun findAllReviewsById(id: Long): List<ReviewResponse> {
+        // Check if the game already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // Transforms a Reviews List to a Review Responses List
+        return reviewMapper.reviewsListToReviewResponsesList(user.reviewsList)
     }
     override fun findById(id: Long): UserResponse {
         // Verifies if the User already exists
@@ -395,7 +417,11 @@ class AbstractGameLogService(
     @Autowired
     val gameLogMapper: GameLogMapper,
     @Autowired
-    val gameLogRepository: GameLogRepository
+    val gameLogRepository: GameLogRepository,
+    @Autowired
+    val reviewRepository: ReviewRepository,
+    @Autowired
+    val reviewMapper: ReviewMapper
 ): GameLogService {
     override fun findAll(): List<GameLogResponse> {
         // Transforms the Game Logs List to a Game Log Responses List
@@ -461,7 +487,13 @@ class AbstractGameLogService(
         }
         // Check if a new Review was submitted, if it was, change it
         if (updateGameLogRequest.review != null) {
-            gameLog.review = updateGameLogRequest.review!!
+            if (gameLog.review != null) {
+                gameLog.review!!.description = updateGameLogRequest.review!!
+            }
+            else {
+                val newReview = reviewMapper.contextToReview(updateGameLogRequest.review!!, gameLog)
+                gameLog.review = reviewRepository.save(newReview)
+            }
         }
         // Check if a new Platform was submitted, if it was, change it
         if (updateGameLogRequest.platformId != null) {

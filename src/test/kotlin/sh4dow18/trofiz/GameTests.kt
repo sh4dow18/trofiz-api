@@ -3,6 +3,8 @@ package sh4dow18.trofiz
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.transaction.annotation.Transactional
+
 // Game Tests Main Class
 @SpringBootTest
 class GameTests(
@@ -14,7 +16,9 @@ class GameTests(
     @Autowired
     val platformRepository: PlatformRepository,
     @Autowired
-    val genreRepository: GenreRepository
+    val genreRepository: GenreRepository,
+    @Autowired
+    val reviewMapper: ReviewMapper
 ) {
     @Test
     fun findAll() {
@@ -26,6 +30,19 @@ class GameTests(
         val name = "Juego 1"
         // Transforms the first 10 Games from a Games List to a Game Responses List
         gameMapper.gamesListToGameResponsesList(gameRepository.findTop10ByNameContainingIgnoreCase(name))
+    }
+    @Test
+    // Makes it transactional to use Review in Game
+    @Transactional
+    fun findAllReviewsById() {
+        // Find All Reviews by id Props
+        val id = "days-gone"
+        // Check if the game already exists
+        val game = gameRepository.findById(id).orElseThrow {
+            NoSuchElementExists(id, "Juego")
+        }
+        // Transforms a Reviews List to a Review Responses List
+        reviewMapper.reviewsListToReviewResponsesList(game.reviewsList)
     }
     @Test
     fun findById() {

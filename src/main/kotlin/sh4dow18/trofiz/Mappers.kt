@@ -54,6 +54,7 @@ interface GameMapper {
     @Mapping(target = "platformsList", expression = "java(platformsList)")
     @Mapping(target = "genresList", expression = "java(genresList)")
     @Mapping(target = "gameLogsList", expression = EMPTY_LIST)
+    @Mapping(target = "reviewsList", expression = EMPTY_LIST)
     fun gameRequestToGame(
         gameRequest: GameRequest,
         @Context platformsList: Set<Platform>,
@@ -117,6 +118,7 @@ interface UserMapper {
     // Set each list as empty
     @Mapping(target = "gameLogsList", expression = EMPTY_LIST)
     @Mapping(target = "logsList", expression = EMPTY_LIST)
+    @Mapping(target = "reviewsList", expression = EMPTY_LIST)
     fun userRequestToUser(
         userRequest: UserRequest,
         @Context role: Role
@@ -152,10 +154,32 @@ interface GameLogMapper {
     @Mapping(target = "game.genresList", expression = "java(game.getGenresList().$MAP(it -> it.getName()).$TO_SET)")
     @Mapping(target = "user", expression = "java(gameLog.getUser().getName())")
     @Mapping(target = "platform", expression = "java(gameLog.getPlatform().getName())")
+    @Mapping(target = "review", expression = "java(gameLog.getReview() != null ? gameLog.getReview().getDescription() : null)")
     fun gameLogToGameLogResponse(
         gameLog: GameLog
     ): GameLogResponse
     fun gameLogsListToGameLogResponsesList(
         gameLogsList: List<GameLog>
     ): List<GameLogResponse>
+}
+// Review Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface ReviewMapper {
+    // Mapping the variables not submitted
+    @Mapping(target = "user", expression = "java(gameLog.getUser())")
+    @Mapping(target = "game", expression = "java(gameLog.getGame())")
+    @Mapping(target = "gameLog", expression = "java(gameLog)")
+    fun contextToReview(
+        description: String,
+        @Context gameLog: GameLog
+    ): Review
+    // Mapping the variables with clipped information
+    @Mapping(target = "user", expression = "java(review.getUser().getName())")
+    @Mapping(target = "game", expression = "java(review.getGame().getName())")
+    fun reviewToReviewResponse(
+        review: Review
+    ): ReviewResponse
+    fun reviewsListToReviewResponsesList(
+        reviewsList: List<Review>
+    ): List<ReviewResponse>
 }

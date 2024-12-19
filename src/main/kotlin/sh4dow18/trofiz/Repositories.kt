@@ -34,3 +34,6 @@ interface UserRepository: JpaRepository<User, Long> {
 interface GameLogRepository: JpaRepository<GameLog, Long> {
     fun findByUserIdOrderByCreatedDateAsc(@Param("id") id: Long): List<GameLog>
 }
+// Review Repository
+@Repository
+interface ReviewRepository: JpaRepository<Review, Long>
