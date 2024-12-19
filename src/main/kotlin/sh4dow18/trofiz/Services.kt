@@ -395,7 +395,11 @@ class AbstractGameLogService(
     @Autowired
     val gameLogMapper: GameLogMapper,
     @Autowired
-    val gameLogRepository: GameLogRepository
+    val gameLogRepository: GameLogRepository,
+    @Autowired
+    val reviewRepository: ReviewRepository,
+    @Autowired
+    val reviewMapper: ReviewMapper
 ): GameLogService {
     override fun findAll(): List<GameLogResponse> {
         // Transforms the Game Logs List to a Game Log Responses List
@@ -461,7 +465,13 @@ class AbstractGameLogService(
         }
         // Check if a new Review was submitted, if it was, change it
         if (updateGameLogRequest.review != null) {
-//            gameLog.review = updateGameLogRequest.review!!
+            if (gameLog.review != null) {
+                gameLog.review!!.description = updateGameLogRequest.review!!
+            }
+            else {
+                val newReview = reviewMapper.contextToReview(updateGameLogRequest.review!!, gameLog)
+                gameLog.review = reviewRepository.save(newReview)
+            }
         }
         // Check if a new Platform was submitted, if it was, change it
         if (updateGameLogRequest.platformId != null) {
