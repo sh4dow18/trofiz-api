@@ -461,7 +461,7 @@ class AbstractGameLogService(
         }
         // Check if a new Review was submitted, if it was, change it
         if (updateGameLogRequest.review != null) {
-            gameLog.review = updateGameLogRequest.review!!
+//            gameLog.review = updateGameLogRequest.review!!
         }
         // Check if a new Platform was submitted, if it was, change it
         if (updateGameLogRequest.platformId != null) {

@@ -16,7 +16,11 @@ class GameLogTests(
     @Autowired
     val gameLogMapper: GameLogMapper,
     @Autowired
-    val gameLogRepository: GameLogRepository
+    val gameLogRepository: GameLogRepository,
+    @Autowired
+    val reviewRepository: ReviewRepository,
+    @Autowired
+    val reviewMapper: ReviewMapper
 ) {
     @Test
     // Makes it transactional to use Platform and Genre in Game
@@ -79,7 +83,7 @@ class GameLogTests(
     @Transactional
     fun update() {
         // Update Game Log Test Prop
-        val updateGameLogRequest = UpdateGameLogRequest(1, 8.5f,"2024-12-17 11:11",
+        val updateGameLogRequest = UpdateGameLogRequest(3, 8.5f,"2024-12-17 11:11",
             "2024-12-17 11:11", "2024-12-17 11:11", "Excelente", "play-station-5")
         // Check if the user submitted already exists
         val gameLog = gameLogRepository.findById(updateGameLogRequest.id).orElseThrow {
@@ -103,7 +107,8 @@ class GameLogTests(
         }
         // Check if a new Review was submitted, if it was, change it
         if (updateGameLogRequest.review != null) {
-            gameLog.review = updateGameLogRequest.review!!
+            val newReview = reviewMapper.contextToReview(updateGameLogRequest.review!!, gameLog)
+            gameLog.review = newReview
         }
         // Check if a new Platform was submitted, if it was, change it
         if (updateGameLogRequest.platformId != null) {

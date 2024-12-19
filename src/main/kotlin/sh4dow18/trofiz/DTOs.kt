@@ -102,5 +102,11 @@ data class GameLogResponse(
     var review: String?,
     var game: GameResponse,
     var user: String,
-    var platform: String
+    var platform: String,
+)
+data class ReviewResponse(
+    var id: Long,
+    var description: String,
+    var user: String,
+    var game: String,
 )
