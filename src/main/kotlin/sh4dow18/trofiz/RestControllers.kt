@@ -156,3 +156,12 @@ class GameLogRestController(private val gameLogService: GameLogService) {
     @ResponseBody
     fun delete(@RequestBody deleteGameLogRequest: DeleteGameLogRequest) = gameLogService.delete(deleteGameLogRequest)
 }
+// Action Type Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.actionType}")
+class ActionTypeRestController(private val actionTypeService: ActionTypeService) {
+    // When the Endpoint has HTTP POST requests, call insert Action Type function
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun insert(@RequestBody actionTypeRequest: ActionTypeRequest) = actionTypeService.insert(actionTypeRequest)
+}

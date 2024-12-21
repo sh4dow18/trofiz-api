@@ -19,7 +19,7 @@ class ActionTypeTests(
         // Check if the Action Type submitted already exists
         val id = getIdByName(actionTypeRequest.name)
         if (actionTypeRepository.findById(id).orElse(null) != null) {
-            ElementAlreadyExists(id, "Tipo de Acción")
+            throw ElementAlreadyExists(id, "Tipo de Acción")
         }
         // If the Action Type exists, create a new Action Type
         val newActionType = actionTypeMapper.actionTypeRequestToActionType(actionTypeRequest)

@@ -518,3 +518,30 @@ class AbstractGameLogService(
         return "El Registro de Juego con el Identificador ${deleteGameLogRequest.id} fue eliminado con éxito"
     }
 }
+// Action Type Service Interface where the functions to be used in
+// Spring Abstract Action Type Service are declared
+interface ActionTypeService {
+    fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse
+}
+// Spring Abstract Game Log Service
+@Service
+class AbstractActionTypeService(
+    // Action Type Tests Props
+    @Autowired
+    val actionTypeRepository: ActionTypeRepository,
+    @Autowired
+    val actionTypeMapper: ActionTypeMapper
+): ActionTypeService {
+    @Transactional(rollbackFor = [ElementAlreadyExists::class])
+    override fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse {
+        // Check if the Action Type submitted already exists
+        val id = getIdByName(actionTypeRequest.name)
+        if (actionTypeRepository.findById(id).orElse(null) != null) {
+            throw ElementAlreadyExists(id, "Tipo de Acción")
+        }
+        // If the Action Type exists, create a new Action Type
+        val newActionType = actionTypeMapper.actionTypeRequestToActionType(actionTypeRequest)
+        // Transforms the New Action Type to a Action Type Response
+        return actionTypeMapper.actionTypeToActionTypeResponse(actionTypeRepository.save(newActionType))
+    }
+}
