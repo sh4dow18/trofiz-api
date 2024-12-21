@@ -5,7 +5,8 @@ data class PlatformRequest(
     var userId: Long
 )
 data class GenreRequest(
-    var name: String
+    var name: String,
+    var userId: Long
 )
 data class GameRequest(
     var name: String,

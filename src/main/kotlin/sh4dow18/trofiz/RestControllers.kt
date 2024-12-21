@@ -39,7 +39,11 @@ class PlatformRestController(
 // Genre Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.genres}")
-class GenreRestController(private val genreService: GenreService) {
+class GenreRestController(
+    private val genreService: GenreService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(GenreRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all genres function
     @GetMapping
     @ResponseBody
@@ -47,7 +51,11 @@ class GenreRestController(private val genreService: GenreService) {
     // When the Endpoint has HTTP POST requests, call insert genre function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody genreRequest: GenreRequest) = genreService.insert(genreRequest)
+    fun insert(@RequestBody genreRequest: GenreRequest): GenreResponse {
+        val response = genreService.insert(genreRequest)
+        addLog(logService, "Género '${genreRequest.name}'", "inserción", genreRequest.userId, logger)
+        return response
+    }
 }
 // Game Rest controller main class
 @RestController
