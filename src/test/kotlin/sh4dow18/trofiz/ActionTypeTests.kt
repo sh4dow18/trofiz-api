@@ -13,6 +13,11 @@ class ActionTypeTests(
     val actionTypeMapper: ActionTypeMapper
 ) {
     @Test
+    fun findAll() {
+        // Transforms the Action Types List to a Action Types Responses List
+        actionTypeMapper.actionTypesListToActionTypeResponsesList(actionTypeRepository.findAll())
+    }
+    @Test
     fun insert() {
         // Insert Action Type Test Prop
         val actionTypeRequest = ActionTypeRequest("eliminar")

@@ -195,4 +195,7 @@ interface ActionTypeMapper {
     fun actionTypeToActionTypeResponse(
         actionType: ActionType
     ): ActionTypeResponse
+    fun actionTypesListToActionTypeResponsesList(
+        actionTypesList: List<ActionType>
+    ): List<ActionTypeResponse>
 }
