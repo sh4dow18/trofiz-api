@@ -524,7 +524,7 @@ interface ActionTypeService {
     fun findAll(): List<ActionTypeResponse>
     fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse
 }
-// Spring Abstract Game Log Service
+// Spring Abstract Action Type Service
 @Service
 class AbstractActionTypeService(
     // Action Type Tests Props
@@ -548,5 +548,24 @@ class AbstractActionTypeService(
         val newActionType = actionTypeMapper.actionTypeRequestToActionType(actionTypeRequest)
         // Transforms the New Action Type to a Action Type Response
         return actionTypeMapper.actionTypeToActionTypeResponse(actionTypeRepository.save(newActionType))
+    }
+}
+// Log Service Interface where the functions to be used in
+// Spring Abstract Log Service are declared
+interface LogService {
+    fun findAll(): List<LogResponse>
+}
+// Spring Abstract Log Service
+@Service
+class AbstractLogService(
+    // Log Props
+    @Autowired
+    val logRepository: LogRepository,
+    @Autowired
+    val logMapper: LogMapper
+): LogService {
+    override fun findAll(): List<LogResponse> {
+        // Transforms the Logs List to a Logs Responses List
+        return logMapper.logsListToLogsResponsesList(logRepository.findAll())
     }
 }

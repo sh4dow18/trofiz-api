@@ -169,3 +169,12 @@ class ActionTypeRestController(private val actionTypeService: ActionTypeService)
     @ResponseBody
     fun insert(@RequestBody actionTypeRequest: ActionTypeRequest) = actionTypeService.insert(actionTypeRequest)
 }
+// Log Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.logs}")
+class LogRestController(private val logService: LogService) {
+    // When the Endpoint has HTTP GET requests, call find all Logs function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = logService.findAll()
+}
