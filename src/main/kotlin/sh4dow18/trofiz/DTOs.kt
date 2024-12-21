@@ -117,3 +117,9 @@ data class ActionTypeResponse(
     var id: String,
     var name: String
 )
+data class LogResponse(
+    var id: Long,
+    var action: String,
+    var actionType: String,
+    var user: String
+)

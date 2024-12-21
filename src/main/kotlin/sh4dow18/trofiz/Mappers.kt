@@ -4,6 +4,8 @@ import org.mapstruct.Context
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.ReportingPolicy
+import org.mapstruct.control.MappingControl.Use
+
 // Mappers Constants
 const val UTILS_PATH = "sh4dow18.trofiz.UtilsKt"
 const val EMPTY_LIST = "java(java.util.Collections.emptyList())"
@@ -183,7 +185,7 @@ interface ReviewMapper {
         reviewsList: List<Review>
     ): List<ReviewResponse>
 }
-// Review Mapper
+// Action Type Mapper
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface ActionTypeMapper {
     // Mapping the variables not submitted
@@ -198,4 +200,17 @@ interface ActionTypeMapper {
     fun actionTypesListToActionTypeResponsesList(
         actionTypesList: List<ActionType>
     ): List<ActionTypeResponse>
+}
+// Log Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface LogMapper {
+    // Mapping the variables with clipped information
+    @Mapping(target = "actionType", expression = "java(log.getActionType().getName())")
+    @Mapping(target = "user", expression = "java(log.getUser().getName())")
+    fun logToLogResponse(
+        log: Log
+    ): LogResponse
+    fun logsListToLogsResponsesList(
+        logsList: List<Log>
+    ): List<LogResponse>
 }
