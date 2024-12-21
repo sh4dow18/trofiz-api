@@ -25,7 +25,9 @@ class UserTests(
     @Autowired
     val roleRepository: RoleRepository,
     @Autowired
-    val reviewMapper: ReviewMapper
+    val reviewMapper: ReviewMapper,
+    @Autowired
+    val logMapper: LogMapper
 ) {
     @Test
     fun findAll() {
@@ -33,7 +35,7 @@ class UserTests(
         userMapper.usersListToUserResponsesList(userRepository.findAll())
     }
     @Test
-    // Makes it transactional to use Review in Game
+    // Makes it transactional to use Review in User
     @Transactional
     fun findAllReviewsById() {
         // Find All Reviews by id Props
@@ -44,6 +46,19 @@ class UserTests(
         }
         // Transforms a Reviews List to a Review Responses List
         reviewMapper.reviewsListToReviewResponsesList(user.reviewsList)
+    }
+    @Test
+    // Makes it transactional to use Log in User
+    @Transactional
+    fun findAllLogsById() {
+        // Find All Reviews by id Props
+        val id = 1L
+        // Check if the game already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // Transforms a Logs List to a Log Responses List
+        logMapper.logsListToLogsResponsesList(user.logsList)
     }
     @Test
     fun findById() {
