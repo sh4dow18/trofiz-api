@@ -60,7 +60,11 @@ class GenreRestController(
 // Game Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.games}")
-class GameRestController(private val gameService: GameService) {
+class GameRestController(
+    private val gameService: GameService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(GameRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all games function
     @GetMapping
     @ResponseBody
@@ -80,7 +84,11 @@ class GameRestController(private val gameService: GameService) {
     // When the Endpoint has HTTP POST requests, call insert game function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody gameRequest: GameRequest) = gameService.insert(gameRequest)
+    fun insert(@RequestBody gameRequest: GameRequest): GameResponse {
+        val response = gameService.insert(gameRequest)
+        addLog(logService, "Juego '${gameRequest.name}'", "inserción", gameRequest.userId, logger)
+        return response
+    }
 }
 // Privilege Rest controller main class
 @RestController

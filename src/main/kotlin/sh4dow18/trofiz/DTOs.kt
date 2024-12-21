@@ -15,7 +15,8 @@ data class GameRequest(
     var releaseDate: String,
     var imageUrl: String,
     var platformsList: Set<String>,
-    var genresList: Set<String>
+    var genresList: Set<String>,
+    var userId: Long
 )
 data class PrivilegeRequest(
     var name: String,
