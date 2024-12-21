@@ -204,6 +204,14 @@ interface ActionTypeMapper {
 // Log Mapper
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface LogMapper {
+    // Mapping the variables not submitted
+    @Mapping(target = "actionType", expression = "java(actionType)")
+    @Mapping(target = "user", expression = "java(user)")
+    fun logRequestToLog(
+        logRequest: LogRequest,
+        @Context actionType: ActionType,
+        @Context user: User
+    ): Log
     // Mapping the variables with clipped information
     @Mapping(target = "actionType", expression = "java(log.getActionType().getName())")
     @Mapping(target = "user", expression = "java(log.getUser().getName())")
