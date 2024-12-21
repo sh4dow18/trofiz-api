@@ -160,6 +160,10 @@ class GameLogRestController(private val gameLogService: GameLogService) {
 @RestController
 @RequestMapping("\${endpoint.actionType}")
 class ActionTypeRestController(private val actionTypeService: ActionTypeService) {
+    // When the Endpoint has HTTP GET requests, call find all Action Types function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = actionTypeService.findAll()
     // When the Endpoint has HTTP POST requests, call insert Action Type function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody

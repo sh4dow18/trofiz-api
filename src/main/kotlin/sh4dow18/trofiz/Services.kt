@@ -521,6 +521,7 @@ class AbstractGameLogService(
 // Action Type Service Interface where the functions to be used in
 // Spring Abstract Action Type Service are declared
 interface ActionTypeService {
+    fun findAll(): List<ActionTypeResponse>
     fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse
 }
 // Spring Abstract Game Log Service
@@ -532,6 +533,10 @@ class AbstractActionTypeService(
     @Autowired
     val actionTypeMapper: ActionTypeMapper
 ): ActionTypeService {
+    override fun findAll(): List<ActionTypeResponse> {
+        // Transforms the Action Types List to a Action Types Responses List
+        return actionTypeMapper.actionTypesListToActionTypeResponsesList(actionTypeRepository.findAll())
+    }
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse {
         // Check if the Action Type submitted already exists
