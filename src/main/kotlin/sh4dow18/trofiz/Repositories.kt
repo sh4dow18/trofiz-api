@@ -37,3 +37,6 @@ interface GameLogRepository: JpaRepository<GameLog, Long> {
 // Review Repository
 @Repository
 interface ReviewRepository: JpaRepository<Review, Long>
+// Review Repository
+@Repository
+interface ActionTypeRepository: JpaRepository<ActionType, String>

@@ -183,3 +183,19 @@ interface ReviewMapper {
         reviewsList: List<Review>
     ): List<ReviewResponse>
 }
+// Review Mapper
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+interface ActionTypeMapper {
+    // Mapping the variables not submitted
+    @Mapping(target = "id", expression = "java($UTILS_PATH.getIdByName(actionTypeRequest.getName()))")
+    @Mapping(target = "logsList", expression = EMPTY_LIST)
+    fun actionTypeRequestToActionType(
+        actionTypeRequest: ActionTypeRequest
+    ): ActionType
+    fun actionTypeToActionTypeResponse(
+        actionType: ActionType
+    ): ActionTypeResponse
+    fun actionTypesListToActionTypeResponsesList(
+        actionTypesList: List<ActionType>
+    ): List<ActionTypeResponse>
+}

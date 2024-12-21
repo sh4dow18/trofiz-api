@@ -54,6 +54,9 @@ data class DeleteGameLogRequest(
     var id: Long,
     var userId: Long
 )
+data class ActionTypeRequest(
+    var name: String
+)
 // Responses
 data class PlatformResponse(
     var id: String,
@@ -109,4 +112,8 @@ data class ReviewResponse(
     var description: String,
     var user: String,
     var game: String,
+)
+data class ActionTypeResponse(
+    var id: String,
+    var name: String
 )

@@ -252,8 +252,7 @@ data class Log(
 data class ActionType(
     // Action Type Properties
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long,
+    var id: String,
     var name: String,
     // Action Type Relationships
     @OneToMany(mappedBy = "actionType", targetEntity = Log::class)
