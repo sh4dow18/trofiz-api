@@ -263,6 +263,7 @@ class AbstractRoleService(
 interface UserService {
     fun findAll(): List<UserResponse>
     fun findAllReviewsById(id: Long): List<ReviewResponse>
+    fun findAllLogsById(id: Long): List<LogResponse>
     fun findById(id: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
     fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
@@ -281,7 +282,9 @@ class AbstractUserService(
     @Autowired
     val roleRepository: RoleRepository,
     @Autowired
-    val reviewMapper: ReviewMapper
+    val reviewMapper: ReviewMapper,
+    @Autowired
+    val logMapper: LogMapper
 ): UserService {
     override fun findAll(): List<UserResponse> {
         // Transforms a User List to a User Responses List
@@ -294,6 +297,14 @@ class AbstractUserService(
         }
         // Transforms a Reviews List to a Review Responses List
         return reviewMapper.reviewsListToReviewResponsesList(user.reviewsList)
+    }
+    override fun findAllLogsById(id: Long): List<LogResponse> {
+        // Check if the user already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // Transforms a Logs List to a Log Responses List
+        return logMapper.logsListToLogsResponsesList(user.logsList)
     }
     override fun findById(id: Long): UserResponse {
         // Verifies if the User already exists

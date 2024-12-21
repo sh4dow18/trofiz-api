@@ -40,7 +40,7 @@ class UserTests(
     fun findAllReviewsById() {
         // Find All Reviews by id Props
         val id = 1L
-        // Check if the game already exists
+        // Check if the user already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
         }
@@ -53,7 +53,7 @@ class UserTests(
     fun findAllLogsById() {
         // Find All Reviews by id Props
         val id = 1L
-        // Check if the game already exists
+        // Check if the user already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
         }
