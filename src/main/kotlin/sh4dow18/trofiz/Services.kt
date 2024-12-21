@@ -565,6 +565,7 @@ class AbstractActionTypeService(
 // Spring Abstract Log Service are declared
 interface LogService {
     fun findAll(): List<LogResponse>
+    fun insert(logRequest: LogRequest): LogResponse
 }
 // Spring Abstract Log Service
 @Service
@@ -573,10 +574,29 @@ class AbstractLogService(
     @Autowired
     val logRepository: LogRepository,
     @Autowired
-    val logMapper: LogMapper
+    val logMapper: LogMapper,
+    @Autowired
+    val actionTypeRepository: ActionTypeRepository,
+    @Autowired
+    val userRepository: UserRepository
 ): LogService {
     override fun findAll(): List<LogResponse> {
         // Transforms the Logs List to a Logs Responses List
         return logMapper.logsListToLogsResponsesList(logRepository.findAll())
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    override fun insert(logRequest: LogRequest): LogResponse {
+        // Check if the Action Type submitted already exists
+        val actionType = actionTypeRepository.findById(logRequest.actionTypeId).orElseThrow {
+            NoSuchElementExists(logRequest.actionTypeId, "Tipo de Acción")
+        }
+        // Check if the user submitted already exists
+        val user = userRepository.findById(logRequest.userId).orElseThrow {
+            NoSuchElementExists("${logRequest.userId}", "Usuario")
+        }
+        // If the action type and user exists, create a new log
+        val newLog = logMapper.logRequestToLog(logRequest, actionType, user)
+        // Transforms the New Log to a Log Response
+        return logMapper.logToLogResponse(logRepository.save(newLog))
     }
 }
