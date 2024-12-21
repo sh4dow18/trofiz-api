@@ -29,11 +29,13 @@ data class UpdatePrivilegeRequest(
 )
 data class RoleRequest(
     var name: String,
-    var privilegesList: List<String>
+    var privilegesList: List<String>,
+    var userId: Long
 )
 data class UpdateRoleRequest(
     var id: Long,
-    var privilegesList: List<String>
+    var privilegesList: List<String>,
+    var userId: Long
 )
 data class UserRequest(
     var email: String,

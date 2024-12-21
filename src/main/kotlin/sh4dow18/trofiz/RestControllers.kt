@@ -124,7 +124,11 @@ class PrivilegeRestController(
 // Privilege Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.roles}")
-class RoleRestController(private val roleService: RoleService) {
+class RoleRestController(
+    private val roleService: RoleService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(RoleRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Roles function
     @GetMapping
     @ResponseBody
@@ -132,11 +136,21 @@ class RoleRestController(private val roleService: RoleService) {
     // When the Endpoint has HTTP POST requests, call insert Role function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody roleRequest: RoleRequest) = roleService.insert(roleRequest)
+    fun insert(@RequestBody roleRequest: RoleRequest): RoleResponse {
+        val response = roleService.insert(roleRequest)
+        addLog(logService, "Role '${response.name}' con los Privilegios ${response.privilegesList}",
+            "inserción", roleRequest.userId, logger)
+        return response
+    }
     // When the Endpoint has HTTP POST requests, call update Role function
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun update(@RequestBody updateRoleRequest: UpdateRoleRequest) = roleService.update(updateRoleRequest)
+    fun update(@RequestBody updateRoleRequest: UpdateRoleRequest): RoleResponse {
+        val response = roleService.update(updateRoleRequest)
+        addLog(logService, "Privilegios del Rol '${response.name}' por ${response.privilegesList}",
+            "actualización", updateRoleRequest.userId, logger)
+        return response
+    }
 }
 // User Rest controller main class
 @RestController
