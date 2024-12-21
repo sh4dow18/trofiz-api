@@ -155,7 +155,11 @@ class RoleRestController(
 // User Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.users}")
-class UserRestController(private val userService: UserService) {
+class UserRestController(
+    private val userService: UserService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(UserRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Users function
     @GetMapping
     @ResponseBody
@@ -175,16 +179,32 @@ class UserRestController(private val userService: UserService) {
     // When the Endpoint has HTTP POST requests, call insert User function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody userRequest: UserRequest) = userService.insert(userRequest)
+    fun insert(@RequestBody userRequest: UserRequest): UserResponse {
+        val response = userService.insert(userRequest)
+        addLog(logService, "Usuario '${response.name}' con el Rol ${response.role}",
+            "inserción", response.id, logger)
+        return response
+    }
     // When the Endpoint has HTTP PUT requests, call Update User function
     @PutMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun update(@RequestPart("information") updateUserRequest: UpdateUserRequest,
-               @RequestPart("image") image: MultipartFile?) = userService.update(updateUserRequest, image)
+               @RequestPart("image") image: MultipartFile?): UserResponse {
+        val response = userService.update(updateUserRequest, image)
+        val imageSent = if (image != null) " e Imagen" else ""
+        addLog(logService,
+            "Usuario '${response.name}' con Nueva Información ${updateUserRequest.toNonNullString()}${imageSent}",
+            "actualización", updateUserRequest.id, logger)
+        return response
+    }
     // When the Endpoint has HTTP PUT requests with subdirectory "close" and id, call Close User's Account function
     @PutMapping("close/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun closeAccount(@PathVariable("id") id: Long) = userService.closeAccount(id)
+    fun closeAccount(@PathVariable("id") id: Long): UserResponse {
+        val response = userService.closeAccount(id)
+        addLog(logService, "Cerrar cuenta de Usuario con Id '${id}'", "actualización", id, logger)
+        return response
+    }
 }
 // Game Log Rest controller main class
 @RestController

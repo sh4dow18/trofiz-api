@@ -136,5 +136,5 @@ data class LogResponse(
     var id: Long,
     var action: String,
     var actionType: String,
-    var user: String
+    var user: Long
 )

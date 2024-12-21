@@ -7,6 +7,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.reflect.full.memberProperties
 // Get Platform Id using its own name
 // Example: "Play Station 5" -> "play-station-5"
 fun getIdByName(name: String): String {
@@ -41,4 +42,13 @@ fun addLog(logService: LogService, action: String, actionType: String, userId: L
     catch (ex: Exception) {
         logger.error("Error al insertar en el log '$action'", ex)
     }
+}
+// To Non-Null String returns a string with props that are not null
+inline fun <reified T : Any> T.toNonNullString(): String {
+    return T::class.memberProperties
+        .mapNotNull { prop ->
+            val value = prop.get(this)
+            if (value != null) "${prop.name}=$value" else null
+        }
+        .joinToString(", ", "{", "}")
 }
