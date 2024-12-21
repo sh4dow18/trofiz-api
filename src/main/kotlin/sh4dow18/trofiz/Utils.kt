@@ -1,5 +1,6 @@
 package sh4dow18.trofiz
 // Utils Requirements
+import org.slf4j.Logger
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -30,4 +31,14 @@ fun getStringAsDate(date: String): ZonedDateTime {
         LocalTime.parse(newDate[1], DateTimeFormatter.ofPattern("HH:mm"))
     )
     return ZonedDateTime.of(localDateTime, ZoneId.of("America/Costa_Rica"))
+}
+// Add Log Function
+fun addLog(logService: LogService, action: String, actionType: String, userId: Long, logger: Logger) {
+    try {
+        logService.insert(
+            LogRequest(action, actionType, userId))
+    }
+    catch (ex: Exception) {
+        logger.error("Error al insertar en el log '$action'", ex)
+    }
 }

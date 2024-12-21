@@ -1,5 +1,7 @@
 package sh4dow18.trofiz
 // Rest Controllers Requirements
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,7 +17,11 @@ import org.springframework.web.multipart.MultipartFile
 // Platform Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.platforms}")
-class PlatformRestController(private val platformService: PlatformService) {
+class PlatformRestController(
+    private val platformService: PlatformService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(PlatformRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all platforms function
     @GetMapping
     @ResponseBody
@@ -23,7 +29,12 @@ class PlatformRestController(private val platformService: PlatformService) {
     // When the Endpoint has HTTP POST requests, call insert platform function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody platformRequest: PlatformRequest) = platformService.insert(platformRequest)
+    fun insert(@RequestBody platformRequest: PlatformRequest): PlatformResponse {
+        val response = platformService.insert(platformRequest)
+        addLog(logService, "Plataforma '${platformRequest.name}'", "inserción",
+            platformRequest.userId, logger)
+        return response
+    }
 }
 // Genre Rest controller main class
 @RestController

@@ -2,6 +2,7 @@ package sh4dow18.trofiz
 // Requests
 data class PlatformRequest(
     var name: String,
+    var userId: Long
 )
 data class GenreRequest(
     var name: String
