@@ -160,7 +160,7 @@ class AbstractGameService(
 interface PrivilegeService {
     fun findAll(): List<PrivilegeResponse>
     fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse
-    fun updateStatus(id: String): PrivilegeResponse
+    fun update(id: String): PrivilegeResponse
 }
 // Spring Abstract Game Service
 @Service
@@ -190,7 +190,7 @@ class AbstractPrivilegeService(
         return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(newPrivilege))
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
-    override fun updateStatus(id: String): PrivilegeResponse {
+    override fun update(id: String): PrivilegeResponse {
         // Verifies if the Privilege already exists
         val privilege = privilegeRepository.findById(id).orElseThrow {
             NoSuchElementExists(id,"Privilegio")

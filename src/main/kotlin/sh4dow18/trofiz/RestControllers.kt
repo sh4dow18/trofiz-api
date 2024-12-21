@@ -93,7 +93,11 @@ class GameRestController(
 // Privilege Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.privileges}")
-class PrivilegeRestController(private val privilegeService: PrivilegeService) {
+class PrivilegeRestController(
+    private val privilegeService: PrivilegeService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(PrivilegeRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Privileges function
     @GetMapping
     @ResponseBody
@@ -101,11 +105,21 @@ class PrivilegeRestController(private val privilegeService: PrivilegeService) {
     // When the Endpoint has HTTP POST requests, call insert Privilege function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody privilegeRequest: PrivilegeRequest) = privilegeService.insert(privilegeRequest)
-    // When the Endpoint has HTTP PUT requests, call update status Privilege function
-    @PutMapping("status/{id}")
+    fun insert(@RequestBody privilegeRequest: PrivilegeRequest): PrivilegeResponse {
+        val response = privilegeService.insert(privilegeRequest)
+        addLog(logService, "Privilegio '${response.name}'", "inserción",
+            privilegeRequest.userId, logger)
+        return response
+    }
+    // When the Endpoint has HTTP PUT requests, call update Privilege function
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun updateStatus(@PathVariable id: String) = privilegeService.updateStatus(id)
+    fun update(@RequestBody updatePrivilegeRequest: UpdatePrivilegeRequest): PrivilegeResponse {
+        val response = privilegeService.update(updatePrivilegeRequest.id)
+        addLog(logService, "Estado del Privilegio '${response.name}' a ${response.enabled}",
+            "actualización", updatePrivilegeRequest.userId, logger)
+        return response
+    }
 }
 // Privilege Rest controller main class
 @RestController

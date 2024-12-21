@@ -20,7 +20,12 @@ data class GameRequest(
 )
 data class PrivilegeRequest(
     var name: String,
-    var description: String
+    var description: String,
+    var userId: Long
+)
+data class UpdatePrivilegeRequest(
+    var id: String,
+    var userId: Long
 )
 data class RoleRequest(
     var name: String,
