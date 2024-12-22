@@ -66,7 +66,8 @@ data class DeleteGameLogRequest(
     var userId: Long
 )
 data class ActionTypeRequest(
-    var name: String
+    var name: String,
+    var userId: Long
 )
 data class LogRequest(
     var action: String,

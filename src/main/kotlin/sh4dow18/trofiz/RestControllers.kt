@@ -258,7 +258,11 @@ class GameLogRestController(
 // Action Type Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.actionType}")
-class ActionTypeRestController(private val actionTypeService: ActionTypeService) {
+class ActionTypeRestController(
+    private val actionTypeService: ActionTypeService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(ActionTypeRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Action Types function
     @GetMapping
     @ResponseBody
@@ -266,7 +270,12 @@ class ActionTypeRestController(private val actionTypeService: ActionTypeService)
     // When the Endpoint has HTTP POST requests, call insert Action Type function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody actionTypeRequest: ActionTypeRequest) = actionTypeService.insert(actionTypeRequest)
+    fun insert(@RequestBody actionTypeRequest: ActionTypeRequest): ActionTypeResponse {
+        val response = actionTypeService.insert(actionTypeRequest)
+        addLog(logService, "Tipo de Acción '${response.name}'", "inserción", actionTypeRequest.userId,
+            logger)
+        return response
+    }
 }
 // Log Rest controller main class
 @RestController
