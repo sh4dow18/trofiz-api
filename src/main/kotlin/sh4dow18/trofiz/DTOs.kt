@@ -121,13 +121,13 @@ data class GameLogResponse(
     var platinum: String?,
     var review: String?,
     var game: GameResponse,
-    var user: String,
+    var user: Long,
     var platform: String,
 )
 data class ReviewResponse(
     var id: Long,
     var description: String,
-    var user: String,
+    var user: Long,
     var game: String,
 )
 data class ActionTypeResponse(
