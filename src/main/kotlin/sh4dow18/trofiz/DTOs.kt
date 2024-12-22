@@ -49,7 +49,7 @@ data class UpdateUserRequest(
 data class GameLogRequest(
     var gameId: String,
     var userId: Long,
-    var platformId: String
+    var platformId: String,
 )
 data class UpdateGameLogRequest(
     var id: Long,
@@ -58,7 +58,8 @@ data class UpdateGameLogRequest(
     var finished: String?,
     var platinum: String?,
     var review: String?,
-    var platformId: String?
+    var platformId: String?,
+    var userId: Long
 )
 data class DeleteGameLogRequest(
     var id: Long,

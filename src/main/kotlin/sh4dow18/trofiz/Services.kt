@@ -525,6 +525,9 @@ class AbstractGameLogService(
             NoSuchElementExists("${deleteGameLogRequest.id}", "Registro de Juego")
         }
         // Delete the Game Log
+        if (gameLog.review != null) {
+            reviewRepository.delete(gameLog.review!!)
+        }
         gameLogRepository.delete(gameLog)
         return "El Registro de Juego con el Identificador ${deleteGameLogRequest.id} fue eliminado con éxito"
     }

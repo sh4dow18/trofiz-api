@@ -209,7 +209,11 @@ class UserRestController(
 // Game Log Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.gameLogs}")
-class GameLogRestController(private val gameLogService: GameLogService) {
+class GameLogRestController(
+    private val gameLogService: GameLogService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(GameLogRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Game Logs function
     @GetMapping
     @ResponseBody
@@ -225,15 +229,31 @@ class GameLogRestController(private val gameLogService: GameLogService) {
     // When the Endpoint has HTTP POST requests, call insert Game Log function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody gameLogRequest: GameLogRequest) = gameLogService.insert(gameLogRequest)
+    fun insert(@RequestBody gameLogRequest: GameLogRequest): GameLogResponse {
+        val response = gameLogService.insert(gameLogRequest)
+        addLog(logService, "Registro del Juego '${response.game.name}'",
+            "inserción", gameLogRequest.userId, logger)
+        return response
+    }
     // When the Endpoint has HTTP POST requests, call insert Game Log function
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun update(@RequestBody updateGameLogRequest: UpdateGameLogRequest) = gameLogService.update(updateGameLogRequest)
+    fun update(@RequestBody updateGameLogRequest: UpdateGameLogRequest): GameLogResponse {
+        val response = gameLogService.update(updateGameLogRequest)
+        addLog(logService,
+            "Registro de Juego '${response.game.name}' con Nueva Información ${updateGameLogRequest.toNonNullString()}",
+            "actualización", updateGameLogRequest.id, logger)
+        return response
+    }
     // When the Endpoint has HTTP POST requests, call delete Game Log function
     @DeleteMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun delete(@RequestBody deleteGameLogRequest: DeleteGameLogRequest) = gameLogService.delete(deleteGameLogRequest)
+    fun delete(@RequestBody deleteGameLogRequest: DeleteGameLogRequest): String {
+        val response = gameLogService.delete(deleteGameLogRequest)
+        addLog(logService,"Registro de Juego '${deleteGameLogRequest.id}'", "eliminación",
+            deleteGameLogRequest.userId, logger)
+        return response
+    }
 }
 // Action Type Rest controller main class
 @RestController
