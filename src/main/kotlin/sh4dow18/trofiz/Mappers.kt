@@ -154,7 +154,7 @@ interface GameLogMapper {
     @Mapping(target = "platinum", expression = "java($UTILS_PATH.getDateAsString(gameLog.getPlatinum()))")
     @Mapping(target = "game.platformsList", expression = "java(game.getPlatformsList().$MAP(it -> it.getName()).$TO_SET)")
     @Mapping(target = "game.genresList", expression = "java(game.getGenresList().$MAP(it -> it.getName()).$TO_SET)")
-    @Mapping(target = "user", expression = "java(gameLog.getUser().getName())")
+    @Mapping(target = "user", expression = "java(gameLog.getUser().getId())")
     @Mapping(target = "platform", expression = "java(gameLog.getPlatform().getName())")
     @Mapping(target = "review", expression = "java(gameLog.getReview() != null ? gameLog.getReview().getDescription() : null)")
     fun gameLogToGameLogResponse(
@@ -176,7 +176,7 @@ interface ReviewMapper {
         @Context gameLog: GameLog
     ): Review
     // Mapping the variables with clipped information
-    @Mapping(target = "user", expression = "java(review.getUser().getName())")
+    @Mapping(target = "user", expression = "java(review.getUser().getId())")
     @Mapping(target = "game", expression = "java(review.getGame().getName())")
     fun reviewToReviewResponse(
         review: Review
