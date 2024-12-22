@@ -20,7 +20,7 @@ class ActionTypeTests(
     @Test
     fun insert() {
         // Insert Action Type Test Prop
-        val actionTypeRequest = ActionTypeRequest("eliminar")
+        val actionTypeRequest = ActionTypeRequest("eliminar", 1)
         // Check if the Action Type submitted already exists
         val id = getIdByName(actionTypeRequest.name)
         if (actionTypeRepository.findById(id).orElse(null) != null) {
