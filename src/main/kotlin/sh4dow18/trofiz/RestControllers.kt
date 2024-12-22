@@ -1,5 +1,7 @@
 package sh4dow18.trofiz
 // Rest Controllers Requirements
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,7 +17,11 @@ import org.springframework.web.multipart.MultipartFile
 // Platform Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.platforms}")
-class PlatformRestController(private val platformService: PlatformService) {
+class PlatformRestController(
+    private val platformService: PlatformService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(PlatformRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all platforms function
     @GetMapping
     @ResponseBody
@@ -23,12 +29,21 @@ class PlatformRestController(private val platformService: PlatformService) {
     // When the Endpoint has HTTP POST requests, call insert platform function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody platformRequest: PlatformRequest) = platformService.insert(platformRequest)
+    fun insert(@RequestBody platformRequest: PlatformRequest): PlatformResponse {
+        val response = platformService.insert(platformRequest)
+        addLog(logService, "Plataforma '${platformRequest.name}'", "inserción",
+            platformRequest.userId, logger)
+        return response
+    }
 }
 // Genre Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.genres}")
-class GenreRestController(private val genreService: GenreService) {
+class GenreRestController(
+    private val genreService: GenreService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(GenreRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all genres function
     @GetMapping
     @ResponseBody
@@ -36,12 +51,20 @@ class GenreRestController(private val genreService: GenreService) {
     // When the Endpoint has HTTP POST requests, call insert genre function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody genreRequest: GenreRequest) = genreService.insert(genreRequest)
+    fun insert(@RequestBody genreRequest: GenreRequest): GenreResponse {
+        val response = genreService.insert(genreRequest)
+        addLog(logService, "Género '${genreRequest.name}'", "inserción", genreRequest.userId, logger)
+        return response
+    }
 }
 // Game Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.games}")
-class GameRestController(private val gameService: GameService) {
+class GameRestController(
+    private val gameService: GameService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(GameRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all games function
     @GetMapping
     @ResponseBody
@@ -61,12 +84,20 @@ class GameRestController(private val gameService: GameService) {
     // When the Endpoint has HTTP POST requests, call insert game function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody gameRequest: GameRequest) = gameService.insert(gameRequest)
+    fun insert(@RequestBody gameRequest: GameRequest): GameResponse {
+        val response = gameService.insert(gameRequest)
+        addLog(logService, "Juego '${gameRequest.name}'", "inserción", gameRequest.userId, logger)
+        return response
+    }
 }
 // Privilege Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.privileges}")
-class PrivilegeRestController(private val privilegeService: PrivilegeService) {
+class PrivilegeRestController(
+    private val privilegeService: PrivilegeService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(PrivilegeRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Privileges function
     @GetMapping
     @ResponseBody
@@ -74,16 +105,30 @@ class PrivilegeRestController(private val privilegeService: PrivilegeService) {
     // When the Endpoint has HTTP POST requests, call insert Privilege function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody privilegeRequest: PrivilegeRequest) = privilegeService.insert(privilegeRequest)
-    // When the Endpoint has HTTP PUT requests, call update status Privilege function
-    @PutMapping("status/{id}")
+    fun insert(@RequestBody privilegeRequest: PrivilegeRequest): PrivilegeResponse {
+        val response = privilegeService.insert(privilegeRequest)
+        addLog(logService, "Privilegio '${response.name}'", "inserción",
+            privilegeRequest.userId, logger)
+        return response
+    }
+    // When the Endpoint has HTTP PUT requests, call update Privilege function
+    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun updateStatus(@PathVariable id: String) = privilegeService.updateStatus(id)
+    fun update(@RequestBody updatePrivilegeRequest: UpdatePrivilegeRequest): PrivilegeResponse {
+        val response = privilegeService.update(updatePrivilegeRequest.id)
+        addLog(logService, "Estado del Privilegio '${response.name}' a ${response.enabled}",
+            "actualización", updatePrivilegeRequest.userId, logger)
+        return response
+    }
 }
 // Privilege Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.roles}")
-class RoleRestController(private val roleService: RoleService) {
+class RoleRestController(
+    private val roleService: RoleService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(RoleRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Roles function
     @GetMapping
     @ResponseBody
@@ -91,16 +136,30 @@ class RoleRestController(private val roleService: RoleService) {
     // When the Endpoint has HTTP POST requests, call insert Role function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody roleRequest: RoleRequest) = roleService.insert(roleRequest)
+    fun insert(@RequestBody roleRequest: RoleRequest): RoleResponse {
+        val response = roleService.insert(roleRequest)
+        addLog(logService, "Role '${response.name}' con los Privilegios ${response.privilegesList}",
+            "inserción", roleRequest.userId, logger)
+        return response
+    }
     // When the Endpoint has HTTP POST requests, call update Role function
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun update(@RequestBody updateRoleRequest: UpdateRoleRequest) = roleService.update(updateRoleRequest)
+    fun update(@RequestBody updateRoleRequest: UpdateRoleRequest): RoleResponse {
+        val response = roleService.update(updateRoleRequest)
+        addLog(logService, "Privilegios del Rol '${response.name}' por ${response.privilegesList}",
+            "actualización", updateRoleRequest.userId, logger)
+        return response
+    }
 }
 // User Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.users}")
-class UserRestController(private val userService: UserService) {
+class UserRestController(
+    private val userService: UserService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(UserRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Users function
     @GetMapping
     @ResponseBody
@@ -109,6 +168,10 @@ class UserRestController(private val userService: UserService) {
     @GetMapping("{id}/reviews")
     @ResponseBody
     fun findAllReviewsById(@PathVariable id: Long) = userService.findAllReviewsById(id)
+    // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
+    @GetMapping("{id}/logs")
+    @ResponseBody
+    fun findAllLogsById(@PathVariable id: Long) = userService.findAllLogsById(id)
     // When the Endpoint has HTTP GET requests with an id, call find user by id function
     @GetMapping("{id}")
     @ResponseBody
@@ -116,21 +179,41 @@ class UserRestController(private val userService: UserService) {
     // When the Endpoint has HTTP POST requests, call insert User function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody userRequest: UserRequest) = userService.insert(userRequest)
+    fun insert(@RequestBody userRequest: UserRequest): UserResponse {
+        val response = userService.insert(userRequest)
+        addLog(logService, "Usuario '${response.name}' con el Rol ${response.role}",
+            "inserción", response.id, logger)
+        return response
+    }
     // When the Endpoint has HTTP PUT requests, call Update User function
     @PutMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun update(@RequestPart("information") updateUserRequest: UpdateUserRequest,
-               @RequestPart("image") image: MultipartFile?) = userService.update(updateUserRequest, image)
+               @RequestPart("image") image: MultipartFile?): UserResponse {
+        val response = userService.update(updateUserRequest, image)
+        val imageSent = if (image != null) " e Imagen" else ""
+        addLog(logService,
+            "Usuario '${response.name}' con Nueva Información ${updateUserRequest.toNonNullString()}${imageSent}",
+            "actualización", updateUserRequest.id, logger)
+        return response
+    }
     // When the Endpoint has HTTP PUT requests with subdirectory "close" and id, call Close User's Account function
     @PutMapping("close/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun closeAccount(@PathVariable("id") id: Long) = userService.closeAccount(id)
+    fun closeAccount(@PathVariable("id") id: Long): UserResponse {
+        val response = userService.closeAccount(id)
+        addLog(logService, "Cerrar cuenta de Usuario con Id '${id}'", "actualización", id, logger)
+        return response
+    }
 }
 // Game Log Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.gameLogs}")
-class GameLogRestController(private val gameLogService: GameLogService) {
+class GameLogRestController(
+    private val gameLogService: GameLogService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(GameLogRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Game Logs function
     @GetMapping
     @ResponseBody
@@ -146,20 +229,40 @@ class GameLogRestController(private val gameLogService: GameLogService) {
     // When the Endpoint has HTTP POST requests, call insert Game Log function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody gameLogRequest: GameLogRequest) = gameLogService.insert(gameLogRequest)
+    fun insert(@RequestBody gameLogRequest: GameLogRequest): GameLogResponse {
+        val response = gameLogService.insert(gameLogRequest)
+        addLog(logService, "Registro del Juego '${response.game.name}'",
+            "inserción", gameLogRequest.userId, logger)
+        return response
+    }
     // When the Endpoint has HTTP POST requests, call insert Game Log function
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun update(@RequestBody updateGameLogRequest: UpdateGameLogRequest) = gameLogService.update(updateGameLogRequest)
+    fun update(@RequestBody updateGameLogRequest: UpdateGameLogRequest): GameLogResponse {
+        val response = gameLogService.update(updateGameLogRequest)
+        addLog(logService,
+            "Registro de Juego '${response.game.name}' con Nueva Información ${updateGameLogRequest.toNonNullString()}",
+            "actualización", updateGameLogRequest.id, logger)
+        return response
+    }
     // When the Endpoint has HTTP POST requests, call delete Game Log function
     @DeleteMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun delete(@RequestBody deleteGameLogRequest: DeleteGameLogRequest) = gameLogService.delete(deleteGameLogRequest)
+    fun delete(@RequestBody deleteGameLogRequest: DeleteGameLogRequest): String {
+        val response = gameLogService.delete(deleteGameLogRequest)
+        addLog(logService,"Registro de Juego '${deleteGameLogRequest.id}'", "eliminación",
+            deleteGameLogRequest.userId, logger)
+        return response
+    }
 }
 // Action Type Rest controller main class
 @RestController
 @RequestMapping("\${endpoint.actionType}")
-class ActionTypeRestController(private val actionTypeService: ActionTypeService) {
+class ActionTypeRestController(
+    private val actionTypeService: ActionTypeService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(ActionTypeRestController::class.java)
     // When the Endpoint has HTTP GET requests, call find all Action Types function
     @GetMapping
     @ResponseBody
@@ -167,5 +270,19 @@ class ActionTypeRestController(private val actionTypeService: ActionTypeService)
     // When the Endpoint has HTTP POST requests, call insert Action Type function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun insert(@RequestBody actionTypeRequest: ActionTypeRequest) = actionTypeService.insert(actionTypeRequest)
+    fun insert(@RequestBody actionTypeRequest: ActionTypeRequest): ActionTypeResponse {
+        val response = actionTypeService.insert(actionTypeRequest)
+        addLog(logService, "Tipo de Acción '${response.name}'", "inserción", actionTypeRequest.userId,
+            logger)
+        return response
+    }
+}
+// Log Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.logs}")
+class LogRestController(private val logService: LogService) {
+    // When the Endpoint has HTTP GET requests, call find all Logs function
+    @GetMapping
+    @ResponseBody
+    fun findAll() = logService.findAll()
 }

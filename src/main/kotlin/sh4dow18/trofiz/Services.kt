@@ -160,7 +160,7 @@ class AbstractGameService(
 interface PrivilegeService {
     fun findAll(): List<PrivilegeResponse>
     fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse
-    fun updateStatus(id: String): PrivilegeResponse
+    fun update(id: String): PrivilegeResponse
 }
 // Spring Abstract Game Service
 @Service
@@ -190,7 +190,7 @@ class AbstractPrivilegeService(
         return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(newPrivilege))
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
-    override fun updateStatus(id: String): PrivilegeResponse {
+    override fun update(id: String): PrivilegeResponse {
         // Verifies if the Privilege already exists
         val privilege = privilegeRepository.findById(id).orElseThrow {
             NoSuchElementExists(id,"Privilegio")
@@ -263,6 +263,7 @@ class AbstractRoleService(
 interface UserService {
     fun findAll(): List<UserResponse>
     fun findAllReviewsById(id: Long): List<ReviewResponse>
+    fun findAllLogsById(id: Long): List<LogResponse>
     fun findById(id: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
     fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
@@ -281,7 +282,9 @@ class AbstractUserService(
     @Autowired
     val roleRepository: RoleRepository,
     @Autowired
-    val reviewMapper: ReviewMapper
+    val reviewMapper: ReviewMapper,
+    @Autowired
+    val logMapper: LogMapper
 ): UserService {
     override fun findAll(): List<UserResponse> {
         // Transforms a User List to a User Responses List
@@ -294,6 +297,14 @@ class AbstractUserService(
         }
         // Transforms a Reviews List to a Review Responses List
         return reviewMapper.reviewsListToReviewResponsesList(user.reviewsList)
+    }
+    override fun findAllLogsById(id: Long): List<LogResponse> {
+        // Check if the user already exists
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
+        }
+        // Transforms a Logs List to a Log Responses List
+        return logMapper.logsListToLogsResponsesList(user.logsList)
     }
     override fun findById(id: Long): UserResponse {
         // Verifies if the User already exists
@@ -514,6 +525,9 @@ class AbstractGameLogService(
             NoSuchElementExists("${deleteGameLogRequest.id}", "Registro de Juego")
         }
         // Delete the Game Log
+        if (gameLog.review != null) {
+            reviewRepository.delete(gameLog.review!!)
+        }
         gameLogRepository.delete(gameLog)
         return "El Registro de Juego con el Identificador ${deleteGameLogRequest.id} fue eliminado con éxito"
     }
@@ -524,7 +538,7 @@ interface ActionTypeService {
     fun findAll(): List<ActionTypeResponse>
     fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse
 }
-// Spring Abstract Game Log Service
+// Spring Abstract Action Type Service
 @Service
 class AbstractActionTypeService(
     // Action Type Tests Props
@@ -548,5 +562,44 @@ class AbstractActionTypeService(
         val newActionType = actionTypeMapper.actionTypeRequestToActionType(actionTypeRequest)
         // Transforms the New Action Type to a Action Type Response
         return actionTypeMapper.actionTypeToActionTypeResponse(actionTypeRepository.save(newActionType))
+    }
+}
+// Log Service Interface where the functions to be used in
+// Spring Abstract Log Service are declared
+interface LogService {
+    fun findAll(): List<LogResponse>
+    fun insert(logRequest: LogRequest): LogResponse
+}
+// Spring Abstract Log Service
+@Service
+class AbstractLogService(
+    // Log Props
+    @Autowired
+    val logRepository: LogRepository,
+    @Autowired
+    val logMapper: LogMapper,
+    @Autowired
+    val actionTypeRepository: ActionTypeRepository,
+    @Autowired
+    val userRepository: UserRepository
+): LogService {
+    override fun findAll(): List<LogResponse> {
+        // Transforms the Logs List to a Logs Responses List
+        return logMapper.logsListToLogsResponsesList(logRepository.findAll())
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    override fun insert(logRequest: LogRequest): LogResponse {
+        // Check if the Action Type submitted already exists
+        val actionType = actionTypeRepository.findById(logRequest.actionTypeId).orElseThrow {
+            NoSuchElementExists(logRequest.actionTypeId, "Tipo de Acción")
+        }
+        // Check if the user submitted already exists
+        val user = userRepository.findById(logRequest.userId).orElseThrow {
+            NoSuchElementExists("${logRequest.userId}", "Usuario")
+        }
+        // If the action type and user exists, create a new log
+        val newLog = logMapper.logRequestToLog(logRequest, actionType, user)
+        // Transforms the New Log to a Log Response
+        return logMapper.logToLogResponse(logRepository.save(newLog))
     }
 }

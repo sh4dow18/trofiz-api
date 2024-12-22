@@ -2,9 +2,11 @@ package sh4dow18.trofiz
 // Requests
 data class PlatformRequest(
     var name: String,
+    var userId: Long
 )
 data class GenreRequest(
-    var name: String
+    var name: String,
+    var userId: Long
 )
 data class GameRequest(
     var name: String,
@@ -13,19 +15,27 @@ data class GameRequest(
     var releaseDate: String,
     var imageUrl: String,
     var platformsList: Set<String>,
-    var genresList: Set<String>
+    var genresList: Set<String>,
+    var userId: Long
 )
 data class PrivilegeRequest(
     var name: String,
-    var description: String
+    var description: String,
+    var userId: Long
+)
+data class UpdatePrivilegeRequest(
+    var id: String,
+    var userId: Long
 )
 data class RoleRequest(
     var name: String,
-    var privilegesList: List<String>
+    var privilegesList: List<String>,
+    var userId: Long
 )
 data class UpdateRoleRequest(
     var id: Long,
-    var privilegesList: List<String>
+    var privilegesList: List<String>,
+    var userId: Long
 )
 data class UserRequest(
     var email: String,
@@ -39,7 +49,7 @@ data class UpdateUserRequest(
 data class GameLogRequest(
     var gameId: String,
     var userId: Long,
-    var platformId: String
+    var platformId: String,
 )
 data class UpdateGameLogRequest(
     var id: Long,
@@ -48,14 +58,21 @@ data class UpdateGameLogRequest(
     var finished: String?,
     var platinum: String?,
     var review: String?,
-    var platformId: String?
+    var platformId: String?,
+    var userId: Long
 )
 data class DeleteGameLogRequest(
     var id: Long,
     var userId: Long
 )
 data class ActionTypeRequest(
-    var name: String
+    var name: String,
+    var userId: Long
+)
+data class LogRequest(
+    var action: String,
+    var actionTypeId: String,
+    var userId: Long
 )
 // Responses
 data class PlatformResponse(
@@ -116,4 +133,10 @@ data class ReviewResponse(
 data class ActionTypeResponse(
     var id: String,
     var name: String
+)
+data class LogResponse(
+    var id: Long,
+    var action: String,
+    var actionType: String,
+    var user: Long
 )
