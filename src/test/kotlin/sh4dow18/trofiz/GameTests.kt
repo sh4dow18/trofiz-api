@@ -21,6 +21,8 @@ class GameTests(
     val reviewMapper: ReviewMapper
 ) {
     @Test
+    // Makes it transactional to use Platforms in Game
+    @Transactional
     fun findAll() {
         // Transforms a Games List to a Game Responses List
         gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
