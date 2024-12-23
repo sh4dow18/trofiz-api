@@ -61,7 +61,7 @@ class GameTests(
         val platformsSet: Set<String> = setOf("play-station-5")
         val genresSet: Set<String> = setOf("aventura")
         val gameRequest = GameRequest("Juego de Prueba: Con Puntos / Y Slashes", 4.5f, 97,
-            "2024-11-01", "http://image.com", platformsSet, genresSet
+            "2024-11-01", "http://image.com", platformsSet, genresSet, 1
             )
         // Verifies if the game already exists
         if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
@@ -71,18 +71,17 @@ class GameTests(
         val platformsList = platformRepository.findAllById(gameRequest.platformsList)
         if (platformsList.size != gameRequest.platformsList.size) {
             val missingIds = gameRequest.platformsList - platformsList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Plataformas")
+            throw NoSuchElementsExists(missingIds.toList(), "Plataformas")
         }
         // Check if each genre submitted exists
         val genresList = genreRepository.findAllById(gameRequest.genresList)
         if (genresList.size != gameRequest.genresList.size) {
             val missingIds = gameRequest.genresList - genresList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Géneros")
+            throw NoSuchElementsExists(missingIds.toList(), "Géneros")
         }
         // If the game not exists and each platform and genre exists, create the new game
-        // If not exists, create the new game
-        val newGame = gameMapper.gameRequestToGame(gameRequest, platformsList.toSet() , genresList.toSet())
-        // Transforms the New Game to a Game Response
+        val newGame = gameMapper.gameRequestToGame(gameRequest, platformsList.toSet(), genresList.toSet())
+        // Transforms the New Game to a Game Response and Returns it
         gameMapper.gameToGameResponse(newGame)
     }
 }
