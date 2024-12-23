@@ -20,7 +20,7 @@ class GenreTests(
     @Test
     fun insert() {
         // Insert Genre Test Prop
-        val genreRequest = GenreRequest("Género de Prueba")
+        val genreRequest = GenreRequest("Género de Prueba", 1)
         // Transforms Name in Genre Request in lowercase and replace spaces with "-"
         // Example: "Interactive Adventure" -> "interactive-adventure"
         val genreId = getIdByName(genreRequest.name)

@@ -20,7 +20,7 @@ class PlatformTests(
     @Test
     fun insert() {
         // Insert Platform Test Prop
-        val platformRequest = PlatformRequest("Plataforma de Prueba")
+        val platformRequest = PlatformRequest("Plataforma de Prueba", 1)
         // Transforms Name in Platform Request in lowercase and replace spaces with "-"
         // Example: "Play Station 5" -> "play-station-5"
         val platformId = getIdByName(platformRequest.name)
