@@ -26,7 +26,7 @@ class RoleTests(
     @Transactional
     fun insert() {
         // Insert Role Test Prop
-        val roleRequest = RoleRequest("administrator", listOf("add-game"))
+        val roleRequest = RoleRequest("administrator", listOf("add-game"), 1)
         // Verifies if the Role already exists
         if (roleRepository.findByNameIgnoringCase(roleRequest.name).orElse(null) != null) {
             throw ElementAlreadyExists(roleRequest.name, "Rol")
@@ -35,7 +35,7 @@ class RoleTests(
         val privilegesList = privilegeRepository.findAllById(roleRequest.privilegesList)
         if (privilegesList.size != roleRequest.privilegesList.size) {
             val missingIds = roleRequest.privilegesList - privilegesList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Privilegios")
+            throw NoSuchElementsExists(missingIds.toList(), "Privilegios")
         }
         // If each privileges exist, create the new role
         val newRole = roleMapper.roleRequestToRole(roleRequest, privilegesList.toSet())
@@ -45,7 +45,7 @@ class RoleTests(
     @Test
     fun update() {
         // Update Role Test Prop
-        val updateRoleRequest = UpdateRoleRequest(1, listOf("add-game"))
+        val updateRoleRequest = UpdateRoleRequest(1, listOf("add-game"), 1)
         // Verifies if the Role already exists
         val role = roleRepository.findById(updateRoleRequest.id).orElseThrow {
             NoSuchElementExists("${updateRoleRequest.id}", "Rol")
@@ -54,7 +54,7 @@ class RoleTests(
         val privilegesList = privilegeRepository.findAllById(updateRoleRequest.privilegesList)
         if (privilegesList.size != updateRoleRequest.privilegesList.size) {
             val missingIds = updateRoleRequest.privilegesList - privilegesList.map { it.id }.toSet()
-            throw NoSuchElementExists(missingIds.toString(), "Privilegios")
+            throw NoSuchElementsExists(missingIds.toList(), "Privilegios")
         }
         // If the Role exists and the Privileges Exists, update it
         role.privilegesList = privilegesList.toSet()
