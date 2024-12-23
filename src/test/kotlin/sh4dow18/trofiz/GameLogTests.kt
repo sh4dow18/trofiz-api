@@ -82,7 +82,8 @@ class GameLogTests(
     fun update() {
         // Update Game Log Test Prop
         val updateGameLogRequest = UpdateGameLogRequest(3, 8.5f,"2024-12-17 11:11",
-            "2024-12-17 11:11", "2024-12-17 11:11", "Excelente", "play-station-5")
+            "2024-12-17 11:11", "2024-12-17 11:11", "Excelente", "play-station-5",
+            1)
         // Check if the user submitted already exists
         val gameLog = gameLogRepository.findById(updateGameLogRequest.id).orElseThrow {
             NoSuchElementExists("${updateGameLogRequest.id}", "Registro de Juego")
