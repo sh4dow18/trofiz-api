@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "sh4dow18"
-version = "0.11.1"
+version = "0.11.2"
 
 java {
 	toolchain {
