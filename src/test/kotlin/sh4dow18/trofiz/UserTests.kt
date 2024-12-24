@@ -154,6 +154,23 @@ class UserTests(
         userMapper.userToUserResponse(user)
     }
     @Test
+    fun changeRole() {
+        // Change Role Test Prop
+        val changeRoleUserRequest = ChangeRoleUserRequest(1, 2, 1)
+        // Verifies if the User already exists
+        val user = userRepository.findById(changeRoleUserRequest.userId).orElseThrow {
+            NoSuchElementExists("${changeRoleUserRequest.userId}", "Usuario")
+        }
+        // Verifies if the Role already exists
+        val role = roleRepository.findById(changeRoleUserRequest.roleId).orElseThrow {
+            NoSuchElementExists("${changeRoleUserRequest.roleId}", "Rol")
+        }
+        // If the user and role were found, update the user
+        user.role = role
+        // Transforms the User to User Response
+        userMapper.userToUserResponse(user)
+    }
+    @Test
     fun closeAccount() {
         // Close Account Test Prop
         val id = 1L

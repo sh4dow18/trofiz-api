@@ -267,6 +267,7 @@ interface UserService {
     fun findById(id: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
     fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
+    fun changeRole(changeRoleUserRequest: ChangeRoleUserRequest): UserResponse
     fun closeAccount(id: Long): UserResponse
 }
 // Spring Abstract Game Service
@@ -380,6 +381,21 @@ class AbstractUserService(
             ImageIO.write(resizedImage, "png", File("$filesPath/users/$fileName"))
             user.image = true
         }
+        // Transforms the User to User Response
+        return userMapper.userToUserResponse(userRepository.save(user))
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    override fun changeRole(changeRoleUserRequest: ChangeRoleUserRequest): UserResponse {
+        // Verifies if the User already exists
+        val user = userRepository.findById(changeRoleUserRequest.userId).orElseThrow {
+            NoSuchElementExists("${changeRoleUserRequest.userId}", "Usuario")
+        }
+        // Verifies if the Role already exists
+        val role = roleRepository.findById(changeRoleUserRequest.roleId).orElseThrow {
+            NoSuchElementExists("${changeRoleUserRequest.roleId}", "Rol")
+        }
+        // If the user and role were found, update the user
+        user.role = role
         // Transforms the User to User Response
         return userMapper.userToUserResponse(userRepository.save(user))
     }

@@ -197,6 +197,15 @@ class UserRestController(
             "actualización", updateUserRequest.id, logger)
         return response
     }
+    // When the Endpoint has HTTP PUT requests with subdirectory "role", call Change Role function
+    @PutMapping("role", consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun changeRole(@RequestBody changeRoleUserRequest: ChangeRoleUserRequest): UserResponse {
+        val response = userService.changeRole(changeRoleUserRequest)
+        addLog(logService, "Rol de Usuario con Id '${changeRoleUserRequest.id}' a '${response.role}'",
+            "actualización", changeRoleUserRequest.id, logger)
+        return response
+    }
     // When the Endpoint has HTTP PUT requests with subdirectory "close" and id, call Close User's Account function
     @PutMapping("close/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody

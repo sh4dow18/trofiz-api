@@ -46,6 +46,11 @@ data class UpdateUserRequest(
     var id: Long,
     var name: String?
 )
+data class ChangeRoleUserRequest(
+    var id: Long,
+    var userId: Long,
+    var roleId: Long
+)
 data class GameLogRequest(
     var gameId: String,
     var userId: Long,
