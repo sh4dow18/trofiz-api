@@ -99,7 +99,7 @@ interface RoleMapper {
     @Mapping(target = "usersList", expression = EMPTY_LIST)
     fun roleRequestToRole(
         roleRequest: RoleRequest,
-        @Context privilegesList: Set<Privilege>
+        @Context privilegesList: MutableSet<Privilege>
     ): Role
     @Mapping(target = "privilegesList", expression = "java(role.getPrivilegesList().$MAP(it -> it.getName()).$TO_SET)")
     fun roleToRoleResponse(
