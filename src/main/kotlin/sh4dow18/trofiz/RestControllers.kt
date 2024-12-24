@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
@@ -101,7 +102,7 @@ class PrivilegeRestController(
     // When the Endpoint has HTTP GET requests, call find all Privileges function
     @GetMapping
     @ResponseBody
-    fun findAll() = privilegeService.findAll()
+    fun findAll(@RequestParam userId: Long) = privilegeService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert Privilege function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -115,7 +116,7 @@ class PrivilegeRestController(
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun update(@RequestBody updatePrivilegeRequest: UpdatePrivilegeRequest): PrivilegeResponse {
-        val response = privilegeService.update(updatePrivilegeRequest.id)
+        val response = privilegeService.update(updatePrivilegeRequest)
         addLog(logService, "Estado del Privilegio '${response.name}' a ${response.enabled}",
             "actualización", updatePrivilegeRequest.userId, logger)
         return response

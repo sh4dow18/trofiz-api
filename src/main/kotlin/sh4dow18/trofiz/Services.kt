@@ -158,9 +158,9 @@ class AbstractGameService(
 // Privilege Service Interface where the functions to be used in
 // Spring Abstract Privilege Service are declared
 interface PrivilegeService {
-    fun findAll(): List<PrivilegeResponse>
+    fun findAll(userId: Long): List<PrivilegeResponse>
     fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse
-    fun update(id: String): PrivilegeResponse
+    fun update(updatePrivilegeRequest: UpdatePrivilegeRequest): PrivilegeResponse
 }
 // Spring Abstract Game Service
 @Service
@@ -169,14 +169,20 @@ class AbstractPrivilegeService(
     @Autowired
     val privilegeRepository: PrivilegeRepository,
     @Autowired
-    val privilegeMapper: PrivilegeMapper
+    val privilegeMapper: PrivilegeMapper,
+    @Autowired
+    val userRepository: UserRepository,
 ): PrivilegeService {
-    override fun findAll(): List<PrivilegeResponse> {
+    override fun findAll(userId: Long): List<PrivilegeResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-privilegios")
         // Transforms a Privilege List to a Privilege Responses List
         return privilegeMapper.privilegesListToPrivilegeResponsesList(privilegeRepository.findAll())
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, privilegeRequest.userId, "agregar-privilegios")
         // Transforms Name in Privilege Request in lowercase and replace spaces with "-"
         // Example: "Add Games" -> "add-games"
         val privilegeId = getIdByName(privilegeRequest.name)
@@ -190,10 +196,12 @@ class AbstractPrivilegeService(
         return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(newPrivilege))
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
-    override fun update(id: String): PrivilegeResponse {
+    override fun update(updatePrivilegeRequest: UpdatePrivilegeRequest): PrivilegeResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updatePrivilegeRequest.userId, "actualizar-privilegios")
         // Verifies if the Privilege already exists
-        val privilege = privilegeRepository.findById(id).orElseThrow {
-            NoSuchElementExists(id,"Privilegio")
+        val privilege = privilegeRepository.findById(updatePrivilegeRequest.id).orElseThrow {
+            NoSuchElementExists(updatePrivilegeRequest.id,"Privilegio")
         }
         // Change enabled from true to false and vice versa
         privilege.enabled = !privilege.enabled
