@@ -545,7 +545,9 @@ class AbstractActionTypeService(
     @Autowired
     val actionTypeRepository: ActionTypeRepository,
     @Autowired
-    val actionTypeMapper: ActionTypeMapper
+    val actionTypeMapper: ActionTypeMapper,
+    @Autowired
+    val userRepository: UserRepository,
 ): ActionTypeService {
     override fun findAll(): List<ActionTypeResponse> {
         // Transforms the Action Types List to a Action Types Responses List
@@ -553,6 +555,8 @@ class AbstractActionTypeService(
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, actionTypeRequest.userId, "agregar-tipos-de-acción")
         // Check if the Action Type submitted already exists
         val id = getIdByName(actionTypeRequest.name)
         if (actionTypeRepository.findById(id).orElse(null) != null) {
