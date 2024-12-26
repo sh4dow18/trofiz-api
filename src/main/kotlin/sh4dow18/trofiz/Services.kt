@@ -301,14 +301,14 @@ class AbstractRoleService(
 // User Service Interface where the functions to be used in
 // Spring Abstract User Service are declared
 interface UserService {
-    fun findAll(): List<UserResponse>
-    fun findAllReviewsById(id: Long): List<ReviewResponse>
-    fun findAllLogsById(id: Long): List<LogResponse>
-    fun findById(id: Long): UserResponse
+    fun findAll(userId: Long): List<UserResponse>
+    fun findAllReviewsById(id: Long, userId: Long): List<ReviewResponse>
+    fun findAllLogsById(id: Long, userId: Long): List<LogResponse>
+    fun findById(id: Long, userId: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
     fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
     fun changeRole(changeRoleUserRequest: ChangeRoleUserRequest): UserResponse
-    fun closeAccount(id: Long): UserResponse
+    fun closeAccount(id: Long, userId: Long): UserResponse
 }
 // Spring Abstract Game Service
 @Service
@@ -327,11 +327,15 @@ class AbstractUserService(
     @Autowired
     val logMapper: LogMapper
 ): UserService {
-    override fun findAll(): List<UserResponse> {
+    override fun findAll(userId: Long): List<UserResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Transforms a User List to a User Responses List
         return userMapper.usersListToUserResponsesList(userRepository.findAll())
     }
-    override fun findAllReviewsById(id: Long): List<ReviewResponse> {
+    override fun findAllReviewsById(id: Long, userId: Long): List<ReviewResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Check if the game already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -339,7 +343,9 @@ class AbstractUserService(
         // Transforms a Reviews List to a Review Responses List
         return reviewMapper.reviewsListToReviewResponsesList(user.reviewsList)
     }
-    override fun findAllLogsById(id: Long): List<LogResponse> {
+    override fun findAllLogsById(id: Long, userId: Long): List<LogResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Check if the user already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -347,7 +353,9 @@ class AbstractUserService(
         // Transforms a Logs List to a Log Responses List
         return logMapper.logsListToLogsResponsesList(user.logsList)
     }
-    override fun findById(id: Long): UserResponse {
+    override fun findById(id: Long, userId: Long): UserResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuario-específico")
         // Verifies if the User already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -378,9 +386,15 @@ class AbstractUserService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class, ElementAlreadyExists::class, BadRequest::class])
     override fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updateUserRequest.userId, "actualizar-usuario-específico")
         // Verifies if the User already exists
         val user = userRepository.findById(updateUserRequest.id).orElseThrow {
             NoSuchElementExists("${updateUserRequest.id}", "Usuario")
+        }
+        // Check if the user is enabled
+        if (!user.enabled) {
+            throw BadRequest("El Usuario a Actualizar Posee la Cuenta Cerrada")
         }
         if (updateUserRequest.name != null) {
             // Check if the username length is less than 16 characters
@@ -426,9 +440,15 @@ class AbstractUserService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun changeRole(changeRoleUserRequest: ChangeRoleUserRequest): UserResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, changeRoleUserRequest.userId, "actualizar-rol-de-usuario")
         // Verifies if the User already exists
-        val user = userRepository.findById(changeRoleUserRequest.userId).orElseThrow {
-            NoSuchElementExists("${changeRoleUserRequest.userId}", "Usuario")
+        val user = userRepository.findById(changeRoleUserRequest.id).orElseThrow {
+            NoSuchElementExists("${changeRoleUserRequest.id}", "Usuario")
+        }
+        // Check if the user is enabled
+        if (!user.enabled) {
+            throw BadRequest("El Usuario a Cambiar Rol Posee la Cuenta Cerrada")
         }
         // Verifies if the Role already exists
         val role = roleRepository.findById(changeRoleUserRequest.roleId).orElseThrow {
@@ -440,10 +460,16 @@ class AbstractUserService(
         return userMapper.userToUserResponse(userRepository.save(user))
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
-    override fun closeAccount(id: Long): UserResponse {
+    override fun closeAccount(id: Long, userId: Long): UserResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "actualizar-usuario-específico")
         // Verifies if the User already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
+        }
+        // Check if the user is enabled
+        if (!user.enabled) {
+            throw BadRequest("El Usuario a Cerrar la Cuenta Posee la Cuenta Cerrada")
         }
         // Update user
         // Check if the user has a profile image, if exists, delete it

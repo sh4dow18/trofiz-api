@@ -44,12 +44,13 @@ data class UserRequest(
 )
 data class UpdateUserRequest(
     var id: Long,
-    var name: String?
+    var name: String?,
+    var userId: Long
 )
 data class ChangeRoleUserRequest(
     var id: Long,
+    var roleId: Long,
     var userId: Long,
-    var roleId: Long
 )
 data class GameLogRequest(
     var gameId: String,

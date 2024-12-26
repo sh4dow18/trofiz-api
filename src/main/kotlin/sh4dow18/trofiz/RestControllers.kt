@@ -166,19 +166,20 @@ class UserRestController(
     // When the Endpoint has HTTP GET requests, call find all Users function
     @GetMapping
     @ResponseBody
-    fun findAll() = userService.findAll()
+    fun findAll(@RequestParam userId: Long) = userService.findAll(userId)
     // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
     @GetMapping("{id}/reviews")
     @ResponseBody
-    fun findAllReviewsById(@PathVariable id: Long) = userService.findAllReviewsById(id)
+    fun findAllReviewsById(@PathVariable id: Long, @RequestParam userId: Long) =
+        userService.findAllReviewsById(id, userId)
     // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
     @GetMapping("{id}/logs")
     @ResponseBody
-    fun findAllLogsById(@PathVariable id: Long) = userService.findAllLogsById(id)
+    fun findAllLogsById(@PathVariable id: Long, @RequestParam userId: Long) = userService.findAllLogsById(id, userId)
     // When the Endpoint has HTTP GET requests with an id, call find user by id function
     @GetMapping("{id}")
     @ResponseBody
-    fun findById(@PathVariable("id") id: Long) = userService.findById(id)
+    fun findById(@PathVariable("id") id: Long, @RequestParam userId: Long) = userService.findById(id, userId)
     // When the Endpoint has HTTP POST requests, call insert User function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -197,7 +198,7 @@ class UserRestController(
         val imageSent = if (image != null) " e Imagen" else ""
         addLog(logService,
             "Usuario '${response.name}' con Nueva Información ${updateUserRequest.toNonNullString()}${imageSent}",
-            "actualización", updateUserRequest.id, logger)
+            "actualización", updateUserRequest.userId, logger)
         return response
     }
     // When the Endpoint has HTTP PUT requests with subdirectory "role", call Change Role function
@@ -206,15 +207,15 @@ class UserRestController(
     fun changeRole(@RequestBody changeRoleUserRequest: ChangeRoleUserRequest): UserResponse {
         val response = userService.changeRole(changeRoleUserRequest)
         addLog(logService, "Rol de Usuario con Id '${changeRoleUserRequest.id}' a '${response.role}'",
-            "actualización", changeRoleUserRequest.id, logger)
+            "actualización", changeRoleUserRequest.userId, logger)
         return response
     }
     // When the Endpoint has HTTP PUT requests with subdirectory "close" and id, call Close User's Account function
     @PutMapping("close/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun closeAccount(@PathVariable("id") id: Long): UserResponse {
-        val response = userService.closeAccount(id)
-        addLog(logService, "Cerrar cuenta de Usuario con Id '${id}'", "actualización", id, logger)
+    fun closeAccount(@PathVariable("id") id: Long, @RequestParam userId: Long): UserResponse {
+        val response = userService.closeAccount(id, userId)
+        addLog(logService, "Cerrar cuenta de Usuario con Id '${id}'", "actualización", userId, logger)
         return response
     }
 }
