@@ -297,5 +297,5 @@ class LogRestController(private val logService: LogService) {
     // When the Endpoint has HTTP GET requests, call find all Logs function
     @GetMapping
     @ResponseBody
-    fun findAll() = logService.findAll()
+    fun findAll(@RequestParam userId: Long) = logService.findAll(userId)
 }

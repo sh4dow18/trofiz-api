@@ -20,7 +20,10 @@ class LogTests(
     @Test
     // Makes it transactional to use Action Type and User in Log
     @Transactional
-    fun findAll() {
+    fun findAll() {// Find All Test Prop
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registros-del-sistema")
         // Transforms the Logs List to a Logs Responses List
         logMapper.logsListToLogsResponsesList(logRepository.findAll())
     }

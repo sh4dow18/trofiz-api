@@ -667,7 +667,7 @@ class AbstractActionTypeService(
 // Log Service Interface where the functions to be used in
 // Spring Abstract Log Service are declared
 interface LogService {
-    fun findAll(): List<LogResponse>
+    fun findAll(userId: Long): List<LogResponse>
     fun insert(logRequest: LogRequest): LogResponse
 }
 // Spring Abstract Log Service
@@ -683,7 +683,9 @@ class AbstractLogService(
     @Autowired
     val userRepository: UserRepository
 ): LogService {
-    override fun findAll(): List<LogResponse> {
+    override fun findAll(userId: Long): List<LogResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registros-del-sistema")
         // Transforms the Logs List to a Logs Responses List
         return logMapper.logsListToLogsResponsesList(logRepository.findAll())
     }
