@@ -236,7 +236,7 @@ class AbstractPrivilegeService(
 // Role Service Interface where the functions to be used in
 // Spring Abstract Role Service are declared
 interface RoleService {
-    fun findAll(): List<RoleResponse>
+    fun findAll(userId: Long): List<RoleResponse>
     fun insert(roleRequest: RoleRequest): RoleResponse
     fun update(updateRoleRequest: UpdateRoleRequest): RoleResponse
 }
@@ -249,14 +249,20 @@ class AbstractRoleService(
     @Autowired
     val privilegeRepository: PrivilegeRepository,
     @Autowired
-    val roleMapper: RoleMapper
+    val roleMapper: RoleMapper,
+    @Autowired
+    val userRepository: UserRepository
 ): RoleService {
-    override fun findAll(): List<RoleResponse> {
+    override fun findAll(userId: Long): List<RoleResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-roles")
         // Transforms a Role List to a Role Responses List
         return roleMapper.rolesListToRoleResponsesList(roleRepository.findAll())
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementsExists::class])
     override fun insert(roleRequest: RoleRequest): RoleResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, roleRequest.userId, "agregar-roles")
         // Verifies if the Role already exists
         if (roleRepository.findByNameIgnoringCase(roleRequest.name).orElse(null) != null) {
             throw ElementAlreadyExists(roleRequest.name, "Rol")
@@ -274,6 +280,8 @@ class AbstractRoleService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class, NoSuchElementsExists::class])
     override fun update(updateRoleRequest: UpdateRoleRequest): RoleResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updateRoleRequest.userId, "actualizar-roles")
         // Verifies if the Role already exists
         val role = roleRepository.findById(updateRoleRequest.id).orElseThrow {
             NoSuchElementExists("${updateRoleRequest.id}", "Rol")

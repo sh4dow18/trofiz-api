@@ -135,7 +135,7 @@ class RoleRestController(
     // When the Endpoint has HTTP GET requests, call find all Roles function
     @GetMapping
     @ResponseBody
-    fun findAll() = roleService.findAll()
+    fun findAll(@RequestParam userId: Long) = roleService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert Role function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
