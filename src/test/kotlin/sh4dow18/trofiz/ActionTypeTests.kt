@@ -17,11 +17,18 @@ class ActionTypeTests(
     val userRepository: UserRepository,
 ) {
     @Test
+    // Makes it transactional to use User Repository in User Validation
+    @Transactional
     fun findAll() {
+        // Find All Test Prop
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-tipos-de-acción")
         // Transforms the Action Types List to a Action Types Responses List
         actionTypeMapper.actionTypesListToActionTypeResponsesList(actionTypeRepository.findAll())
     }
     @Test
+    // Makes it transactional to use User Repository in User Validation
     @Transactional
     fun insert() {
         // Insert Action Type Test Prop

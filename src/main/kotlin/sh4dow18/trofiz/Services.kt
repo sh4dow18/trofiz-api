@@ -629,7 +629,7 @@ class AbstractGameLogService(
 // Action Type Service Interface where the functions to be used in
 // Spring Abstract Action Type Service are declared
 interface ActionTypeService {
-    fun findAll(): List<ActionTypeResponse>
+    fun findAll(userId: Long): List<ActionTypeResponse>
     fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse
 }
 // Spring Abstract Action Type Service
@@ -643,7 +643,9 @@ class AbstractActionTypeService(
     @Autowired
     val userRepository: UserRepository,
 ): ActionTypeService {
-    override fun findAll(): List<ActionTypeResponse> {
+    override fun findAll(userId: Long): List<ActionTypeResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-tipos-de-acción")
         // Transforms the Action Types List to a Action Types Responses List
         return actionTypeMapper.actionTypesListToActionTypeResponsesList(actionTypeRepository.findAll())
     }

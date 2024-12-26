@@ -279,7 +279,7 @@ class ActionTypeRestController(
     // When the Endpoint has HTTP GET requests, call find all Action Types function
     @GetMapping
     @ResponseBody
-    fun findAll() = actionTypeService.findAll()
+    fun findAll(@RequestParam userId: Long) = actionTypeService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert Action Type function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
