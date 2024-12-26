@@ -48,7 +48,7 @@ class GenreRestController(
     // When the Endpoint has HTTP GET requests, call find all genres function
     @GetMapping
     @ResponseBody
-    fun findAll() = genreService.findAll()
+    fun findAll(@RequestParam userId: Long) = genreService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert genre function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
