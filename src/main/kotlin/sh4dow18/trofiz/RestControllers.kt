@@ -230,15 +230,15 @@ class GameLogRestController(
     // When the Endpoint has HTTP GET requests, call find all Game Logs function
     @GetMapping
     @ResponseBody
-    fun findAll() = gameLogService.findAll()
+    fun findAll(@RequestParam userId: Long) = gameLogService.findAll(userId)
     // When the Endpoint has HTTP GET requests with subdirectory "user" and id, call find all Game Logs function
     @GetMapping("user/{id}")
     @ResponseBody
-    fun findByUserId(@PathVariable("id") id: Long) = gameLogService.findByUserId(id)
+    fun findByUserId(@PathVariable("id") id: Long, @RequestParam userId: Long) = gameLogService.findByUserId(id, userId)
     // When the Endpoint has HTTP GET requests with an id, call find Game Log by id function
     @GetMapping("{id}")
     @ResponseBody
-    fun findById(@PathVariable("id") id: Long) = gameLogService.findById(id)
+    fun findById(@PathVariable("id") id: Long, @RequestParam userId: Long) = gameLogService.findById(id, userId)
     // When the Endpoint has HTTP POST requests, call insert Game Log function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody

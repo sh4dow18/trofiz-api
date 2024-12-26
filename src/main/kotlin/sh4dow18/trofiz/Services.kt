@@ -492,9 +492,9 @@ class AbstractUserService(
 // Game Log Service Interface where the functions to be used in
 // Spring Abstract Game Log Service are declared
 interface GameLogService {
-    fun findAll(): List<GameLogResponse>
-    fun findByUserId(id: Long): List<GameLogResponse>
-    fun findById(id: Long): GameLogResponse
+    fun findAll(userId: Long): List<GameLogResponse>
+    fun findByUserId(id: Long, userId: Long): List<GameLogResponse>
+    fun findById(id: Long, userId: Long): GameLogResponse
     fun insert(gameLogRequest: GameLogRequest): GameLogResponse
     fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse
     fun delete(deleteGameLogRequest: DeleteGameLogRequest): String
@@ -516,15 +516,21 @@ class AbstractGameLogService(
     @Autowired
     val reviewMapper: ReviewMapper
 ): GameLogService {
-    override fun findAll(): List<GameLogResponse> {
+    override fun findAll(userId: Long): List<GameLogResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registros-de-juegos")
         // Transforms the Game Logs List to a Game Log Responses List
         return gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findAll())
     }
-    override fun findByUserId(id: Long): List<GameLogResponse> {
+    override fun findByUserId(id: Long, userId: Long): List<GameLogResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registros-de-juegos-de-usuario")
         // Transforms the Game Logs List to a Game Log Responses List
         return gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findByUserIdOrderByCreatedDateAsc(id))
     }
-    override fun findById(id: Long): GameLogResponse {
+    override fun findById(id: Long, userId: Long): GameLogResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registro-de-juego-específico")
         // Check if the game log already exists
         val gameLog = gameLogRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Registro de Juego")
@@ -534,6 +540,8 @@ class AbstractGameLogService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class, ElementAlreadyExists::class])
     override fun insert(gameLogRequest: GameLogRequest): GameLogResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, gameLogRequest.userId, "agregar-registros-de-juegos")
         // Check if the user submitted already exists
         val user = userRepository.findById(gameLogRequest.userId).orElseThrow {
             NoSuchElementExists("${gameLogRequest.userId}", "Usuario")
@@ -558,6 +566,8 @@ class AbstractGameLogService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updateGameLogRequest.userId, "actualizar-registros-de-juegos")
         // Check if the user submitted already exists
         val gameLog = gameLogRepository.findById(updateGameLogRequest.id).orElseThrow {
             NoSuchElementExists("${updateGameLogRequest.id}", "Registro de Juego")
@@ -602,6 +612,8 @@ class AbstractGameLogService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun delete(deleteGameLogRequest: DeleteGameLogRequest): String {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, deleteGameLogRequest.userId, "eliminar-registros-de-juegos")
         // Check if the user submitted already exists
         val gameLog = gameLogRepository.findById(deleteGameLogRequest.id).orElseThrow {
             NoSuchElementExists("${deleteGameLogRequest.id}", "Registro de Juego")
