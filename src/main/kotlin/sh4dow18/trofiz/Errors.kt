@@ -20,6 +20,8 @@ class NoSuchElementsExists(elements: List<String>, notExistsHow: String) :
     RuntimeException("Los elementos con los identificadores $elements no existen como $notExistsHow")
 // "Bad Request" class based on "Runtime Exception" class for use in error handlers with a template message
 class BadRequest(message: String) : RuntimeException(message)
+// "Unauthorized" class based on "Runtime Exception" class for use in error handlers with a template message
+class Unauthorized() : RuntimeException("No está autorizado para realizar esta acción")
 // Error Handlers Main Class
 @ControllerAdvice
 class ErrorsHandler: ResponseEntityExceptionHandler() {
@@ -57,6 +59,18 @@ class ErrorsHandler: ResponseEntityExceptionHandler() {
             message = exception.message
         )
         logger.debug("Bad Request: {}", exception)
+        return ResponseEntity(apiError, apiError.status)
+    }
+    // Error handler when some HTTP request is unauthorized
+    @ExceptionHandler(Unauthorized::class)
+    fun unauthorized(
+        exception: java.lang.Exception,
+    ): ResponseEntity<Any> {
+        val apiError = ApiError(
+            status = HttpStatus.UNAUTHORIZED,
+            message = exception.message
+        )
+        logger.debug("Unauthorized: {}", exception)
         return ResponseEntity(apiError, apiError.status)
     }
     // Default error handler for each exception that does not have a specific error handler

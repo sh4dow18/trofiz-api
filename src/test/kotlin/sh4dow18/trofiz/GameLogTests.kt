@@ -21,27 +21,37 @@ class GameLogTests(
     val reviewMapper: ReviewMapper
 ) {
     @Test
-    // Makes it transactional to use Platform and Genre in Game
+    // Makes it transactional to use Platform and Genre in Game and to use User Repository in User Validation
     @Transactional
     fun findAll() {
+        // Find All Test Prop
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registros-de-juegos")
         // Transforms the Game Logs List to a Game Log Responses List
         gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findAll())
     }
     @Test
-    // Makes it transactional to use Platform and Genre in Game
+    // Makes it transactional to use Platform and Genre in Game and to use User Repository in User Validation
     @Transactional
     fun findByUserId() {
         // Find Game Logs by User Id Test Prop
         val id = 1L
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registros-de-juegos-de-usuario")
         // Transforms the Game Logs List to a Game Log Responses List
         gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findByUserIdOrderByCreatedDateAsc(id))
     }
     @Test
-    // Makes it transactional to use Platform and Genre in Game
+    // Makes it transactional to use Platform and Genre in Game and to use User Repository in User Validation
     @Transactional
     fun findById() {
         // Find Game Log by Id Test Prop
         val id = 1L
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registro-de-juego-específico")
         // Check if the game log already exists
         val gameLog = gameLogRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Registro de Juego")
@@ -50,11 +60,13 @@ class GameLogTests(
         gameLogMapper.gameLogToGameLogResponse(gameLog)
     }
     @Test
-    // Makes it transactional to use Game and User Repositories
+    // Makes it transactional to use Game and User Repositories and to use User Repository in User Validation
     @Transactional
     fun insert() {
         // Insert Game Log Test Prop
         val gameLogRequest = GameLogRequest("days-gone",  1, "play-station-5")
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, gameLogRequest.userId, "agregar-registros-de-juegos")
         // Check if the user submitted already exists
         val user = userRepository.findById(gameLogRequest.userId).orElseThrow {
             NoSuchElementExists("${gameLogRequest.userId}", "Usuario")
@@ -78,12 +90,15 @@ class GameLogTests(
         gameLogMapper.gameLogToGameLogResponse(newGameLog)
     }
     @Test
+    // Makes it transactional to use Reviews and to use User Repository in User Validation
     @Transactional
     fun update() {
         // Update Game Log Test Prop
         val updateGameLogRequest = UpdateGameLogRequest(3, 8.5f,"2024-12-17 11:11",
             "2024-12-17 11:11", "2024-12-17 11:11", "Excelente", "play-station-5",
             1)
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updateGameLogRequest.userId, "actualizar-registros-de-juegos")
         // Check if the user submitted already exists
         val gameLog = gameLogRepository.findById(updateGameLogRequest.id).orElseThrow {
             NoSuchElementExists("${updateGameLogRequest.id}", "Registro de Juego")
@@ -127,9 +142,13 @@ class GameLogTests(
         gameLogMapper.gameLogToGameLogResponse(gameLog)
     }
     @Test
+    // Makes it transactional to use User Repository in User Validation
+    @Transactional
     fun delete() {
         // Delete Game Log Test Prop
         val deleteGameLogRequest = DeleteGameLogRequest(1, 1)
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, deleteGameLogRequest.userId, "eliminar-registros-de-juegos")
         // Check if the user submitted already exists
         gameLogRepository.findById(deleteGameLogRequest.id).orElseThrow {
             NoSuchElementExists("${deleteGameLogRequest.id}", "Registro de Juego")

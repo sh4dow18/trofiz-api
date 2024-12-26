@@ -56,7 +56,7 @@ data class Role(
         joinColumns = [JoinColumn(name = "role_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "privilege_id", referencedColumnName = "id")]
     )
-    var privilegesList: Set<Privilege>
+    var privilegesList: MutableSet<Privilege>
 ) {
     override fun equals(other: Any?): Boolean {
         // Check if the current object is the same instance as other
@@ -81,7 +81,7 @@ data class Privilege(
     var enabled: Boolean,
     // Privileges Relationships
     @ManyToMany(mappedBy = "privilegesList", fetch = FetchType.LAZY, targetEntity = Role::class)
-    var rolesList: Set<Role>
+    var rolesList: MutableSet<Role>
 ) {
     override fun equals(other: Any?): Boolean {
         // Check if the current object is the same instance as other

@@ -52,3 +52,18 @@ inline fun <reified T : Any> T.toNonNullString(): String {
         }
         .joinToString(", ", "{", "}")
 }
+// Check if the submitted user could do the submitted action
+fun checkUserValidation(userRepository: UserRepository, userId: Long, privilegeId: String) {
+    // Check if the user submitted already exists
+    val user = userRepository.findById(userId).orElseThrow {
+        NoSuchElementExists("$userId", "Usuario")
+    }
+    // Check if the submitted user has the permissions to perform the submitted action
+    if (user.role.privilegesList.none { it.id == privilegeId }) {
+        throw Unauthorized()
+    }
+    // Check if the user is enabled
+    if (!user.enabled) {
+        throw BadRequest("El Usuario Actual tiene la Cuenta Cerrada")
+    }
+}

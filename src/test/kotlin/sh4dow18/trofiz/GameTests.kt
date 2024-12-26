@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
-
 // Game Tests Main Class
 @SpringBootTest
 class GameTests(
@@ -18,27 +17,42 @@ class GameTests(
     @Autowired
     val genreRepository: GenreRepository,
     @Autowired
-    val reviewMapper: ReviewMapper
+    val reviewMapper: ReviewMapper,
+    @Autowired
+    val userRepository: UserRepository,
 ) {
     @Test
-    // Makes it transactional to use Platforms in Game
+    // Makes it transactional to use Platforms in Game and to use User Repository in User Validation
     @Transactional
     fun findAll() {
+        // Find All Test Prop
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-juegos")
         // Transforms a Games List to a Game Responses List
         gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
     }
     @Test
+    // Makes it transactional to use User Repository in User Validation
+    @Transactional
     fun findTop10ByNameContainingIgnoreCase() {
+        // Find Top 10 By Name Test Prop
         val name = "Juego 1"
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-juegos")
         // Transforms the first 10 Games from a Games List to a Game Responses List
         gameMapper.gamesListToGameResponsesList(gameRepository.findTop10ByNameContainingIgnoreCase(name))
     }
     @Test
-    // Makes it transactional to use Review in Game
+    // Makes it transactional to use Review in Game and to use User Repository in User Validation
     @Transactional
     fun findAllReviewsById() {
         // Find All Reviews by id Props
         val id = "days-gone"
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-juegos")
         // Check if the game already exists
         val game = gameRepository.findById(id).orElseThrow {
             NoSuchElementExists(id, "Juego")
@@ -47,9 +61,14 @@ class GameTests(
         reviewMapper.reviewsListToReviewResponsesList(game.reviewsList)
     }
     @Test
+    // Makes it transactional to use User Repository in User Validation
+    @Transactional
     fun findById() {
         // Find by id Props
         val id = "resident-evil"
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-juegos")
         // Check if the game already exists
         val game = gameRepository.findById(id).orElseThrow {
             NoSuchElementExists(id, "Juego")
@@ -58,6 +77,8 @@ class GameTests(
         gameMapper.gameToGameResponse(game)
     }
     @Test
+    // Makes it transactional to use User Repository in User Validation
+    @Transactional
     fun insert() {
         // Insert Genre Test Props
         val platformsSet: Set<String> = setOf("play-station-5")
@@ -65,6 +86,8 @@ class GameTests(
         val gameRequest = GameRequest("Juego de Prueba: Con Puntos / Y Slashes", 4.5f, 97,
             "2024-11-01", "http://image.com", platformsSet, genresSet, 1
             )
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, gameRequest.userId, "agregar-juegos")
         // Verifies if the game already exists
         if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
             throw ElementAlreadyExists(gameRequest.name, "Juego")

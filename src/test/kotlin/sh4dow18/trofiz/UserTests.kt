@@ -30,16 +30,25 @@ class UserTests(
     val logMapper: LogMapper
 ) {
     @Test
+    // Makes it transactional to use Role Info in User Validation
+    @Transactional
     fun findAll() {
+        // Find All Test Prop
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Transforms a User List to a User Responses List
         userMapper.usersListToUserResponsesList(userRepository.findAll())
     }
     @Test
-    // Makes it transactional to use Review in User
+    // Makes it transactional to use Review in User and to use Role Info in User Validation
     @Transactional
     fun findAllReviewsById() {
         // Find All Reviews by id Props
         val id = 1L
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Check if the user already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -48,11 +57,14 @@ class UserTests(
         reviewMapper.reviewsListToReviewResponsesList(user.reviewsList)
     }
     @Test
-    // Makes it transactional to use Log in User
+    // Makes it transactional to use Log in User and to use Role Info in User Validation
     @Transactional
     fun findAllLogsById() {
         // Find All Reviews by id Props
         val id = 1L
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Check if the user already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -61,18 +73,23 @@ class UserTests(
         logMapper.logsListToLogsResponsesList(user.logsList)
     }
     @Test
+    // Makes it transactional to use Role Info in User Validation
+    @Transactional
     fun findById() {
         // Find User By Id Test Prop
+        val id = 1L
         val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuario-específico")
         // Verifies if the User already exists
-        val user = userRepository.findById(userId).orElseThrow {
-            NoSuchElementExists("$userId", "Usuario")
+        val user = userRepository.findById(id).orElseThrow {
+            NoSuchElementExists("$id", "Usuario")
         }
         // If exists, transforms it to User Response
         userMapper.userToUserResponse(user)
     }
     @Test
-    // Makes it transactional to use Role Repository
+    // Makes it transactional to use Role Repository and use Role Info in User Validation
     @Transactional
     fun insert() {
         // Insert User Test Prop
@@ -97,9 +114,13 @@ class UserTests(
         userMapper.userToUserResponse(newUser)
     }
     @Test
+    // Makes it transactional to use Role Info in User Validation
+    @Transactional
     fun update() {
         // Update User Test Prop
-        val updateUserRequest = UpdateUserRequest(1, "Ramsés Solano")
+        val updateUserRequest = UpdateUserRequest(1, "Ramsés Solano", 1)
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updateUserRequest.userId, "actualizar-usuario-específico")
         // Update User Image Test Prop
         // Generate a blank image to test
         val width = 500
@@ -154,9 +175,35 @@ class UserTests(
         userMapper.userToUserResponse(user)
     }
     @Test
+    // Makes it transactional to use Role Info in User Validation
+    @Transactional
+    fun changeRole() {
+        // Change Role Test Prop
+        val changeRoleUserRequest = ChangeRoleUserRequest(1, 1, 2)
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, changeRoleUserRequest.userId, "actualizar-rol-de-usuario")
+        // Verifies if the User already exists
+        val user = userRepository.findById(changeRoleUserRequest.id).orElseThrow {
+            NoSuchElementExists("${changeRoleUserRequest.id}", "Usuario")
+        }
+        // Verifies if the Role already exists
+        val role = roleRepository.findById(changeRoleUserRequest.roleId).orElseThrow {
+            NoSuchElementExists("${changeRoleUserRequest.roleId}", "Rol")
+        }
+        // If the user and role were found, update the user
+        user.role = role
+        // Transforms the User to User Response
+        userMapper.userToUserResponse(user)
+    }
+    @Test
+    // Makes it transactional to use Role Info in User Validation
+    @Transactional
     fun closeAccount() {
         // Close Account Test Prop
         val id = 1L
+        val userId = 1L
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "actualizar-usuario-específico")
         // Verifies if the User already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")

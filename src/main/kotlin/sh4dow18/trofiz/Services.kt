@@ -18,7 +18,7 @@ import javax.imageio.ImageIO
 // Platform Service Interface where the functions to be used in
 // Spring Abstract Platform Service are declared
 interface PlatformService {
-    fun findAll(): List<PlatformResponse>
+    fun findAll(userId: Long): List<PlatformResponse>
     fun insert(platformRequest: PlatformRequest): PlatformResponse
 }
 // Spring Abstract Platform Service
@@ -28,14 +28,20 @@ class AbstractPlatformService(
     @Autowired
     val platformRepository: PlatformRepository,
     @Autowired
-    val platformMapper: PlatformMapper
+    val platformMapper: PlatformMapper,
+    @Autowired
+    val userRepository: UserRepository,
 ): PlatformService {
-    override fun findAll(): List<PlatformResponse> {
+    override fun findAll(userId: Long): List<PlatformResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-plataformas")
         // Returns all Platforms as a Platform Responses List
         return platformMapper.platformsListToPlatformResponsesList(platformRepository.findAll())
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(platformRequest: PlatformRequest): PlatformResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, platformRequest.userId, "agregar-plataformas")
         // Transforms Name in Platform Request in lowercase and replace spaces with "-"
         // Example: "Play Station 5" -> "play-station-5"
         val platformId = getIdByName(platformRequest.name)
@@ -52,7 +58,7 @@ class AbstractPlatformService(
 // Genre Service Interface where the functions to be used in
 // Spring Abstract Genre Service are declared
 interface GenreService {
-    fun findAll(): List<GenreResponse>
+    fun findAll(userId: Long): List<GenreResponse>
     fun insert(genreRequest: GenreRequest): GenreResponse
 }
 // Spring Abstract Genre Service
@@ -62,14 +68,20 @@ class AbstractGenreService(
     @Autowired
     val genreRepository: GenreRepository,
     @Autowired
-    val genreMapper: GenreMapper
+    val genreMapper: GenreMapper,
+    @Autowired
+    val userRepository: UserRepository
 ): GenreService {
-    override fun findAll(): List<GenreResponse> {
+    override fun findAll(userId: Long): List<GenreResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-géneros")
         // Returns all Genres as a Genre Responses List
         return genreMapper.genresListToGenreResponsesList(genreRepository.findAll())
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(genreRequest: GenreRequest): GenreResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, genreRequest.userId, "agregar-géneros")
         // Transforms Name in Genre Request in lowercase and replace spaces with "-"
         // Example: "Interactive Adventure" -> "interactive-adventure"
         val genreId = getIdByName(genreRequest.name)
@@ -86,10 +98,10 @@ class AbstractGenreService(
 // Game Service Interface where the functions to be used in
 // Spring Abstract Game Service are declared
 interface GameService {
-    fun findAll(): List<GameResponse>
-    fun findTop10ByNameContainingIgnoreCase(name: String): List<GameResponse>
-    fun findAllReviewsById(id: String): List<ReviewResponse>
-    fun findById(id: String): GameResponse
+    fun findAll(userId: Long): List<GameResponse>
+    fun findTop10ByNameContainingIgnoreCase(name: String, userId: Long): List<GameResponse>
+    fun findAllReviewsById(id: String, userId: Long): List<ReviewResponse>
+    fun findById(id: String, userId: Long): GameResponse
     fun insert(gameRequest: GameRequest): GameResponse
 }
 // Spring Abstract Game Service
@@ -105,17 +117,25 @@ class AbstractGameService(
     @Autowired
     val genreRepository: GenreRepository,
     @Autowired
-    val reviewMapper: ReviewMapper
+    val reviewMapper: ReviewMapper,
+    @Autowired
+    val userRepository: UserRepository,
 ): GameService {
-    override fun findAll(): List<GameResponse> {
+    override fun findAll(userId: Long): List<GameResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-juegos")
         // Transforms a Games List to a Game Responses List
         return gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
     }
-    override fun findTop10ByNameContainingIgnoreCase(name: String): List<GameResponse> {
+    override fun findTop10ByNameContainingIgnoreCase(name: String, userId: Long): List<GameResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-juegos")
         // Transforms the first 10 Games from a Games List to a Game Responses List
         return gameMapper.gamesListToGameResponsesList(gameRepository.findTop10ByNameContainingIgnoreCase(name))
     }
-    override fun findAllReviewsById(id: String): List<ReviewResponse> {
+    override fun findAllReviewsById(id: String, userId: Long): List<ReviewResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-juegos")
         // Check if the game already exists
         val game = gameRepository.findById(id).orElseThrow {
             NoSuchElementExists(id, "Juego")
@@ -123,7 +143,9 @@ class AbstractGameService(
         // Transforms a Reviews List to a Review Responses List
         return reviewMapper.reviewsListToReviewResponsesList(game.reviewsList)
     }
-    override fun findById(id: String): GameResponse {
+    override fun findById(id: String, userId: Long): GameResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-juegos")
         // Find a game with the id and if the game is not found, throw a "No Such Element Exists" error
         val game = gameRepository.findById(id).orElseThrow {
             NoSuchElementExists(id, "Juego")
@@ -133,6 +155,8 @@ class AbstractGameService(
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementsExists::class])
     override fun insert(gameRequest: GameRequest): GameResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, gameRequest.userId, "agregar-juegos")
         // Verifies if the game already exists
         if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
             throw ElementAlreadyExists(gameRequest.name, "Juego")
@@ -158,9 +182,9 @@ class AbstractGameService(
 // Privilege Service Interface where the functions to be used in
 // Spring Abstract Privilege Service are declared
 interface PrivilegeService {
-    fun findAll(): List<PrivilegeResponse>
+    fun findAll(userId: Long): List<PrivilegeResponse>
     fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse
-    fun update(id: String): PrivilegeResponse
+    fun update(updatePrivilegeRequest: UpdatePrivilegeRequest): PrivilegeResponse
 }
 // Spring Abstract Game Service
 @Service
@@ -169,14 +193,20 @@ class AbstractPrivilegeService(
     @Autowired
     val privilegeRepository: PrivilegeRepository,
     @Autowired
-    val privilegeMapper: PrivilegeMapper
+    val privilegeMapper: PrivilegeMapper,
+    @Autowired
+    val userRepository: UserRepository,
 ): PrivilegeService {
-    override fun findAll(): List<PrivilegeResponse> {
+    override fun findAll(userId: Long): List<PrivilegeResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-privilegios")
         // Transforms a Privilege List to a Privilege Responses List
         return privilegeMapper.privilegesListToPrivilegeResponsesList(privilegeRepository.findAll())
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(privilegeRequest: PrivilegeRequest): PrivilegeResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, privilegeRequest.userId, "agregar-privilegios")
         // Transforms Name in Privilege Request in lowercase and replace spaces with "-"
         // Example: "Add Games" -> "add-games"
         val privilegeId = getIdByName(privilegeRequest.name)
@@ -190,10 +220,12 @@ class AbstractPrivilegeService(
         return privilegeMapper.privilegeToPrivilegeResponse(privilegeRepository.save(newPrivilege))
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
-    override fun update(id: String): PrivilegeResponse {
+    override fun update(updatePrivilegeRequest: UpdatePrivilegeRequest): PrivilegeResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updatePrivilegeRequest.userId, "actualizar-privilegios")
         // Verifies if the Privilege already exists
-        val privilege = privilegeRepository.findById(id).orElseThrow {
-            NoSuchElementExists(id,"Privilegio")
+        val privilege = privilegeRepository.findById(updatePrivilegeRequest.id).orElseThrow {
+            NoSuchElementExists(updatePrivilegeRequest.id,"Privilegio")
         }
         // Change enabled from true to false and vice versa
         privilege.enabled = !privilege.enabled
@@ -204,7 +236,7 @@ class AbstractPrivilegeService(
 // Role Service Interface where the functions to be used in
 // Spring Abstract Role Service are declared
 interface RoleService {
-    fun findAll(): List<RoleResponse>
+    fun findAll(userId: Long): List<RoleResponse>
     fun insert(roleRequest: RoleRequest): RoleResponse
     fun update(updateRoleRequest: UpdateRoleRequest): RoleResponse
 }
@@ -217,14 +249,20 @@ class AbstractRoleService(
     @Autowired
     val privilegeRepository: PrivilegeRepository,
     @Autowired
-    val roleMapper: RoleMapper
+    val roleMapper: RoleMapper,
+    @Autowired
+    val userRepository: UserRepository
 ): RoleService {
-    override fun findAll(): List<RoleResponse> {
+    override fun findAll(userId: Long): List<RoleResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-roles")
         // Transforms a Role List to a Role Responses List
         return roleMapper.rolesListToRoleResponsesList(roleRepository.findAll())
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class, NoSuchElementsExists::class])
     override fun insert(roleRequest: RoleRequest): RoleResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, roleRequest.userId, "agregar-roles")
         // Verifies if the Role already exists
         if (roleRepository.findByNameIgnoringCase(roleRequest.name).orElse(null) != null) {
             throw ElementAlreadyExists(roleRequest.name, "Rol")
@@ -236,12 +274,14 @@ class AbstractRoleService(
             throw NoSuchElementsExists(missingIds.toList(), "Privilegios")
         }
         // If each privileges exist, create the new role
-        val newRole = roleMapper.roleRequestToRole(roleRequest, privilegesList.toSet())
+        val newRole = roleMapper.roleRequestToRole(roleRequest, privilegesList.toMutableSet())
         // Transforms the New Role to Role Response
         return roleMapper.roleToRoleResponse(roleRepository.save(newRole))
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class, NoSuchElementsExists::class])
     override fun update(updateRoleRequest: UpdateRoleRequest): RoleResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updateRoleRequest.userId, "actualizar-roles")
         // Verifies if the Role already exists
         val role = roleRepository.findById(updateRoleRequest.id).orElseThrow {
             NoSuchElementExists("${updateRoleRequest.id}", "Rol")
@@ -253,7 +293,7 @@ class AbstractRoleService(
             throw NoSuchElementsExists(missingIds.toList(), "Privilegios")
         }
         // If the Role exists and the Privileges Exists, update it
-        role.privilegesList = privilegesList.toSet()
+        role.privilegesList = privilegesList.toMutableSet()
         // Transforms the New Role to Role Response
         return roleMapper.roleToRoleResponse(roleRepository.save(role))
     }
@@ -261,13 +301,14 @@ class AbstractRoleService(
 // User Service Interface where the functions to be used in
 // Spring Abstract User Service are declared
 interface UserService {
-    fun findAll(): List<UserResponse>
-    fun findAllReviewsById(id: Long): List<ReviewResponse>
-    fun findAllLogsById(id: Long): List<LogResponse>
-    fun findById(id: Long): UserResponse
+    fun findAll(userId: Long): List<UserResponse>
+    fun findAllReviewsById(id: Long, userId: Long): List<ReviewResponse>
+    fun findAllLogsById(id: Long, userId: Long): List<LogResponse>
+    fun findById(id: Long, userId: Long): UserResponse
     fun insert(userRequest: UserRequest): UserResponse
     fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
-    fun closeAccount(id: Long): UserResponse
+    fun changeRole(changeRoleUserRequest: ChangeRoleUserRequest): UserResponse
+    fun closeAccount(id: Long, userId: Long): UserResponse
 }
 // Spring Abstract Game Service
 @Service
@@ -286,11 +327,15 @@ class AbstractUserService(
     @Autowired
     val logMapper: LogMapper
 ): UserService {
-    override fun findAll(): List<UserResponse> {
+    override fun findAll(userId: Long): List<UserResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Transforms a User List to a User Responses List
         return userMapper.usersListToUserResponsesList(userRepository.findAll())
     }
-    override fun findAllReviewsById(id: Long): List<ReviewResponse> {
+    override fun findAllReviewsById(id: Long, userId: Long): List<ReviewResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Check if the game already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -298,7 +343,9 @@ class AbstractUserService(
         // Transforms a Reviews List to a Review Responses List
         return reviewMapper.reviewsListToReviewResponsesList(user.reviewsList)
     }
-    override fun findAllLogsById(id: Long): List<LogResponse> {
+    override fun findAllLogsById(id: Long, userId: Long): List<LogResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Check if the user already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -306,7 +353,9 @@ class AbstractUserService(
         // Transforms a Logs List to a Log Responses List
         return logMapper.logsListToLogsResponsesList(user.logsList)
     }
-    override fun findById(id: Long): UserResponse {
+    override fun findById(id: Long, userId: Long): UserResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-usuario-específico")
         // Verifies if the User already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -337,9 +386,15 @@ class AbstractUserService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class, ElementAlreadyExists::class, BadRequest::class])
     override fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updateUserRequest.userId, "actualizar-usuario-específico")
         // Verifies if the User already exists
         val user = userRepository.findById(updateUserRequest.id).orElseThrow {
             NoSuchElementExists("${updateUserRequest.id}", "Usuario")
+        }
+        // Check if the user is enabled
+        if (!user.enabled) {
+            throw BadRequest("El Usuario a Actualizar Posee la Cuenta Cerrada")
         }
         if (updateUserRequest.name != null) {
             // Check if the username length is less than 16 characters
@@ -384,10 +439,37 @@ class AbstractUserService(
         return userMapper.userToUserResponse(userRepository.save(user))
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
-    override fun closeAccount(id: Long): UserResponse {
+    override fun changeRole(changeRoleUserRequest: ChangeRoleUserRequest): UserResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, changeRoleUserRequest.userId, "actualizar-rol-de-usuario")
+        // Verifies if the User already exists
+        val user = userRepository.findById(changeRoleUserRequest.id).orElseThrow {
+            NoSuchElementExists("${changeRoleUserRequest.id}", "Usuario")
+        }
+        // Check if the user is enabled
+        if (!user.enabled) {
+            throw BadRequest("El Usuario a Cambiar Rol Posee la Cuenta Cerrada")
+        }
+        // Verifies if the Role already exists
+        val role = roleRepository.findById(changeRoleUserRequest.roleId).orElseThrow {
+            NoSuchElementExists("${changeRoleUserRequest.roleId}", "Rol")
+        }
+        // If the user and role were found, update the user
+        user.role = role
+        // Transforms the User to User Response
+        return userMapper.userToUserResponse(userRepository.save(user))
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    override fun closeAccount(id: Long, userId: Long): UserResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "actualizar-usuario-específico")
         // Verifies if the User already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
+        }
+        // Check if the user is enabled
+        if (!user.enabled) {
+            throw BadRequest("El Usuario a Cerrar la Cuenta Posee la Cuenta Cerrada")
         }
         // Update user
         // Check if the user has a profile image, if exists, delete it
@@ -410,9 +492,9 @@ class AbstractUserService(
 // Game Log Service Interface where the functions to be used in
 // Spring Abstract Game Log Service are declared
 interface GameLogService {
-    fun findAll(): List<GameLogResponse>
-    fun findByUserId(id: Long): List<GameLogResponse>
-    fun findById(id: Long): GameLogResponse
+    fun findAll(userId: Long): List<GameLogResponse>
+    fun findByUserId(id: Long, userId: Long): List<GameLogResponse>
+    fun findById(id: Long, userId: Long): GameLogResponse
     fun insert(gameLogRequest: GameLogRequest): GameLogResponse
     fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse
     fun delete(deleteGameLogRequest: DeleteGameLogRequest): String
@@ -434,15 +516,21 @@ class AbstractGameLogService(
     @Autowired
     val reviewMapper: ReviewMapper
 ): GameLogService {
-    override fun findAll(): List<GameLogResponse> {
+    override fun findAll(userId: Long): List<GameLogResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registros-de-juegos")
         // Transforms the Game Logs List to a Game Log Responses List
         return gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findAll())
     }
-    override fun findByUserId(id: Long): List<GameLogResponse> {
+    override fun findByUserId(id: Long, userId: Long): List<GameLogResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registros-de-juegos-de-usuario")
         // Transforms the Game Logs List to a Game Log Responses List
         return gameLogMapper.gameLogsListToGameLogResponsesList(gameLogRepository.findByUserIdOrderByCreatedDateAsc(id))
     }
-    override fun findById(id: Long): GameLogResponse {
+    override fun findById(id: Long, userId: Long): GameLogResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registro-de-juego-específico")
         // Check if the game log already exists
         val gameLog = gameLogRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Registro de Juego")
@@ -452,6 +540,8 @@ class AbstractGameLogService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class, ElementAlreadyExists::class])
     override fun insert(gameLogRequest: GameLogRequest): GameLogResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, gameLogRequest.userId, "agregar-registros-de-juegos")
         // Check if the user submitted already exists
         val user = userRepository.findById(gameLogRequest.userId).orElseThrow {
             NoSuchElementExists("${gameLogRequest.userId}", "Usuario")
@@ -476,6 +566,8 @@ class AbstractGameLogService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun update(updateGameLogRequest: UpdateGameLogRequest): GameLogResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, updateGameLogRequest.userId, "actualizar-registros-de-juegos")
         // Check if the user submitted already exists
         val gameLog = gameLogRepository.findById(updateGameLogRequest.id).orElseThrow {
             NoSuchElementExists("${updateGameLogRequest.id}", "Registro de Juego")
@@ -520,6 +612,8 @@ class AbstractGameLogService(
     }
     @Transactional(rollbackFor = [NoSuchElementExists::class])
     override fun delete(deleteGameLogRequest: DeleteGameLogRequest): String {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, deleteGameLogRequest.userId, "eliminar-registros-de-juegos")
         // Check if the user submitted already exists
         val gameLog = gameLogRepository.findById(deleteGameLogRequest.id).orElseThrow {
             NoSuchElementExists("${deleteGameLogRequest.id}", "Registro de Juego")
@@ -535,7 +629,7 @@ class AbstractGameLogService(
 // Action Type Service Interface where the functions to be used in
 // Spring Abstract Action Type Service are declared
 interface ActionTypeService {
-    fun findAll(): List<ActionTypeResponse>
+    fun findAll(userId: Long): List<ActionTypeResponse>
     fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse
 }
 // Spring Abstract Action Type Service
@@ -545,14 +639,20 @@ class AbstractActionTypeService(
     @Autowired
     val actionTypeRepository: ActionTypeRepository,
     @Autowired
-    val actionTypeMapper: ActionTypeMapper
+    val actionTypeMapper: ActionTypeMapper,
+    @Autowired
+    val userRepository: UserRepository,
 ): ActionTypeService {
-    override fun findAll(): List<ActionTypeResponse> {
+    override fun findAll(userId: Long): List<ActionTypeResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-tipos-de-acción")
         // Transforms the Action Types List to a Action Types Responses List
         return actionTypeMapper.actionTypesListToActionTypeResponsesList(actionTypeRepository.findAll())
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(actionTypeRequest: ActionTypeRequest): ActionTypeResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, actionTypeRequest.userId, "agregar-tipos-de-acción")
         // Check if the Action Type submitted already exists
         val id = getIdByName(actionTypeRequest.name)
         if (actionTypeRepository.findById(id).orElse(null) != null) {
@@ -567,7 +667,7 @@ class AbstractActionTypeService(
 // Log Service Interface where the functions to be used in
 // Spring Abstract Log Service are declared
 interface LogService {
-    fun findAll(): List<LogResponse>
+    fun findAll(userId: Long): List<LogResponse>
     fun insert(logRequest: LogRequest): LogResponse
 }
 // Spring Abstract Log Service
@@ -583,7 +683,9 @@ class AbstractLogService(
     @Autowired
     val userRepository: UserRepository
 ): LogService {
-    override fun findAll(): List<LogResponse> {
+    override fun findAll(userId: Long): List<LogResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-registros-del-sistema")
         // Transforms the Logs List to a Logs Responses List
         return logMapper.logsListToLogsResponsesList(logRepository.findAll())
     }

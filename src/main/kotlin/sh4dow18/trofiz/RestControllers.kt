@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
@@ -25,7 +26,7 @@ class PlatformRestController(
     // When the Endpoint has HTTP GET requests, call find all platforms function
     @GetMapping
     @ResponseBody
-    fun findAll() = platformService.findAll()
+    fun findAll(@RequestParam userId: Long) = platformService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert platform function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -47,7 +48,7 @@ class GenreRestController(
     // When the Endpoint has HTTP GET requests, call find all genres function
     @GetMapping
     @ResponseBody
-    fun findAll() = genreService.findAll()
+    fun findAll(@RequestParam userId: Long) = genreService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert genre function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -68,19 +69,21 @@ class GameRestController(
     // When the Endpoint has HTTP GET requests, call find all games function
     @GetMapping
     @ResponseBody
-    fun findAll() = gameService.findAll()
+    fun findAll(@RequestParam userId: Long) = gameService.findAll(userId)
     // When the Endpoint has HTTP GET requests with an id, call find by id function
     @GetMapping("{id}")
     @ResponseBody
-    fun findById(@PathVariable id: String) = gameService.findById(id)
+    fun findById(@PathVariable id: String, @RequestParam userId: Long) = gameService.findById(id, userId)
     // When the Endpoint has HTTP GET requests on "search" and an id, call find Top 10 by name containing ignore case function
     @GetMapping("search/{name}")
     @ResponseBody
-    fun findTop10ByNameContainingIgnoreCase(@PathVariable name: String) = gameService.findTop10ByNameContainingIgnoreCase(name)
+    fun findTop10ByNameContainingIgnoreCase(@PathVariable name: String, @RequestParam userId: Long) =
+        gameService.findTop10ByNameContainingIgnoreCase(name, userId)
     // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
     @GetMapping("{id}/reviews")
     @ResponseBody
-    fun findAllReviewsById(@PathVariable id: String) = gameService.findAllReviewsById(id)
+    fun findAllReviewsById(@PathVariable id: String, @RequestParam userId: Long) =
+        gameService.findAllReviewsById(id, userId)
     // When the Endpoint has HTTP POST requests, call insert game function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -101,7 +104,7 @@ class PrivilegeRestController(
     // When the Endpoint has HTTP GET requests, call find all Privileges function
     @GetMapping
     @ResponseBody
-    fun findAll() = privilegeService.findAll()
+    fun findAll(@RequestParam userId: Long) = privilegeService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert Privilege function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -115,7 +118,7 @@ class PrivilegeRestController(
     @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
     fun update(@RequestBody updatePrivilegeRequest: UpdatePrivilegeRequest): PrivilegeResponse {
-        val response = privilegeService.update(updatePrivilegeRequest.id)
+        val response = privilegeService.update(updatePrivilegeRequest)
         addLog(logService, "Estado del Privilegio '${response.name}' a ${response.enabled}",
             "actualización", updatePrivilegeRequest.userId, logger)
         return response
@@ -132,7 +135,7 @@ class RoleRestController(
     // When the Endpoint has HTTP GET requests, call find all Roles function
     @GetMapping
     @ResponseBody
-    fun findAll() = roleService.findAll()
+    fun findAll(@RequestParam userId: Long) = roleService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert Role function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -163,19 +166,20 @@ class UserRestController(
     // When the Endpoint has HTTP GET requests, call find all Users function
     @GetMapping
     @ResponseBody
-    fun findAll() = userService.findAll()
+    fun findAll(@RequestParam userId: Long) = userService.findAll(userId)
     // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
     @GetMapping("{id}/reviews")
     @ResponseBody
-    fun findAllReviewsById(@PathVariable id: Long) = userService.findAllReviewsById(id)
+    fun findAllReviewsById(@PathVariable id: Long, @RequestParam userId: Long) =
+        userService.findAllReviewsById(id, userId)
     // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
     @GetMapping("{id}/logs")
     @ResponseBody
-    fun findAllLogsById(@PathVariable id: Long) = userService.findAllLogsById(id)
+    fun findAllLogsById(@PathVariable id: Long, @RequestParam userId: Long) = userService.findAllLogsById(id, userId)
     // When the Endpoint has HTTP GET requests with an id, call find user by id function
     @GetMapping("{id}")
     @ResponseBody
-    fun findById(@PathVariable("id") id: Long) = userService.findById(id)
+    fun findById(@PathVariable("id") id: Long, @RequestParam userId: Long) = userService.findById(id, userId)
     // When the Endpoint has HTTP POST requests, call insert User function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -194,15 +198,24 @@ class UserRestController(
         val imageSent = if (image != null) " e Imagen" else ""
         addLog(logService,
             "Usuario '${response.name}' con Nueva Información ${updateUserRequest.toNonNullString()}${imageSent}",
-            "actualización", updateUserRequest.id, logger)
+            "actualización", updateUserRequest.userId, logger)
+        return response
+    }
+    // When the Endpoint has HTTP PUT requests with subdirectory "role", call Change Role function
+    @PutMapping("role", consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun changeRole(@RequestBody changeRoleUserRequest: ChangeRoleUserRequest): UserResponse {
+        val response = userService.changeRole(changeRoleUserRequest)
+        addLog(logService, "Rol de Usuario con Id '${changeRoleUserRequest.id}' a '${response.role}'",
+            "actualización", changeRoleUserRequest.userId, logger)
         return response
     }
     // When the Endpoint has HTTP PUT requests with subdirectory "close" and id, call Close User's Account function
     @PutMapping("close/{id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
-    fun closeAccount(@PathVariable("id") id: Long): UserResponse {
-        val response = userService.closeAccount(id)
-        addLog(logService, "Cerrar cuenta de Usuario con Id '${id}'", "actualización", id, logger)
+    fun closeAccount(@PathVariable("id") id: Long, @RequestParam userId: Long): UserResponse {
+        val response = userService.closeAccount(id, userId)
+        addLog(logService, "Cerrar cuenta de Usuario con Id '${id}'", "actualización", userId, logger)
         return response
     }
 }
@@ -217,15 +230,15 @@ class GameLogRestController(
     // When the Endpoint has HTTP GET requests, call find all Game Logs function
     @GetMapping
     @ResponseBody
-    fun findAll() = gameLogService.findAll()
+    fun findAll(@RequestParam userId: Long) = gameLogService.findAll(userId)
     // When the Endpoint has HTTP GET requests with subdirectory "user" and id, call find all Game Logs function
     @GetMapping("user/{id}")
     @ResponseBody
-    fun findByUserId(@PathVariable("id") id: Long) = gameLogService.findByUserId(id)
+    fun findByUserId(@PathVariable("id") id: Long, @RequestParam userId: Long) = gameLogService.findByUserId(id, userId)
     // When the Endpoint has HTTP GET requests with an id, call find Game Log by id function
     @GetMapping("{id}")
     @ResponseBody
-    fun findById(@PathVariable("id") id: Long) = gameLogService.findById(id)
+    fun findById(@PathVariable("id") id: Long, @RequestParam userId: Long) = gameLogService.findById(id, userId)
     // When the Endpoint has HTTP POST requests, call insert Game Log function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -266,7 +279,7 @@ class ActionTypeRestController(
     // When the Endpoint has HTTP GET requests, call find all Action Types function
     @GetMapping
     @ResponseBody
-    fun findAll() = actionTypeService.findAll()
+    fun findAll(@RequestParam userId: Long) = actionTypeService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert Action Type function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
@@ -284,5 +297,5 @@ class LogRestController(private val logService: LogService) {
     // When the Endpoint has HTTP GET requests, call find all Logs function
     @GetMapping
     @ResponseBody
-    fun findAll() = logService.findAll()
+    fun findAll(@RequestParam userId: Long) = logService.findAll(userId)
 }
