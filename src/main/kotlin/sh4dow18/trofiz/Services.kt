@@ -18,7 +18,7 @@ import javax.imageio.ImageIO
 // Platform Service Interface where the functions to be used in
 // Spring Abstract Platform Service are declared
 interface PlatformService {
-    fun findAll(): List<PlatformResponse>
+    fun findAll(userId: Long): List<PlatformResponse>
     fun insert(platformRequest: PlatformRequest): PlatformResponse
 }
 // Spring Abstract Platform Service
@@ -28,14 +28,20 @@ class AbstractPlatformService(
     @Autowired
     val platformRepository: PlatformRepository,
     @Autowired
-    val platformMapper: PlatformMapper
+    val platformMapper: PlatformMapper,
+    @Autowired
+    val userRepository: UserRepository,
 ): PlatformService {
-    override fun findAll(): List<PlatformResponse> {
+    override fun findAll(userId: Long): List<PlatformResponse> {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, userId, "ver-plataformas")
         // Returns all Platforms as a Platform Responses List
         return platformMapper.platformsListToPlatformResponsesList(platformRepository.findAll())
     }
     @Transactional(rollbackFor = [ElementAlreadyExists::class])
     override fun insert(platformRequest: PlatformRequest): PlatformResponse {
+        // Check if the submitted user could do the submitted action
+        checkUserValidation(userRepository, platformRequest.userId, "agregar-plataformas")
         // Transforms Name in Platform Request in lowercase and replace spaces with "-"
         // Example: "Play Station 5" -> "play-station-5"
         val platformId = getIdByName(platformRequest.name)

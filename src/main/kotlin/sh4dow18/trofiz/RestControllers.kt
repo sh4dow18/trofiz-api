@@ -26,7 +26,7 @@ class PlatformRestController(
     // When the Endpoint has HTTP GET requests, call find all platforms function
     @GetMapping
     @ResponseBody
-    fun findAll() = platformService.findAll()
+    fun findAll(@RequestParam userId: Long) = platformService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert platform function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
