@@ -36,6 +36,29 @@ class GenrePublicRestController(private val genreService: GenreService) {
     @ResponseBody
     fun findAll(@RequestParam userId: Long) = genreService.findAll(userId)
 }
+// Game Public Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.public.games}")
+class GamePublicRestController(private val gameService: GameService) {
+    // When the Endpoint has HTTP GET requests, call find all games function
+    @GetMapping
+    @ResponseBody
+    fun findAll(@RequestParam userId: Long) = gameService.findAll(userId)
+    // When the Endpoint has HTTP GET requests with an id, call find by id function
+    @GetMapping("{id}")
+    @ResponseBody
+    fun findById(@PathVariable id: String, @RequestParam userId: Long) = gameService.findById(id, userId)
+    // When the Endpoint has HTTP GET requests on "search" and an id, call find Top 10 by name containing ignore case function
+    @GetMapping("search/{name}")
+    @ResponseBody
+    fun findTop10ByNameContainingIgnoreCase(@PathVariable name: String, @RequestParam userId: Long) =
+        gameService.findTop10ByNameContainingIgnoreCase(name, userId)
+    // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
+    @GetMapping("{id}/reviews")
+    @ResponseBody
+    fun findAllReviewsById(@PathVariable id: String, @RequestParam userId: Long) =
+        gameService.findAllReviewsById(id, userId)
+}
 
 // Private Rest Controllers
 
@@ -82,24 +105,6 @@ class GameRestController(
     private val logService: LogService
 ) {
     private val logger: Logger = LoggerFactory.getLogger(GameRestController::class.java)
-    // When the Endpoint has HTTP GET requests, call find all games function
-    @GetMapping
-    @ResponseBody
-    fun findAll(@RequestParam userId: Long) = gameService.findAll(userId)
-    // When the Endpoint has HTTP GET requests with an id, call find by id function
-    @GetMapping("{id}")
-    @ResponseBody
-    fun findById(@PathVariable id: String, @RequestParam userId: Long) = gameService.findById(id, userId)
-    // When the Endpoint has HTTP GET requests on "search" and an id, call find Top 10 by name containing ignore case function
-    @GetMapping("search/{name}")
-    @ResponseBody
-    fun findTop10ByNameContainingIgnoreCase(@PathVariable name: String, @RequestParam userId: Long) =
-        gameService.findTop10ByNameContainingIgnoreCase(name, userId)
-    // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
-    @GetMapping("{id}/reviews")
-    @ResponseBody
-    fun findAllReviewsById(@PathVariable id: String, @RequestParam userId: Long) =
-        gameService.findAllReviewsById(id, userId)
     // When the Endpoint has HTTP POST requests, call insert game function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
