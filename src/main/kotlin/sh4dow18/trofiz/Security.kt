@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
+import jakarta.annotation.Resource
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -32,12 +33,11 @@ object SecurityConstants {
 }
 // JWT Authentication Filter Class that is a Custom Security Filter that extends of
 // "UsernamePasswordAuthenticationFilter" and would be used to JWT authentication
-class JwtAuthenticationFilter(
-    authenticationManager: AuthenticationManager,
-    private val userService: UserService
-) : UsernamePasswordAuthenticationFilter() {
+class JwtAuthenticationFilter(authenticationManager: AuthenticationManager) : UsernamePasswordAuthenticationFilter() {
     // Variables Declaration
     private val authManager: AuthenticationManager
+    @Resource
+    private val userService: UserService? = null
     // JWTAuthenticationFilter Constructor
     init {
         // Establishes the URL that will listen for this filter
@@ -89,7 +89,7 @@ class JwtAuthenticationFilter(
         // Get the Username
         val userName = (authentication.principal as org.springframework.security.core.userdetails.User).username
         // Get the user Id from database
-        val userId = userService.findUserIdByName(userName)
+        val userId = userService?.findUserIdByName(userName) ?: 0
         // Creates the JWT
         val token = Jwts.builder()
             .signWith(SecurityConstants.SECRET_KEY)
