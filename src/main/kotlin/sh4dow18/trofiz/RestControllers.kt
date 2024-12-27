@@ -27,6 +27,15 @@ class PlatformPublicRestController(private val platformService: PlatformService)
     @ResponseBody
     fun findAll(@RequestParam userId: Long) = platformService.findAll(userId)
 }
+// Genre Public Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.public.genres}")
+class GenrePublicRestController(private val genreService: GenreService) {
+    // When the Endpoint has HTTP GET requests, call find all genres function
+    @GetMapping
+    @ResponseBody
+    fun findAll(@RequestParam userId: Long) = genreService.findAll(userId)
+}
 
 // Private Rest Controllers
 
@@ -56,10 +65,6 @@ class GenreRestController(
     private val logService: LogService
 ) {
     private val logger: Logger = LoggerFactory.getLogger(GenreRestController::class.java)
-    // When the Endpoint has HTTP GET requests, call find all genres function
-    @GetMapping
-    @ResponseBody
-    fun findAll(@RequestParam userId: Long) = genreService.findAll(userId)
     // When the Endpoint has HTTP POST requests, call insert genre function
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
