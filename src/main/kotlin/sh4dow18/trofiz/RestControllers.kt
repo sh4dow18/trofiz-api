@@ -59,6 +59,24 @@ class GamePublicRestController(private val gameService: GameService) {
     fun findAllReviewsById(@PathVariable id: String, @RequestParam userId: Long) =
         gameService.findAllReviewsById(id, userId)
 }
+// User Public Rest controller main class
+@RestController
+@RequestMapping("\${endpoint.public.users}")
+class UserPublicRestController(
+    private val userService: UserService,
+    private val logService: LogService
+) {
+    private val logger: Logger = LoggerFactory.getLogger(UserPublicRestController::class.java)
+    // When the Endpoint has HTTP POST requests, call insert User function
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @ResponseBody
+    fun insert(@RequestBody userRequest: UserRequest): UserResponse {
+        val response = userService.insert(userRequest)
+        addLog(logService, "Usuario '${response.name}' con el Rol ${response.role}",
+            "inserción", response.id, logger)
+        return response
+    }
+}
 
 // Private Rest Controllers
 
@@ -201,15 +219,6 @@ class UserRestController(
     @GetMapping("{id}")
     @ResponseBody
     fun findById(@PathVariable("id") id: Long, @RequestParam userId: Long) = userService.findById(id, userId)
-    // When the Endpoint has HTTP POST requests, call insert User function
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @ResponseBody
-    fun insert(@RequestBody userRequest: UserRequest): UserResponse {
-        val response = userService.insert(userRequest)
-        addLog(logService, "Usuario '${response.name}' con el Rol ${response.role}",
-            "inserción", response.id, logger)
-        return response
-    }
     // When the Endpoint has HTTP PUT requests, call Update User function
     @PutMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseBody
