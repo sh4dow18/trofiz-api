@@ -1,4 +1,7 @@
 package sh4dow18.trofiz
+
+import com.fasterxml.jackson.annotation.JsonCreator
+
 // Requests
 data class PlatformRequest(
     var name: String,
@@ -80,6 +83,13 @@ data class LogRequest(
     var actionTypeId: String,
     var userId: Long
 )
+data class LoginRequest(
+    var email: String,
+    var password: String
+){
+    @JsonCreator
+    constructor() : this("", "")
+}
 // Responses
 data class PlatformResponse(
     var id: String,

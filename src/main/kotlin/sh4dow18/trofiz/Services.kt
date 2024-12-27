@@ -309,6 +309,7 @@ interface UserService {
     fun update(updateUserRequest: UpdateUserRequest, image: MultipartFile?): UserResponse
     fun changeRole(changeRoleUserRequest: ChangeRoleUserRequest): UserResponse
     fun closeAccount(id: Long, userId: Long): UserResponse
+    fun findUserIdByName(name: String): Long
 }
 // Spring Abstract Game Service
 @Service
@@ -487,6 +488,14 @@ class AbstractUserService(
         user.enabled = false
         // Transforms the User to User Response
         return userMapper.userToUserResponse(userRepository.save(user))
+    }
+    @Transactional(rollbackFor = [NoSuchElementExists::class])
+    override fun findUserIdByName(name: String): Long {
+        // Verifies if the User already exists
+        val user = userRepository.findByEmailOrName(name, name).orElseThrow {
+            NoSuchElementExists(name, "Usuario")
+        }
+        return user.id
     }
 }
 // Game Log Service Interface where the functions to be used in
