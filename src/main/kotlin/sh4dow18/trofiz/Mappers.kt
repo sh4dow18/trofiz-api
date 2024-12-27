@@ -113,6 +113,7 @@ interface RoleMapper {
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 interface UserMapper {
     // Mapping the variables not submitted
+    @Mapping(target = "password", expression = "java($UTILS_PATH.encodePassword(userRequest.getPassword()))")
     @Mapping(target = "createdDate", expression = "java($UTILS_PATH.getCurrentDate())")
     @Mapping(target = "enabled", expression = "java(true)")
     @Mapping(target = "image", expression = "java(false)")

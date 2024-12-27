@@ -1,6 +1,8 @@
 package sh4dow18.trofiz
 // Utils Requirements
 import org.slf4j.Logger
+import org.springframework.context.annotation.Bean
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -66,4 +68,9 @@ fun checkUserValidation(userRepository: UserRepository, userId: Long, privilegeI
     if (!user.enabled) {
         throw BadRequest("El Usuario Actual tiene la Cuenta Cerrada")
     }
+}
+// Function that returns a password encoded with BCrypt Encoder
+@Bean
+fun encodePassword(password: String): String {
+    return BCryptPasswordEncoder().encode(password)
 }
