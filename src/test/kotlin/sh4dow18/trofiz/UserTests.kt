@@ -179,7 +179,7 @@ class UserTests(
     @Transactional
     fun changeRole() {
         // Change Role Test Prop
-        val changeRoleUserRequest = ChangeRoleUserRequest(1, 1, 2)
+        val changeRoleUserRequest = ChangeRoleUserRequest(1, 1, 1)
         // Check if the submitted user could do the submitted action
         checkUserValidation(userRepository, changeRoleUserRequest.userId, "actualizar-rol-de-usuario")
         // Verifies if the User already exists

@@ -81,7 +81,7 @@ class GameTests(
     @Transactional
     fun insert() {
         // Insert Genre Test Props
-        val platformsSet: Set<String> = setOf("play-station-5")
+        val platformsSet: Set<String> = setOf("playstation-5")
         val genresSet: Set<String> = setOf("aventura")
         val gameRequest = GameRequest("Juego de Prueba: Con Puntos / Y Slashes", 4.5f, 97,
             "2024-11-01", "http://image.com", platformsSet, genresSet, 1

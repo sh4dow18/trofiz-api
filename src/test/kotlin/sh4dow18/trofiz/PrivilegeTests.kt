@@ -52,7 +52,7 @@ class PrivilegeTests(
     @Transactional
     fun update() {
         // Update Privilege Status Test Prop
-        val updatePrivilegeRequest = UpdatePrivilegeRequest("add-game", 1)
+        val updatePrivilegeRequest = UpdatePrivilegeRequest("agregar-tipos-de-acción", 1)
         // Check if the submitted user could do the submitted action
         checkUserValidation(userRepository, updatePrivilegeRequest.userId, "actualizar-privilegios")
         // Verifies if the Privilege already exists

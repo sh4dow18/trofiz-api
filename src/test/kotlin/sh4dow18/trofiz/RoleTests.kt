@@ -33,7 +33,7 @@ class RoleTests(
     @Transactional
     fun insert() {
         // Insert Role Test Prop
-        val roleRequest = RoleRequest("administrator", listOf("add-game"), 1)
+        val roleRequest = RoleRequest("administrator", listOf("agregar-tipos-de-acción"), 1)
         // Check if the submitted user could do the submitted action
         checkUserValidation(userRepository, roleRequest.userId, "agregar-roles")
         // Verifies if the Role already exists
@@ -56,7 +56,7 @@ class RoleTests(
     @Transactional
     fun update() {
         // Update Role Test Prop
-        val updateRoleRequest = UpdateRoleRequest(1, listOf("add-game"), 1)
+        val updateRoleRequest = UpdateRoleRequest(1, listOf("agregar-tipos-de-acción"), 1)
         // Check if the submitted user could do the submitted action
         checkUserValidation(userRepository, updateRoleRequest.userId, "actualizar-roles")
         // Verifies if the Role already exists
