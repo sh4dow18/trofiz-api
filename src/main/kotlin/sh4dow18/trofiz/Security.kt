@@ -96,9 +96,9 @@ class JwtAuthenticationFilter(authenticationManager: AuthenticationManager) : Us
             .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
             .setIssuer(SecurityConstants.TOKEN_ISSUER)
             .setAudience(SecurityConstants.TOKEN_AUDIENCE)
-            .setSubject(userName)
+            .setSubject(userId.toString())
             .setExpiration(Date(System.currentTimeMillis() + SecurityConstants.TOKEN_LIFETIME))
-            .claim("id", userId)
+//            .claim("id", userId)
             // Compact the JWT in a string
             .compact()
         // Add the JWT as a Header called "Authorization" for the HTTP Response.
@@ -135,19 +135,19 @@ class JwtAuthorizationFilter(authenticationManager: AuthenticationManager) :
                 // Verifies if it is a valid token
                 // It verifies the token signature key with the Secret Key in Security Constants
                 // Then, extract the username that is the subject of body
-                val username: String = Jwts.parserBuilder()
+                val userId: String = Jwts.parserBuilder()
                     .setSigningKey(SecurityConstants.SECRET_KEY)
                     .build()
                     .parseClaimsJws(authorizationToken)
                     .body
                     .subject
                 // Registers the username in a local variable for the actual thread
-                LoggedUser.logIn(username)
+                LoggedUser.logIn(userId.toLong())
                 // Establishes the Spring Security Context Authentication that is a
                 // "UsernamePasswordAuthenticationToken" with the username extracted of the
                 // JWT Token and an "emptyList" that are the "User" privileges
                 SecurityContextHolder.getContext().authentication =
-                    UsernamePasswordAuthenticationToken(username, null, emptyList())
+                    UsernamePasswordAuthenticationToken(userId, null, emptyList())
             }
             // This allows the Request to continue with the process for which it was created
             filterChain.doFilter(request, response)
@@ -160,13 +160,13 @@ class JwtAuthorizationFilter(authenticationManager: AuthenticationManager) :
 // Logged User Object to control the Actual Thread
 object LoggedUser {
     // Variable Declaration to calls the local actual Thread
-    private val userHolder = ThreadLocal<String>()
+    private val userHolder = ThreadLocal<Long>()
     // Registers the username in a local variable for the actual thread
-    fun logIn(user: String) {
+    fun logIn(user: Long) {
         userHolder.set(user)
     }
     // Get the username of the local variable of the actual thread
-    fun get(): String {
+    fun get(): Long {
         return userHolder.get()
     }
 }
