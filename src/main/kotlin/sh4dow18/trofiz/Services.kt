@@ -741,7 +741,7 @@ class AppUserDetailsService(
             )
         // Returns a Spring Security "User" with the "User" information found
         return org.springframework.security.core.userdetails.User(
-            user.email, user.password, user.enabled, true, true,
+            user.id.toString(), user.password, user.enabled, true, true,
             true, getAuthorities(user.role)
         )
     }

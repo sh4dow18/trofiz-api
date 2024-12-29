@@ -86,19 +86,16 @@ class JwtAuthenticationFilter(authenticationManager: AuthenticationManager) : Us
     ) {
         // Creates an "ObjectMapper" that is used to serialize Java to JSON and JSON to Java
         val objectMapper = ObjectMapper()
-        // Get the Username
-        val userName = (authentication.principal as org.springframework.security.core.userdetails.User).username
         // Get the user Id from database
-        val userId = userService?.findUserIdByName(userName) ?: 0
+        val userId = (authentication.principal as org.springframework.security.core.userdetails.User).username
         // Creates the JWT
         val token = Jwts.builder()
             .signWith(SecurityConstants.SECRET_KEY)
             .setHeaderParam("typ", SecurityConstants.TOKEN_TYPE)
             .setIssuer(SecurityConstants.TOKEN_ISSUER)
             .setAudience(SecurityConstants.TOKEN_AUDIENCE)
-            .setSubject(userId.toString())
+            .setSubject(userId)
             .setExpiration(Date(System.currentTimeMillis() + SecurityConstants.TOKEN_LIFETIME))
-//            .claim("id", userId)
             // Compact the JWT in a string
             .compact()
         // Add the JWT as a Header called "Authorization" for the HTTP Response.
