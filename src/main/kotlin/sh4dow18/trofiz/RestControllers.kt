@@ -25,7 +25,7 @@ class PlatformPublicRestController(private val platformService: PlatformService)
     // When the Endpoint has HTTP GET requests, call find all platforms function
     @GetMapping
     @ResponseBody
-    fun findAll(@RequestParam userId: Long) = platformService.findAll(userId)
+    fun findAll() = platformService.findAll()
 }
 // Genre Public Rest controller main class
 @RestController
@@ -34,7 +34,7 @@ class GenrePublicRestController(private val genreService: GenreService) {
     // When the Endpoint has HTTP GET requests, call find all genres function
     @GetMapping
     @ResponseBody
-    fun findAll(@RequestParam userId: Long) = genreService.findAll(userId)
+    fun findAll() = genreService.findAll()
 }
 // Game Public Rest controller main class
 @RestController
@@ -43,21 +43,21 @@ class GamePublicRestController(private val gameService: GameService) {
     // When the Endpoint has HTTP GET requests, call find all games function
     @GetMapping
     @ResponseBody
-    fun findAll(@RequestParam userId: Long) = gameService.findAll(userId)
+    fun findAll() = gameService.findAll()
     // When the Endpoint has HTTP GET requests with an id, call find by id function
     @GetMapping("{id}")
     @ResponseBody
-    fun findById(@PathVariable id: String, @RequestParam userId: Long) = gameService.findById(id, userId)
+    fun findById(@PathVariable id: String) = gameService.findById(id)
     // When the Endpoint has HTTP GET requests on "search" and an id, call find Top 10 by name containing ignore case function
     @GetMapping("search/{name}")
     @ResponseBody
-    fun findTop10ByNameContainingIgnoreCase(@PathVariable name: String, @RequestParam userId: Long) =
-        gameService.findTop10ByNameContainingIgnoreCase(name, userId)
+    fun findTop10ByNameContainingIgnoreCase(@PathVariable name: String) =
+        gameService.findTop10ByNameContainingIgnoreCase(name)
     // When the Endpoint has HTTP GET requests on "reviews" and an id, call find all reviews by id function
     @GetMapping("{id}/reviews")
     @ResponseBody
-    fun findAllReviewsById(@PathVariable id: String, @RequestParam userId: Long) =
-        gameService.findAllReviewsById(id, userId)
+    fun findAllReviewsById(@PathVariable id: String) =
+        gameService.findAllReviewsById(id)
 }
 // User Public Rest controller main class
 @RestController

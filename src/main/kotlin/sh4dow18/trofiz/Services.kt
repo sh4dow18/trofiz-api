@@ -23,7 +23,7 @@ import javax.imageio.ImageIO
 // Platform Service Interface where the functions to be used in
 // Spring Abstract Platform Service are declared
 interface PlatformService {
-    fun findAll(userId: Long): List<PlatformResponse>
+    fun findAll(): List<PlatformResponse>
     fun insert(platformRequest: PlatformRequest): PlatformResponse
 }
 // Spring Abstract Platform Service
@@ -37,9 +37,7 @@ class AbstractPlatformService(
     @Autowired
     val userRepository: UserRepository,
 ): PlatformService {
-    override fun findAll(userId: Long): List<PlatformResponse> {
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-plataformas")
+    override fun findAll(): List<PlatformResponse> {
         // Returns all Platforms as a Platform Responses List
         return platformMapper.platformsListToPlatformResponsesList(platformRepository.findAll())
     }
@@ -63,7 +61,7 @@ class AbstractPlatformService(
 // Genre Service Interface where the functions to be used in
 // Spring Abstract Genre Service are declared
 interface GenreService {
-    fun findAll(userId: Long): List<GenreResponse>
+    fun findAll(): List<GenreResponse>
     fun insert(genreRequest: GenreRequest): GenreResponse
 }
 // Spring Abstract Genre Service
@@ -77,9 +75,7 @@ class AbstractGenreService(
     @Autowired
     val userRepository: UserRepository
 ): GenreService {
-    override fun findAll(userId: Long): List<GenreResponse> {
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-géneros")
+    override fun findAll(): List<GenreResponse> {
         // Returns all Genres as a Genre Responses List
         return genreMapper.genresListToGenreResponsesList(genreRepository.findAll())
     }
@@ -103,10 +99,10 @@ class AbstractGenreService(
 // Game Service Interface where the functions to be used in
 // Spring Abstract Game Service are declared
 interface GameService {
-    fun findAll(userId: Long): List<GameResponse>
-    fun findTop10ByNameContainingIgnoreCase(name: String, userId: Long): List<GameResponse>
-    fun findAllReviewsById(id: String, userId: Long): List<ReviewResponse>
-    fun findById(id: String, userId: Long): GameResponse
+    fun findAll(): List<GameResponse>
+    fun findTop10ByNameContainingIgnoreCase(name: String): List<GameResponse>
+    fun findAllReviewsById(id: String): List<ReviewResponse>
+    fun findById(id: String): GameResponse
     fun insert(gameRequest: GameRequest): GameResponse
 }
 // Spring Abstract Game Service
@@ -126,21 +122,15 @@ class AbstractGameService(
     @Autowired
     val userRepository: UserRepository,
 ): GameService {
-    override fun findAll(userId: Long): List<GameResponse> {
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-juegos")
+    override fun findAll(): List<GameResponse> {
         // Transforms a Games List to a Game Responses List
         return gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
     }
-    override fun findTop10ByNameContainingIgnoreCase(name: String, userId: Long): List<GameResponse> {
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-juegos")
+    override fun findTop10ByNameContainingIgnoreCase(name: String): List<GameResponse> {
         // Transforms the first 10 Games from a Games List to a Game Responses List
         return gameMapper.gamesListToGameResponsesList(gameRepository.findTop10ByNameContainingIgnoreCase(name))
     }
-    override fun findAllReviewsById(id: String, userId: Long): List<ReviewResponse> {
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-juegos")
+    override fun findAllReviewsById(id: String): List<ReviewResponse> {
         // Check if the game already exists
         val game = gameRepository.findById(id).orElseThrow {
             NoSuchElementExists(id, "Juego")
@@ -148,9 +138,7 @@ class AbstractGameService(
         // Transforms a Reviews List to a Review Responses List
         return reviewMapper.reviewsListToReviewResponsesList(game.reviewsList)
     }
-    override fun findById(id: String, userId: Long): GameResponse {
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-juegos")
+    override fun findById(id: String): GameResponse {
         // Find a game with the id and if the game is not found, throw a "No Such Element Exists" error
         val game = gameRepository.findById(id).orElseThrow {
             NoSuchElementExists(id, "Juego")
