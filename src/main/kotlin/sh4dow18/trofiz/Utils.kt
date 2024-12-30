@@ -54,8 +54,9 @@ inline fun <reified T : Any> T.toNonNullString(): String {
         .joinToString(", ", "{", "}")
 }
 // Check if the submitted user could do the submitted action
-fun checkUserValidation(userRepository: UserRepository, userId: Long, privilegeId: String) {
+fun checkUserValidation(userRepository: UserRepository, privilegeId: String) {
     // Check if the user submitted already exists
+    val userId = LoggedUser.get()
     val user = userRepository.findById(userId).orElseThrow {
         NoSuchElementExists("$userId", "Usuario")
     }

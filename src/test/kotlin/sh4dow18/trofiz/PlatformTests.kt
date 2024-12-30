@@ -11,17 +11,11 @@ class PlatformTests(
     @Autowired
     val platformRepository: PlatformRepository,
     @Autowired
-    val platformMapper: PlatformMapper,
-    @Autowired
-    val userRepository: UserRepository,
+    val platformMapper: PlatformMapper
 ) {
     @Test
     @Transactional
     fun findAll() {
-        // Find All Test Prop
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-plataformas")
         // Transforms a Platforms List to a Platform Responses List
         platformMapper.platformsListToPlatformResponsesList(platformRepository.findAll())
     }
@@ -29,9 +23,7 @@ class PlatformTests(
     @Transactional
     fun insert() {
         // Insert Platform Test Prop
-        val platformRequest = PlatformRequest("Plataforma de Prueba", 1)
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, platformRequest.userId, "agregar-plataformas")
+        val platformRequest = PlatformRequest("Plataforma de Prueba")
         // Transforms Name in Platform Request in lowercase and replace spaces with "-"
         // Example: "Play Station 5" -> "play-station-5"
         val platformId = getIdByName(platformRequest.name)

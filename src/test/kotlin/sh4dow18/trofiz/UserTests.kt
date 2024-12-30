@@ -33,10 +33,6 @@ class UserTests(
     // Makes it transactional to use Role Info in User Validation
     @Transactional
     fun findAll() {
-        // Find All Test Prop
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Transforms a User List to a User Responses List
         userMapper.usersListToUserResponsesList(userRepository.findAll())
     }
@@ -46,9 +42,6 @@ class UserTests(
     fun findAllReviewsById() {
         // Find All Reviews by id Props
         val id = 1L
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Check if the user already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -62,9 +55,6 @@ class UserTests(
     fun findAllLogsById() {
         // Find All Reviews by id Props
         val id = 1L
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-usuarios")
         // Check if the user already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -78,9 +68,6 @@ class UserTests(
     fun findById() {
         // Find User By Id Test Prop
         val id = 1L
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-usuario-específico")
         // Verifies if the User already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
@@ -118,9 +105,7 @@ class UserTests(
     @Transactional
     fun update() {
         // Update User Test Prop
-        val updateUserRequest = UpdateUserRequest(1, "Ramsés Solano", 1)
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, updateUserRequest.userId, "actualizar-usuario-específico")
+        val updateUserRequest = UpdateUserRequest(1, "Ramsés Solano")
         // Update User Image Test Prop
         // Generate a blank image to test
         val width = 500
@@ -179,9 +164,7 @@ class UserTests(
     @Transactional
     fun changeRole() {
         // Change Role Test Prop
-        val changeRoleUserRequest = ChangeRoleUserRequest(1, 1, 1)
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, changeRoleUserRequest.userId, "actualizar-rol-de-usuario")
+        val changeRoleUserRequest = ChangeRoleUserRequest(1, 1)
         // Verifies if the User already exists
         val user = userRepository.findById(changeRoleUserRequest.id).orElseThrow {
             NoSuchElementExists("${changeRoleUserRequest.id}", "Usuario")
@@ -201,9 +184,6 @@ class UserTests(
     fun closeAccount() {
         // Close Account Test Prop
         val id = 1L
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "actualizar-usuario-específico")
         // Verifies if the User already exists
         val user = userRepository.findById(id).orElseThrow {
             NoSuchElementExists("$id", "Usuario")
