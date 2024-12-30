@@ -72,8 +72,7 @@ class UserPublicRestController(
     @ResponseBody
     fun insert(@RequestBody userRequest: UserRequest): UserResponse {
         val response = userService.insert(userRequest)
-        addLog(logService, "Usuario '${response.name}' con el Rol ${response.role}",
-            "inserción", response.id, logger)
+        addLog(logService, "Usuario '${response.name}' con el Rol ${response.role}", "inserción", logger)
         return response
     }
 }
@@ -93,8 +92,7 @@ class PlatformRestController(
     @ResponseBody
     fun insert(@RequestBody platformRequest: PlatformRequest): PlatformResponse {
         val response = platformService.insert(platformRequest)
-        addLog(logService, "Plataforma '${platformRequest.name}'", "inserción",
-            platformRequest.userId, logger)
+        addLog(logService, "Plataforma '${platformRequest.name}'", "inserción", logger)
         return response
     }
 }
@@ -111,7 +109,7 @@ class GenreRestController(
     @ResponseBody
     fun insert(@RequestBody genreRequest: GenreRequest): GenreResponse {
         val response = genreService.insert(genreRequest)
-        addLog(logService, "Género '${genreRequest.name}'", "inserción", genreRequest.userId, logger)
+        addLog(logService, "Género '${genreRequest.name}'", "inserción", logger)
         return response
     }
 }
@@ -128,7 +126,7 @@ class GameRestController(
     @ResponseBody
     fun insert(@RequestBody gameRequest: GameRequest): GameResponse {
         val response = gameService.insert(gameRequest)
-        addLog(logService, "Juego '${gameRequest.name}'", "inserción", gameRequest.userId, logger)
+        addLog(logService, "Juego '${gameRequest.name}'", "inserción", logger)
         return response
     }
 }
@@ -149,8 +147,7 @@ class PrivilegeRestController(
     @ResponseBody
     fun insert(@RequestBody privilegeRequest: PrivilegeRequest): PrivilegeResponse {
         val response = privilegeService.insert(privilegeRequest)
-        addLog(logService, "Privilegio '${response.name}'", "inserción",
-            privilegeRequest.userId, logger)
+        addLog(logService, "Privilegio '${response.name}'", "inserción", logger)
         return response
     }
     // When the Endpoint has HTTP PUT requests, call update Privilege function
@@ -159,7 +156,7 @@ class PrivilegeRestController(
     fun update(@RequestBody updatePrivilegeRequest: UpdatePrivilegeRequest): PrivilegeResponse {
         val response = privilegeService.update(updatePrivilegeRequest)
         addLog(logService, "Estado del Privilegio '${response.name}' a ${response.enabled}",
-            "actualización", updatePrivilegeRequest.userId, logger)
+            "actualización", logger)
         return response
     }
 }
@@ -181,7 +178,7 @@ class RoleRestController(
     fun insert(@RequestBody roleRequest: RoleRequest): RoleResponse {
         val response = roleService.insert(roleRequest)
         addLog(logService, "Role '${response.name}' con los Privilegios ${response.privilegesList}",
-            "inserción", roleRequest.userId, logger)
+            "inserción", logger)
         return response
     }
     // When the Endpoint has HTTP POST requests, call update Role function
@@ -190,7 +187,7 @@ class RoleRestController(
     fun update(@RequestBody updateRoleRequest: UpdateRoleRequest): RoleResponse {
         val response = roleService.update(updateRoleRequest)
         addLog(logService, "Privilegios del Rol '${response.name}' por ${response.privilegesList}",
-            "actualización", updateRoleRequest.userId, logger)
+            "actualización", logger)
         return response
     }
 }
@@ -228,7 +225,7 @@ class UserRestController(
         val imageSent = if (image != null) " e Imagen" else ""
         addLog(logService,
             "Usuario '${response.name}' con Nueva Información ${updateUserRequest.toNonNullString()}${imageSent}",
-            "actualización", updateUserRequest.userId, logger)
+            "actualización", logger)
         return response
     }
     // When the Endpoint has HTTP PUT requests with subdirectory "role", call Change Role function
@@ -237,7 +234,7 @@ class UserRestController(
     fun changeRole(@RequestBody changeRoleUserRequest: ChangeRoleUserRequest): UserResponse {
         val response = userService.changeRole(changeRoleUserRequest)
         addLog(logService, "Rol de Usuario con Id '${changeRoleUserRequest.id}' a '${response.role}'",
-            "actualización", changeRoleUserRequest.userId, logger)
+            "actualización", logger)
         return response
     }
     // When the Endpoint has HTTP PUT requests with subdirectory "close" and id, call Close User's Account function
@@ -245,7 +242,7 @@ class UserRestController(
     @ResponseBody
     fun closeAccount(@PathVariable("id") id: Long, @RequestParam userId: Long): UserResponse {
         val response = userService.closeAccount(id, userId)
-        addLog(logService, "Cerrar cuenta de Usuario con Id '${id}'", "actualización", userId, logger)
+        addLog(logService, "Cerrar cuenta de Usuario con Id '${id}'", "actualización", logger)
         return response
     }
 }
@@ -274,8 +271,7 @@ class GameLogRestController(
     @ResponseBody
     fun insert(@RequestBody gameLogRequest: GameLogRequest): GameLogResponse {
         val response = gameLogService.insert(gameLogRequest)
-        addLog(logService, "Registro del Juego '${response.game.name}'",
-            "inserción", gameLogRequest.userId, logger)
+        addLog(logService, "Registro del Juego '${response.game.name}'", "inserción", logger)
         return response
     }
     // When the Endpoint has HTTP POST requests, call insert Game Log function
@@ -285,7 +281,7 @@ class GameLogRestController(
         val response = gameLogService.update(updateGameLogRequest)
         addLog(logService,
             "Registro de Juego '${response.game.name}' con Nueva Información ${updateGameLogRequest.toNonNullString()}",
-            "actualización", updateGameLogRequest.id, logger)
+            "actualización", logger)
         return response
     }
     // When the Endpoint has HTTP POST requests, call delete Game Log function
@@ -293,8 +289,7 @@ class GameLogRestController(
     @ResponseBody
     fun delete(@RequestBody deleteGameLogRequest: DeleteGameLogRequest): String {
         val response = gameLogService.delete(deleteGameLogRequest)
-        addLog(logService,"Registro de Juego '${deleteGameLogRequest.id}'", "eliminación",
-            deleteGameLogRequest.userId, logger)
+        addLog(logService,"Registro de Juego '${deleteGameLogRequest.id}'", "eliminación", logger)
         return response
     }
 }
@@ -315,8 +310,7 @@ class ActionTypeRestController(
     @ResponseBody
     fun insert(@RequestBody actionTypeRequest: ActionTypeRequest): ActionTypeResponse {
         val response = actionTypeService.insert(actionTypeRequest)
-        addLog(logService, "Tipo de Acción '${response.name}'", "inserción", actionTypeRequest.userId,
-            logger)
+        addLog(logService, "Tipo de Acción '${response.name}'", "inserción", logger)
         return response
     }
 }

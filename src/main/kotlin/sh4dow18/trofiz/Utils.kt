@@ -36,10 +36,9 @@ fun getStringAsDate(date: String): ZonedDateTime {
     return ZonedDateTime.of(localDateTime, ZoneId.of("America/Costa_Rica"))
 }
 // Add Log Function
-fun addLog(logService: LogService, action: String, actionType: String, userId: Long, logger: Logger) {
+fun addLog(logService: LogService, action: String, actionType: String, logger: Logger) {
     try {
-        logService.insert(
-            LogRequest(action, actionType, userId))
+        logService.insert(LogRequest(action, actionType))
     }
     catch (ex: Exception) {
         logger.error("Error al insertar en el log '$action'", ex)

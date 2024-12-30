@@ -698,8 +698,9 @@ class AbstractLogService(
             NoSuchElementExists(logRequest.actionTypeId, "Tipo de Acción")
         }
         // Check if the user submitted already exists
-        val user = userRepository.findById(logRequest.userId).orElseThrow {
-            NoSuchElementExists("${logRequest.userId}", "Usuario")
+        val userId = LoggedUser.get()
+        val user = userRepository.findById(userId).orElseThrow {
+            NoSuchElementExists("$userId", "Usuario")
         }
         // If the action type and user exists, create a new log
         val newLog = logMapper.logRequestToLog(logRequest, actionType, user)

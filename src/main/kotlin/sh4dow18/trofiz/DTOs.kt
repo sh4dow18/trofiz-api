@@ -80,8 +80,7 @@ data class ActionTypeRequest(
 )
 data class LogRequest(
     var action: String,
-    var actionTypeId: String,
-    var userId: Long
+    var actionTypeId: String
 )
 data class LoginRequest(
     var email: String,
