@@ -444,6 +444,12 @@ class AbstractUserService(
         if (!user.enabled) {
             throw BadRequest("El Usuario a Cambiar Rol Posee la Cuenta Cerrada")
         }
+        if (user.id == changeRoleUserRequest.id) {
+            throw BadRequest("Un Usuario no puede cambiarse el rol a él mismo")
+        }
+        if (user.id == 1L) {
+            throw BadRequest("No se puede cambiar el Rol del Usuario 1")
+        }
         // Verifies if the Role already exists
         val role = roleRepository.findById(changeRoleUserRequest.roleId).orElseThrow {
             NoSuchElementExists("${changeRoleUserRequest.roleId}", "Rol")

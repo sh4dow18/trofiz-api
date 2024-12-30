@@ -169,6 +169,9 @@ class UserTests(
         val user = userRepository.findById(changeRoleUserRequest.id).orElseThrow {
             NoSuchElementExists("${changeRoleUserRequest.id}", "Usuario")
         }
+        if (user.id == 1L) {
+            throw BadRequest("No se puede cambiar el Rol del Usuario 1")
+        }
         // Verifies if the Role already exists
         val role = roleRepository.findById(changeRoleUserRequest.roleId).orElseThrow {
             NoSuchElementExists("${changeRoleUserRequest.roleId}", "Rol")
