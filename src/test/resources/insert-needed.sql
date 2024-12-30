@@ -80,11 +80,8 @@ INSERT INTO privileges (id, name, description, enabled) VALUES ('agregar-privile
 INSERT INTO privileges (id, name, description, enabled) VALUES ('actualizar-privilegios', 'Actualizar Privilegios', 'Permite actualizar privilegios', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO privileges (id, name, description, enabled) VALUES ('ver-privilegios', 'Ver Privilegios', 'Permite ver privilegios', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO privileges (id, name, description, enabled) VALUES ('agregar-plataformas', 'Agregar Plataformas', 'Permite agregar plataformas', true) ON CONFLICT (id) DO NOTHING;
-INSERT INTO privileges (id, name, description, enabled) VALUES ('ver-plataformas', 'Ver Plataformas', 'Permite ver plataformas', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO privileges (id, name, description, enabled) VALUES ('agregar-géneros', 'Agregar Géneros', 'Permite agregar géneros', true) ON CONFLICT (id) DO NOTHING;
-INSERT INTO privileges (id, name, description, enabled) VALUES ('ver-géneros', 'Ver Géneros', 'Permite ver géneros', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO privileges (id, name, description, enabled) VALUES ('agregar-juegos', 'Agregar Juegos', 'Permite agregar juegos', true) ON CONFLICT (id) DO NOTHING;
-INSERT INTO privileges (id, name, description, enabled) VALUES ('ver-juegos', 'Ver Juegos', 'Permite ver juegos', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO privileges (id, name, description, enabled) VALUES ('agregar-roles', 'Agregar Roles', 'Permite agregar roles', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO privileges (id, name, description, enabled) VALUES ('ver-roles', 'Ver Roles', 'Permite ver roles', true) ON CONFLICT (id) DO NOTHING;
 INSERT INTO privileges (id, name, description, enabled) VALUES ('actualizar-roles', 'Actualizar Roles', 'Permite actualizar roles', true) ON CONFLICT (id) DO NOTHING;
@@ -109,11 +106,8 @@ INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'agregar-privilegi
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'actualizar-privilegios') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'ver-privilegios') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'agregar-plataformas') ON CONFLICT (role_id, privilege_id) DO NOTHING;
-INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'ver-plataformas') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'agregar-géneros') ON CONFLICT (role_id, privilege_id) DO NOTHING;
-INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'ver-géneros') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'agregar-juegos') ON CONFLICT (role_id, privilege_id) DO NOTHING;
-INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'ver-juegos') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'agregar-roles') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'ver-roles') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'actualizar-roles') ON CONFLICT (role_id, privilege_id) DO NOTHING;
@@ -129,9 +123,6 @@ INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'actualizar-regist
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'eliminar-registros-de-juegos') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (1, 'ver-registros-del-sistema') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 
-INSERT INTO role_privilege (role_id, privilege_id) VALUES (2, 'ver-plataformas') ON CONFLICT (role_id, privilege_id) DO NOTHING;
-INSERT INTO role_privilege (role_id, privilege_id) VALUES (2, 'ver-géneros') ON CONFLICT (role_id, privilege_id) DO NOTHING;
-INSERT INTO role_privilege (role_id, privilege_id) VALUES (2, 'ver-juegos') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (2, 'ver-usuario-específico') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (2, 'actualizar-usuario-específico') ON CONFLICT (role_id, privilege_id) DO NOTHING;
 INSERT INTO role_privilege (role_id, privilege_id) VALUES (2, 'ver-registros-de-juegos-de-usuario') ON CONFLICT (role_id, privilege_id) DO NOTHING;
