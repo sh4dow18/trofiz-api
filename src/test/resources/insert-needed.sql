@@ -143,4 +143,5 @@ INSERT INTO role_privilege (role_id, privilege_id) VALUES (2, 'eliminar-registro
 INSERT INTO users (id, email, name, password, created_date, enabled, image, role_id) VALUES
 (1, 'super-user@trofiz.cr', 'super-user', '$2a$06$hZZgwy9Z0qmyj4Sn4YEil.n6wdJocvFN9JzNd6v0JsfuqpzvAssAG', NOW(),
 true, false, 1) ON CONFLICT (id) DO NOTHING;
+SELECT setval('users_id_seq', 2, false);
 
