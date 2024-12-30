@@ -1,12 +1,13 @@
 package sh4dow18.trofiz
+
+import com.fasterxml.jackson.annotation.JsonCreator
+
 // Requests
 data class PlatformRequest(
-    var name: String,
-    var userId: Long
+    var name: String
 )
 data class GenreRequest(
-    var name: String,
-    var userId: Long
+    var name: String
 )
 data class GameRequest(
     var name: String,
@@ -15,27 +16,22 @@ data class GameRequest(
     var releaseDate: String,
     var imageUrl: String,
     var platformsList: Set<String>,
-    var genresList: Set<String>,
-    var userId: Long
+    var genresList: Set<String>
 )
 data class PrivilegeRequest(
     var name: String,
-    var description: String,
-    var userId: Long
+    var description: String
 )
 data class UpdatePrivilegeRequest(
-    var id: String,
-    var userId: Long
+    var id: String
 )
 data class RoleRequest(
     var name: String,
-    var privilegesList: List<String>,
-    var userId: Long
+    var privilegesList: List<String>
 )
 data class UpdateRoleRequest(
     var id: Long,
-    var privilegesList: List<String>,
-    var userId: Long
+    var privilegesList: List<String>
 )
 data class UserRequest(
     var email: String,
@@ -44,13 +40,11 @@ data class UserRequest(
 )
 data class UpdateUserRequest(
     var id: Long,
-    var name: String?,
-    var userId: Long
+    var name: String?
 )
 data class ChangeRoleUserRequest(
     var id: Long,
-    var roleId: Long,
-    var userId: Long,
+    var roleId: Long
 )
 data class GameLogRequest(
     var gameId: String,
@@ -64,22 +58,25 @@ data class UpdateGameLogRequest(
     var finished: String?,
     var platinum: String?,
     var review: String?,
-    var platformId: String?,
-    var userId: Long
+    var platformId: String?
 )
 data class DeleteGameLogRequest(
-    var id: Long,
-    var userId: Long
+    var id: Long
 )
 data class ActionTypeRequest(
-    var name: String,
-    var userId: Long
+    var name: String
 )
 data class LogRequest(
     var action: String,
-    var actionTypeId: String,
-    var userId: Long
+    var actionTypeId: String
 )
+data class LoginRequest(
+    var email: String,
+    var password: String
+){
+    @JsonCreator
+    constructor() : this("", "")
+}
 // Responses
 data class PlatformResponse(
     var id: String,

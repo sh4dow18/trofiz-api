@@ -12,18 +12,12 @@ class PrivilegeTests(
     @Autowired
     val privilegeRepository: PrivilegeRepository,
     @Autowired
-    val privilegeMapper: PrivilegeMapper,
-    @Autowired
-    val userRepository: UserRepository,
+    val privilegeMapper: PrivilegeMapper
 ) {
     @Test
     // Makes it transactional to use User Repository in User Validation
     @Transactional
     fun findAll() {
-        // Find All Test Prop
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-privilegios")
         // Transforms a Privilege List to a Privilege Responses List
         privilegeMapper.privilegesListToPrivilegeResponsesList(privilegeRepository.findAll())
     }
@@ -32,9 +26,7 @@ class PrivilegeTests(
     @Transactional
     fun insert() {
         // Insert Privilege Test Prop
-        val privilegeRequest = PrivilegeRequest("Add Games", "El Usuario puede agregar juegos", 1)
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, privilegeRequest.userId, "agregar-privilegios")
+        val privilegeRequest = PrivilegeRequest("Add Games", "El Usuario puede agregar juegos")
         // Transforms Name in Privilege Request in lowercase and replace spaces with "-"
         // Example: "Add Games" -> "add-games"
         val privilegeId = getIdByName(privilegeRequest.name)
@@ -52,9 +44,7 @@ class PrivilegeTests(
     @Transactional
     fun update() {
         // Update Privilege Status Test Prop
-        val updatePrivilegeRequest = UpdatePrivilegeRequest("add-game", 1)
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, updatePrivilegeRequest.userId, "actualizar-privilegios")
+        val updatePrivilegeRequest = UpdatePrivilegeRequest("agregar-tipos-de-acción")
         // Verifies if the Privilege already exists
         val privilege = privilegeRepository.findById(updatePrivilegeRequest.id).orElseThrow {
             NoSuchElementExists(updatePrivilegeRequest.id,"Privilegio")

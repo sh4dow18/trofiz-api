@@ -12,18 +12,12 @@ class ActionTypeTests(
     @Autowired
     val actionTypeRepository: ActionTypeRepository,
     @Autowired
-    val actionTypeMapper: ActionTypeMapper,
-    @Autowired
-    val userRepository: UserRepository,
+    val actionTypeMapper: ActionTypeMapper
 ) {
     @Test
     // Makes it transactional to use User Repository in User Validation
     @Transactional
     fun findAll() {
-        // Find All Test Prop
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-tipos-de-acción")
         // Transforms the Action Types List to a Action Types Responses List
         actionTypeMapper.actionTypesListToActionTypeResponsesList(actionTypeRepository.findAll())
     }
@@ -32,9 +26,7 @@ class ActionTypeTests(
     @Transactional
     fun insert() {
         // Insert Action Type Test Prop
-        val actionTypeRequest = ActionTypeRequest("eliminar", 1)
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, actionTypeRequest.userId, "agregar-tipos-de-acción")
+        val actionTypeRequest = ActionTypeRequest("eliminar")
         // Check if the Action Type submitted already exists
         val id = getIdByName(actionTypeRequest.name)
         if (actionTypeRepository.findById(id).orElse(null) != null) {

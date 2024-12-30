@@ -17,18 +17,12 @@ class GameTests(
     @Autowired
     val genreRepository: GenreRepository,
     @Autowired
-    val reviewMapper: ReviewMapper,
-    @Autowired
-    val userRepository: UserRepository,
+    val reviewMapper: ReviewMapper
 ) {
     @Test
     // Makes it transactional to use Platforms in Game and to use User Repository in User Validation
     @Transactional
     fun findAll() {
-        // Find All Test Prop
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-juegos")
         // Transforms a Games List to a Game Responses List
         gameMapper.gamesListToGameResponsesList(gameRepository.findAll())
     }
@@ -38,9 +32,6 @@ class GameTests(
     fun findTop10ByNameContainingIgnoreCase() {
         // Find Top 10 By Name Test Prop
         val name = "Juego 1"
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-juegos")
         // Transforms the first 10 Games from a Games List to a Game Responses List
         gameMapper.gamesListToGameResponsesList(gameRepository.findTop10ByNameContainingIgnoreCase(name))
     }
@@ -50,9 +41,6 @@ class GameTests(
     fun findAllReviewsById() {
         // Find All Reviews by id Props
         val id = "days-gone"
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-juegos")
         // Check if the game already exists
         val game = gameRepository.findById(id).orElseThrow {
             NoSuchElementExists(id, "Juego")
@@ -66,9 +54,6 @@ class GameTests(
     fun findById() {
         // Find by id Props
         val id = "resident-evil"
-        val userId = 1L
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, userId, "ver-juegos")
         // Check if the game already exists
         val game = gameRepository.findById(id).orElseThrow {
             NoSuchElementExists(id, "Juego")
@@ -81,13 +66,10 @@ class GameTests(
     @Transactional
     fun insert() {
         // Insert Genre Test Props
-        val platformsSet: Set<String> = setOf("play-station-5")
+        val platformsSet: Set<String> = setOf("playstation-5")
         val genresSet: Set<String> = setOf("aventura")
         val gameRequest = GameRequest("Juego de Prueba: Con Puntos / Y Slashes", 4.5f, 97,
-            "2024-11-01", "http://image.com", platformsSet, genresSet, 1
-            )
-        // Check if the submitted user could do the submitted action
-        checkUserValidation(userRepository, gameRequest.userId, "agregar-juegos")
+            "2024-11-01", "http://image.com", platformsSet, genresSet)
         // Verifies if the game already exists
         if (gameRepository.findById(getIdByName(gameRequest.name)).orElse(null) != null) {
             throw ElementAlreadyExists(gameRequest.name, "Juego")

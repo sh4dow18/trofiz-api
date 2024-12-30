@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "sh4dow18"
-version = "0.12.0"
+version = "0.13.0"
 
 java {
 	toolchain {
@@ -27,8 +27,13 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.postgresql:postgresql:42.7.4")
 	implementation("org.mapstruct:mapstruct:1.6.2")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
+	implementation("io.jsonwebtoken:jjwt-gson:0.11.5")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	runtimeOnly("org.postgresql:postgresql")
 	kapt("org.mapstruct:mapstruct-processor:1.6.2")
